@@ -1,5 +1,6 @@
 use convert_case::{Case, Casing};
 use expect_test::expect;
+use itertools::Itertools;
 
 use self::copy::{parse_grammar, InputGrammar, Rule, VariableType};
 
@@ -20,20 +21,25 @@ fn generate_grammar(grammar: &str) -> String {
 }
 
 fn generate_nodes(grammar: InputGrammar) -> String {
-    let mut s = String::new();
-    for variable in grammar
+    let mut syntax_nodes = "pub type SyntaxNode = rowan::SyntaxNode<Sql>;\n".to_owned();
+
+    let mut syntax_kinds = vec![];
+
+    for v in grammar
         .variables
-        .into_iter()
+        .iter()
         .filter(|v| v.kind == VariableType::Named)
         .filter(|v| !v.name.starts_with('_'))
     {
-        s.push_str(&format!(
+        syntax_kinds.push(&v.name);
+
+        syntax_nodes.push_str(&format!(
             "
-            pub struct {}();
-        ",
-            variable.name.to_case(Case::Pascal)
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct {}(SyntaxNode);\n",
+            v.name.to_case(Case::Pascal)
         ));
-        match variable.rule {
+        match &v.rule {
             Rule::Blank => {}
             Rule::String(_) => {}
             Rule::Pattern(_) => {}
@@ -45,35 +51,106 @@ fn generate_nodes(grammar: InputGrammar) -> String {
             Rule::Seq(_) => {}
         }
     }
-    s
+
+    let mut syntax_kinds = format!(
+        r#"
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(u16)]
+enum SyntaxKind {{
+    {variants}
+}}
+
+impl From<&'static str> for SyntaxKind {{
+    fn from(s: &'static str) -> Self {{
+        match s {{
+{cases}
+            _ => unreachable!(),
+        }}
+    }}
+}}
+"#,
+        variants = syntax_kinds
+            .iter()
+            .map(|kind| kind.to_case(Case::Pascal))
+            .join(",\n\t"),
+        cases = syntax_kinds
+            .iter()
+            .map(|kind| format!("\t\t\t\"{}\" => Self::{}", kind, kind.to_case(Case::Pascal)))
+            .join(",\n")
+    );
+
+    syntax_nodes.push_str(&syntax_kinds);
+    syntax_nodes
 }
 
 #[test]
 fn test_generate_nodes() {
     let out = generate_grammar(TEST_GRAMMAR);
     expect![[r#"
+        pub type SyntaxNode = rowan::SyntaxNode<Sql>;
 
-                    pub struct Array();
-        
-                    pub struct Document();
-        
-                    pub struct False();
-        
-                    pub struct Null();
-        
-                    pub struct Number();
-        
-                    pub struct Object();
-        
-                    pub struct Pair();
-        
-                    pub struct String();
-        
-                    pub struct True();
-        "#]]
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+        pub struct Array(SyntaxNode);
+
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+        pub struct Document(SyntaxNode);
+
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+        pub struct False(SyntaxNode);
+
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+        pub struct Null(SyntaxNode);
+
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+        pub struct Number(SyntaxNode);
+
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+        pub struct Object(SyntaxNode);
+
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+        pub struct Pair(SyntaxNode);
+
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+        pub struct String(SyntaxNode);
+
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+        pub struct True(SyntaxNode);
+
+        #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+        #[repr(u16)]
+        enum SyntaxKind {
+            Array,
+        	Document,
+        	False,
+        	Null,
+        	Number,
+        	Object,
+        	Pair,
+        	String,
+        	True
+        }
+
+        impl From<&'static str> for SyntaxKind {
+            fn from(s: &'static str) -> Self {
+                match s {
+        			"array" => Self::Array,
+        			"document" => Self::Document,
+        			"false" => Self::False,
+        			"null" => Self::Null,
+        			"number" => Self::Number,
+        			"object" => Self::Object,
+        			"pair" => Self::Pair,
+        			"string" => Self::String,
+        			"true" => Self::True
+                    _ => unreachable!(),
+                }
+            }
+        }
+    "#]]
     .assert_eq(&out);
 }
 
+// simplified jsonish grammar
 const TEST_GRAMMAR: &str = r#"
 {
   "name": "json",

@@ -1,7 +1,9 @@
 pub use self::db::{SyntaxDatabase, SyntaxDatabaseStorage};
 
+mod convert;
 mod db;
 mod lower;
+mod nodes;
 
 use tree_sitter::{Language, Parser, Tree};
 
