@@ -509,6 +509,7 @@ dependencies = [
  "convert_case",
  "expect-test",
  "itertools",
+ "quote",
  "rowan",
  "salsa",
  "serde",

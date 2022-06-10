@@ -1,6 +1,11 @@
+use std::io::{Read, Write};
+use std::process::{Command, Stdio};
+
 use convert_case::{Case, Casing};
 use expect_test::expect;
 use itertools::Itertools;
+use quote::__private::TokenStream;
+use quote::{format_ident, quote};
 
 use self::copy::{parse_grammar, InputGrammar, Rule, VariableType};
 
@@ -11,7 +16,7 @@ fn generate() -> std::io::Result<()> {
     let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("../tree-sitter-sql/src/grammar.json");
     let grammar = parse_grammar(&std::fs::read_to_string(path)?).unwrap();
-    let _ = generate_nodes(grammar);
+    // let _ = generate_nodes(grammar);
     Ok(())
 }
 
@@ -21,66 +26,101 @@ fn generate_grammar(grammar: &str) -> String {
 }
 
 fn generate_nodes(grammar: InputGrammar) -> String {
-    let mut syntax_nodes = "pub type SyntaxNode = rowan::SyntaxNode<Sql>;\n".to_owned();
+    Gen::default().generate(grammar)
+}
 
-    let mut syntax_kinds = vec![];
+#[derive(Default)]
+struct Gen {
+    s: String,
+}
 
-    for v in grammar
-        .variables
-        .iter()
-        .filter(|v| v.kind == VariableType::Named)
-        .filter(|v| !v.name.starts_with('_'))
-    {
-        syntax_kinds.push(&v.name);
+fn rustfmt(code: &str) -> String {
+    let child = Command::new("rustfmt")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    child.stdin.unwrap().write_all(code.as_bytes()).unwrap();
+    let mut s = String::with_capacity(code.len());
+    child.stdout.unwrap().read_to_string(&mut s).unwrap();
+    s
+}
 
-        syntax_nodes.push_str(&format!(
-            "
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct {}(SyntaxNode);\n",
-            v.name.to_case(Case::Pascal)
-        ));
-        match &v.rule {
-            Rule::Blank => {}
-            Rule::String(_) => {}
+impl Gen {
+    pub fn generate(mut self, grammar: InputGrammar) -> String {
+        self.gen(grammar);
+        rustfmt(&self.s)
+    }
+
+    fn push(&mut self, stream: TokenStream) {
+        self.push_str(&stream.to_string())
+    }
+
+    fn push_str(&mut self, s: &str) {
+        self.s.push_str(s);
+    }
+
+    fn gen_rule(&mut self, rule: &Rule) {
+        dbg!(rule);
+        match &rule {
+            Rule::Blank | Rule::String(_) => {}
             Rule::Pattern(_) => {}
             Rule::NamedSymbol(_) => {}
             Rule::Symbol(_) => {}
             Rule::Choice(_) => {}
             Rule::Metadata { params, rule } => {}
             Rule::Repeat(_) => {}
-            Rule::Seq(_) => {}
+            Rule::Seq(rules) => rules.iter().for_each(|rule| {}),
         }
     }
 
-    let mut syntax_kinds = format!(
-        r#"
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[repr(u16)]
-enum SyntaxKind {{
-    {variants}
-}}
+    fn gen(&mut self, grammar: InputGrammar) {
+        let mut syntax_kinds = vec![];
+        self.push_str("pub type SyntaxNode = rowan::SyntaxNode<Sql>;\n");
 
-impl From<&'static str> for SyntaxKind {{
-    fn from(s: &'static str) -> Self {{
-        match s {{
-{cases}
-            _ => unreachable!(),
-        }}
-    }}
-}}
-"#,
-        variants = syntax_kinds
+        for v in grammar
+            .variables
             .iter()
-            .map(|kind| kind.to_case(Case::Pascal))
-            .join(",\n\t"),
-        cases = syntax_kinds
-            .iter()
-            .map(|kind| format!("\t\t\t\"{}\" => Self::{}", kind, kind.to_case(Case::Pascal)))
-            .join(",\n")
-    );
+            .filter(|v| v.kind == VariableType::Named)
+            .filter(|v| !v.name.starts_with('_'))
+        {
+            syntax_kinds.push(&v.name);
 
-    syntax_nodes.push_str(&syntax_kinds);
-    syntax_nodes
+            let name = format_ident!("{}", v.name.to_case(Case::Pascal));
+            self.push(quote! {
+                #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+                pub struct #name(SyntaxNode);
+            });
+
+            self.gen_rule(&v.rule);
+        }
+
+        let variants = syntax_kinds
+            .iter()
+            .map(|kind| format_ident!("{}", kind.to_case(Case::Pascal)));
+
+        let cases = syntax_kinds.iter().map(|kind| {
+            let variant = format_ident!("{}", kind.to_case(Case::Pascal));
+            quote!(#kind => Self::#variant)
+        });
+
+        self.push(quote! {
+            #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+            #[repr(u16)]
+            enum SyntaxKind {
+                #(#variants,)*
+            }
+
+            impl From<&'static str> for SyntaxKind {
+                fn from(s: &'static str) -> Self {
+                    match s {
+                        #(#cases,)*
+                        _ => unreachable!(),
+                    }
+                }
+            }
+        });
+    }
 }
 
 #[test]
@@ -88,60 +128,49 @@ fn test_generate_nodes() {
     let out = generate_grammar(TEST_GRAMMAR);
     expect![[r#"
         pub type SyntaxNode = rowan::SyntaxNode<Sql>;
-
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Array(SyntaxNode);
-
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Document(SyntaxNode);
-
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct False(SyntaxNode);
-
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Null(SyntaxNode);
-
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Number(SyntaxNode);
-
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Object(SyntaxNode);
-
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Pair(SyntaxNode);
-
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct String(SyntaxNode);
-
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct True(SyntaxNode);
-
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
         #[repr(u16)]
         enum SyntaxKind {
             Array,
-        	Document,
-        	False,
-        	Null,
-        	Number,
-        	Object,
-        	Pair,
-        	String,
-        	True
+            Document,
+            False,
+            Null,
+            Number,
+            Object,
+            Pair,
+            String,
+            True,
         }
-
         impl From<&'static str> for SyntaxKind {
             fn from(s: &'static str) -> Self {
                 match s {
-        			"array" => Self::Array,
-        			"document" => Self::Document,
-        			"false" => Self::False,
-        			"null" => Self::Null,
-        			"number" => Self::Number,
-        			"object" => Self::Object,
-        			"pair" => Self::Pair,
-        			"string" => Self::String,
-        			"true" => Self::True
+                    "array" => Self::Array,
+                    "document" => Self::Document,
+                    "false" => Self::False,
+                    "null" => Self::Null,
+                    "number" => Self::Number,
+                    "object" => Self::Object,
+                    "pair" => Self::Pair,
+                    "string" => Self::String,
+                    "true" => Self::True,
                     _ => unreachable!(),
                 }
             }
