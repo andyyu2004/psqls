@@ -1,3 +1,7 @@
+pub use self::db::{SyntaxDatabase, SyntaxDatabaseStorage};
+
+mod db;
+
 use tree_sitter::{Language, Parser, Tree};
 
 extern "C" {

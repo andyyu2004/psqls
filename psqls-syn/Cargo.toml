@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+salsa = "0.17.0-pre.2"
 tree-sitter = "0.20"
 
 [dev-dependencies]

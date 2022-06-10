@@ -13,3 +13,6 @@ tower-lsp = "0.17"
 [dependencies.tokio]
 version = "1"
 features = ["macros", "rt-multi-thread", "io-std"]
+
+[dependencies.psqls-ide]
+path = "../psqls-ide"

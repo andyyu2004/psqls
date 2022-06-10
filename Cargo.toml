@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "psqls",
+    "psqls-ide",
     "psqls-syn",
 ]
