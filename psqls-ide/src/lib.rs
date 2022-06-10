@@ -7,7 +7,6 @@ use salsa::ParallelDatabase;
 pub struct Ide {
     db: IdeDatabase,
 }
-
 pub struct Snapshot {
     snapshot: salsa::Snapshot<IdeDatabase>,
 }

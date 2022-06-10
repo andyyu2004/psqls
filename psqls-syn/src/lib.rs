@@ -1,6 +1,7 @@
 pub use self::db::{SyntaxDatabase, SyntaxDatabaseStorage};
 
 mod db;
+mod lower;
 
 use tree_sitter::{Language, Parser, Tree};
 
@@ -20,3 +21,6 @@ pub fn parse(text: &str) -> Tree {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod gen;
