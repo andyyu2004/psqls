@@ -1,0 +1,15 @@
+[package]
+name = "psqls"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "psqls"
+path = "src/psqls.rs"
+
+[dependencies]
+tower-lsp = "0.17"
+
+[dependencies.tokio]
+version = "1"
+features = ["macros", "rt-multi-thread", "io-std"]
