@@ -1,6 +1,6 @@
 use crate::nodes::SyntaxKind;
 
-// can use this instead of the generated stuff if we need a to generate fresh
+// // can use this instead of the generated stuff if we need a to generate fresh
 // #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 // #[repr(u16)]
 // pub enum SyntaxKind {
@@ -31,6 +31,9 @@ pub trait Node {
     fn syntax(&self) -> &SyntaxNode;
     fn children<C: Node>(&self) -> Children<C> {
         Children::new(self.syntax())
+    }
+    fn child<C: Node>(&self) -> Option<C> {
+        self.syntax().children().find_map(C::cast)
     }
 }
 

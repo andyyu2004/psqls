@@ -60,6 +60,16 @@ impl Node for AlterStatement {
         &self.0
     }
 }
+impl AlterStatement {
+    pub fn r#sequence(&self) -> Option<Sequence> {
+        self.child()
+    }
+}
+impl AlterStatement {
+    pub fn r#alter_table(&self) -> Option<AlterTable> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct AlterTable(SyntaxNode);
 impl Node for AlterTable {
@@ -71,6 +81,11 @@ impl Node for AlterTable {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl AlterTable {
+    pub fn r#alter_table_action(&self) -> Option<AlterTableAction> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -86,6 +101,16 @@ impl Node for AlterTableAction {
         &self.0
     }
 }
+impl AlterTableAction {
+    pub fn r#alter_table_action_add(&self) -> Option<AlterTableActionAdd> {
+        self.child()
+    }
+}
+impl AlterTableAction {
+    pub fn r#alter_table_action_alter_column(&self) -> Option<AlterTableActionAlterColumn> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct AlterTableActionAdd(SyntaxNode);
 impl Node for AlterTableActionAdd {
@@ -97,6 +122,11 @@ impl Node for AlterTableActionAdd {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl AlterTableActionAdd {
+    pub fn r#table_column(&self) -> Option<TableColumn> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -138,6 +168,16 @@ impl Node for ArrayElementAccess {
         &self.0
     }
 }
+impl ArrayElementAccess {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl ArrayElementAccess {
+    pub fn r#argument_reference(&self) -> Option<ArgumentReference> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ArrayType(SyntaxNode);
 impl Node for ArrayType {
@@ -164,6 +204,11 @@ impl Node for AssigmentExpression {
         &self.0
     }
 }
+impl AssigmentExpression {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct AsteriskExpression(SyntaxNode);
 impl Node for AsteriskExpression {
@@ -175,6 +220,11 @@ impl Node for AsteriskExpression {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl AsteriskExpression {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -255,6 +305,11 @@ impl Node for ColumnDefault {
         &self.0
     }
 }
+impl ColumnDefault {
+    pub fn r#type_cast(&self) -> Option<TypeCast> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Comment(SyntaxNode);
 impl Node for Comment {
@@ -294,6 +349,11 @@ impl Node for ConstrainedType {
         &self.0
     }
 }
+impl ConstrainedType {
+    pub fn r#null_constraint(&self) -> Option<NullConstraint> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CreateDomainStatement(SyntaxNode);
 impl Node for CreateDomainStatement {
@@ -305,6 +365,21 @@ impl Node for CreateDomainStatement {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl CreateDomainStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl CreateDomainStatement {
+    pub fn r#null_constraint(&self) -> Option<NullConstraint> {
+        self.child()
+    }
+}
+impl CreateDomainStatement {
+    pub fn r#check_constraint(&self) -> Option<CheckConstraint> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -320,6 +395,11 @@ impl Node for CreateExtensionStatement {
         &self.0
     }
 }
+impl CreateExtensionStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CreateFunctionParameter(SyntaxNode);
 impl Node for CreateFunctionParameter {
@@ -331,6 +411,16 @@ impl Node for CreateFunctionParameter {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl CreateFunctionParameter {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl CreateFunctionParameter {
+    pub fn r#constrained_type(&self) -> Option<ConstrainedType> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -364,6 +454,36 @@ impl Node for CreateFunctionStatement {
         &self.0
     }
 }
+impl CreateFunctionStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#create_function_parameters(&self) -> Option<CreateFunctionParameters> {
+        self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#function_body(&self) -> Option<FunctionBody> {
+        self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#optimizer_hint(&self) -> Option<OptimizerHint> {
+        self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#parallel_hint(&self) -> Option<ParallelHint> {
+        self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#null_hint(&self) -> Option<NullHint> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CreateIndexStatement(SyntaxNode);
 impl Node for CreateIndexStatement {
@@ -375,6 +495,31 @@ impl Node for CreateIndexStatement {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl CreateIndexStatement {
+    pub fn r#unique_constraint(&self) -> Option<UniqueConstraint> {
+        self.child()
+    }
+}
+impl CreateIndexStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl CreateIndexStatement {
+    pub fn r#using_clause(&self) -> Option<UsingClause> {
+        self.child()
+    }
+}
+impl CreateIndexStatement {
+    pub fn r#index_table_parameters(&self) -> Option<IndexTableParameters> {
+        self.child()
+    }
+}
+impl CreateIndexStatement {
+    pub fn r#where_clause(&self) -> Option<WhereClause> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -390,6 +535,11 @@ impl Node for CreateRoleStatement {
         &self.0
     }
 }
+impl CreateRoleStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CreateSchemaStatement(SyntaxNode);
 impl Node for CreateSchemaStatement {
@@ -401,6 +551,11 @@ impl Node for CreateSchemaStatement {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl CreateSchemaStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -416,6 +571,11 @@ impl Node for CreateStatement {
         &self.0
     }
 }
+impl CreateStatement {
+    pub fn r#sequence(&self) -> Option<Sequence> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CreateTableStatement(SyntaxNode);
 impl Node for CreateTableStatement {
@@ -429,6 +589,11 @@ impl Node for CreateTableStatement {
         &self.0
     }
 }
+impl CreateTableStatement {
+    pub fn r#table_parameters(&self) -> Option<TableParameters> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CreateTypeStatement(SyntaxNode);
 impl Node for CreateTypeStatement {
@@ -440,6 +605,16 @@ impl Node for CreateTypeStatement {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl CreateTypeStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl CreateTypeStatement {
+    pub fn r#parameters(&self) -> Option<Parameters> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -481,6 +656,11 @@ impl Node for DottedName {
         &self.0
     }
 }
+impl DottedName {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct DropStatement(SyntaxNode);
 impl Node for DropStatement {
@@ -507,6 +687,16 @@ impl Node for ExcludeEntry {
         &self.0
     }
 }
+impl ExcludeEntry {
+    pub fn r#op_class(&self) -> Option<OpClass> {
+        self.child()
+    }
+}
+impl ExcludeEntry {
+    pub fn r#binary_operator(&self) -> Option<BinaryOperator> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct FieldAccess(SyntaxNode);
 impl Node for FieldAccess {
@@ -518,6 +708,16 @@ impl Node for FieldAccess {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl FieldAccess {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl FieldAccess {
+    pub fn r#string(&self) -> Option<String> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -546,6 +746,11 @@ impl Node for FunctionBody {
         &self.0
     }
 }
+impl FunctionBody {
+    pub fn r#select_statement(&self) -> Option<SelectStatement> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct FunctionCall(SyntaxNode);
 impl Node for FunctionCall {
@@ -557,6 +762,11 @@ impl Node for FunctionCall {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl FunctionCall {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -572,6 +782,11 @@ impl Node for GrantStatement {
         &self.0
     }
 }
+impl GrantStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct GroupByClause(SyntaxNode);
 impl Node for GroupByClause {
@@ -583,6 +798,11 @@ impl Node for GroupByClause {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl GroupByClause {
+    pub fn r#group_by_clause_body(&self) -> Option<GroupByClauseBody> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -624,6 +844,11 @@ impl Node for InExpression {
         &self.0
     }
 }
+impl InExpression {
+    pub fn r#tuple(&self) -> Option<Tuple> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct IndexTableParameters(SyntaxNode);
 impl Node for IndexTableParameters {
@@ -635,6 +860,16 @@ impl Node for IndexTableParameters {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl IndexTableParameters {
+    pub fn r#ordered_expression(&self) -> Option<OrderedExpression> {
+        self.child()
+    }
+}
+impl IndexTableParameters {
+    pub fn r#op_class(&self) -> Option<OpClass> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -663,6 +898,11 @@ impl Node for InsertStatement {
         &self.0
     }
 }
+impl InsertStatement {
+    pub fn r#values_clause(&self) -> Option<ValuesClause> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct IntervalExpression(SyntaxNode);
 impl Node for IntervalExpression {
@@ -674,6 +914,11 @@ impl Node for IntervalExpression {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl IntervalExpression {
+    pub fn r#string(&self) -> Option<String> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -689,6 +934,26 @@ impl Node for IsExpression {
         &self.0
     }
 }
+impl IsExpression {
+    pub fn r#null(&self) -> Option<Null> {
+        self.child()
+    }
+}
+impl IsExpression {
+    pub fn r#true(&self) -> Option<True> {
+        self.child()
+    }
+}
+impl IsExpression {
+    pub fn r#false(&self) -> Option<False> {
+        self.child()
+    }
+}
+impl IsExpression {
+    pub fn r#distinct_from(&self) -> Option<DistinctFrom> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct JoinClause(SyntaxNode);
 impl Node for JoinClause {
@@ -700,6 +965,11 @@ impl Node for JoinClause {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl JoinClause {
+    pub fn r#join_type(&self) -> Option<JoinType> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -741,6 +1011,11 @@ impl Node for NamedConstraint {
         &self.0
     }
 }
+impl NamedConstraint {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct NullConstraint(SyntaxNode);
 impl Node for NullConstraint {
@@ -752,6 +1027,11 @@ impl Node for NullConstraint {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl NullConstraint {
+    pub fn r#null(&self) -> Option<Null> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -845,6 +1125,11 @@ impl Node for OrderByClause {
         &self.0
     }
 }
+impl OrderByClause {
+    pub fn r#order_by_clause_body(&self) -> Option<OrderByClauseBody> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct OrderByClauseBody(SyntaxNode);
 impl Node for OrderByClauseBody {
@@ -895,6 +1180,16 @@ impl Node for Parameter {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl Parameter {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl Parameter {
+    pub fn r#constrained_type(&self) -> Option<ConstrainedType> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -959,6 +1254,16 @@ impl ReferencesConstraint {
         self.children()
     }
 }
+impl ReferencesConstraint {
+    pub fn r#on_update_action(&self) -> Option<OnUpdateAction> {
+        self.child()
+    }
+}
+impl ReferencesConstraint {
+    pub fn r#on_delete_action(&self) -> Option<OnDeleteAction> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SelectClause(SyntaxNode);
 impl Node for SelectClause {
@@ -970,6 +1275,11 @@ impl Node for SelectClause {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl SelectClause {
+    pub fn r#select_clause_body(&self) -> Option<SelectClauseBody> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -998,6 +1308,36 @@ impl Node for SelectStatement {
         &self.0
     }
 }
+impl SelectStatement {
+    pub fn r#select_clause(&self) -> Option<SelectClause> {
+        self.child()
+    }
+}
+impl SelectStatement {
+    pub fn r#from_clause(&self) -> Option<FromClause> {
+        self.child()
+    }
+}
+impl SelectStatement {
+    pub fn r#join_clause(&self) -> Option<JoinClause> {
+        self.child()
+    }
+}
+impl SelectStatement {
+    pub fn r#where_clause(&self) -> Option<WhereClause> {
+        self.child()
+    }
+}
+impl SelectStatement {
+    pub fn r#group_by_clause(&self) -> Option<GroupByClause> {
+        self.child()
+    }
+}
+impl SelectStatement {
+    pub fn r#order_by_clause(&self) -> Option<OrderByClause> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SelectSubexpression(SyntaxNode);
 impl Node for SelectSubexpression {
@@ -1009,6 +1349,11 @@ impl Node for SelectSubexpression {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl SelectSubexpression {
+    pub fn r#select_statement(&self) -> Option<SelectStatement> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1024,6 +1369,21 @@ impl Node for Sequence {
         &self.0
     }
 }
+impl Sequence {
+    pub fn r#type(&self) -> Option<Type> {
+        self.child()
+    }
+}
+impl Sequence {
+    pub fn r#number(&self) -> Option<Number> {
+        self.child()
+    }
+}
+impl Sequence {
+    pub fn r#dotted_name(&self) -> Option<DottedName> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SetClause(SyntaxNode);
 impl Node for SetClause {
@@ -1035,6 +1395,11 @@ impl Node for SetClause {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl SetClause {
+    pub fn r#set_clause_body(&self) -> Option<SetClauseBody> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1068,6 +1433,11 @@ impl Node for SetStatement {
         &self.0
     }
 }
+impl SetStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Setof(SyntaxNode);
 impl Node for Setof {
@@ -1079,6 +1449,11 @@ impl Node for Setof {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl Setof {
+    pub fn r#constrained_type(&self) -> Option<ConstrainedType> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1118,6 +1493,56 @@ impl Node for TableColumn {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl TableColumn {
+    pub fn r#column_default(&self) -> Option<ColumnDefault> {
+        self.child()
+    }
+}
+impl TableColumn {
+    pub fn r#primary_key_constraint(&self) -> Option<PrimaryKeyConstraint> {
+        self.child()
+    }
+}
+impl TableColumn {
+    pub fn r#check_constraint(&self) -> Option<CheckConstraint> {
+        self.child()
+    }
+}
+impl TableColumn {
+    pub fn r#references_constraint(&self) -> Option<ReferencesConstraint> {
+        self.child()
+    }
+}
+impl TableColumn {
+    pub fn r#unique_constraint(&self) -> Option<UniqueConstraint> {
+        self.child()
+    }
+}
+impl TableColumn {
+    pub fn r#null_constraint(&self) -> Option<NullConstraint> {
+        self.child()
+    }
+}
+impl TableColumn {
+    pub fn r#named_constraint(&self) -> Option<NamedConstraint> {
+        self.child()
+    }
+}
+impl TableColumn {
+    pub fn r#direction_constraint(&self) -> Option<DirectionConstraint> {
+        self.child()
+    }
+}
+impl TableColumn {
+    pub fn r#auto_increment_constraint(&self) -> Option<AutoIncrementConstraint> {
+        self.child()
+    }
+}
+impl TableColumn {
+    pub fn r#time_zone_constraint(&self) -> Option<TimeZoneConstraint> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1169,6 +1594,11 @@ impl TableConstraintForeignKey {
         self.children()
     }
 }
+impl TableConstraintForeignKey {
+    pub fn r#references_constraint(&self) -> Option<ReferencesConstraint> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TableConstraintPrimaryKey(SyntaxNode);
 impl Node for TableConstraintPrimaryKey {
@@ -1206,6 +1636,11 @@ impl Node for TableParameters {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl TableParameters {
+    pub fn r#table_column(&self) -> Option<TableColumn> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1247,6 +1682,11 @@ impl Node for Type {
         &self.0
     }
 }
+impl Type {
+    pub fn r#number(&self) -> Option<Number> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TypeCast(SyntaxNode);
 impl Node for TypeCast {
@@ -1258,6 +1698,21 @@ impl Node for TypeCast {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl TypeCast {
+    pub fn r#string(&self) -> Option<String> {
+        self.child()
+    }
+}
+impl TypeCast {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl TypeCast {
+    pub fn r#function_call(&self) -> Option<FunctionCall> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1286,6 +1741,21 @@ impl Node for UpdateStatement {
         &self.0
     }
 }
+impl UpdateStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl UpdateStatement {
+    pub fn r#set_clause(&self) -> Option<SetClause> {
+        self.child()
+    }
+}
+impl UpdateStatement {
+    pub fn r#where_clause(&self) -> Option<WhereClause> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct UsingClause(SyntaxNode);
 impl Node for UsingClause {
@@ -1299,6 +1769,11 @@ impl Node for UsingClause {
         &self.0
     }
 }
+impl UsingClause {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ValuesClause(SyntaxNode);
 impl Node for ValuesClause {
@@ -1310,6 +1785,11 @@ impl Node for ValuesClause {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl ValuesClause {
+    pub fn r#values_clause_body(&self) -> Option<ValuesClauseBody> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

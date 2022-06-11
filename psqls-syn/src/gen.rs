@@ -1,9 +1,9 @@
+use std::collections::{HashMap, HashSet};
 use std::io::{Read, Write};
 use std::process::{Command, Stdio};
 
 use convert_case::{Case, Casing};
 use expect_test::expect;
-use itertools::Itertools;
 use quote::__private::{Ident, TokenStream};
 use quote::{format_ident, quote};
 
@@ -69,6 +69,7 @@ impl From<copy::Rule> for Rule {
 #[derive(Default)]
 struct Gen {
     s: String,
+    methods: HashMap<Ident, HashSet<Ident>>,
 }
 
 fn rustfmt(code: &str) -> String {
@@ -104,7 +105,24 @@ impl Gen {
 
         match rule {
             Rule::Blank | Rule::String(_) | Rule::Pattern(_) | Rule::Symbol(_) => {}
-            Rule::NamedSymbol(_) => {}
+            Rule::NamedSymbol(sym) => {
+                if !sym.starts_with("_") {
+                    let f = format_ident!("r#{}", sym.to_case(Case::Snake));
+                    let ty = format_ident!("{}", sym.to_case(Case::Pascal));
+                    let methods = self.methods.entry(name.clone()).or_default();
+                    if !methods.contains(&f) {
+                        let stream = quote! {
+                            impl #name {
+                                pub fn #f(&self) -> Option<#ty> {
+                                    self.child()
+                                }
+                            }
+                        };
+                        methods.insert(f);
+                        self.push(stream);
+                    }
+                }
+            }
             Rule::Repeat(rule) => self.gen_rule(name, *rule),
             Rule::Choice(rules) | Rule::Seq(rules) => rules
                 .into_vec()
@@ -286,6 +304,11 @@ fn test_generate_nodes() {
                 &self.0
             }
         }
+        impl Document {
+            pub fn r#value(&self) -> Option<Value> {
+                self.child()
+            }
+        }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct False(SyntaxNode);
         impl Node for False {
@@ -356,6 +379,21 @@ fn test_generate_nodes() {
                 &self.0
             }
         }
+        impl Pair {
+            pub fn r#string(&self) -> Option<String> {
+                self.child()
+            }
+        }
+        impl Pair {
+            pub fn r#number(&self) -> Option<Number> {
+                self.child()
+            }
+        }
+        impl Pair {
+            pub fn r#value(&self) -> Option<Value> {
+                self.child()
+            }
+        }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct String(SyntaxNode);
         impl Node for String {
@@ -393,6 +431,41 @@ fn test_generate_nodes() {
             }
             fn syntax(&self) -> &SyntaxNode {
                 &self.0
+            }
+        }
+        impl Value {
+            pub fn r#object(&self) -> Option<Object> {
+                self.child()
+            }
+        }
+        impl Value {
+            pub fn r#array(&self) -> Option<Array> {
+                self.child()
+            }
+        }
+        impl Value {
+            pub fn r#number(&self) -> Option<Number> {
+                self.child()
+            }
+        }
+        impl Value {
+            pub fn r#string(&self) -> Option<String> {
+                self.child()
+            }
+        }
+        impl Value {
+            pub fn r#true(&self) -> Option<True> {
+                self.child()
+            }
+        }
+        impl Value {
+            pub fn r#false(&self) -> Option<False> {
+                self.child()
+            }
+        }
+        impl Value {
+            pub fn r#null(&self) -> Option<Null> {
+                self.child()
             }
         }
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
