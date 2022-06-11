@@ -1,14 +1,17 @@
 use std::marker::PhantomData;
 
-use rowan::{GreenNodeBuilder, Language, SyntaxNode};
+use rowan::{GreenNode, GreenNodeBuilder, Language};
 use tree_sitter::{Node, Tree};
 
-fn tree_sitter_to_rowan<L, K>(tree: Tree) -> SyntaxNode<L>
+// the reason for using rowan at all is due to treesitter nodes having an inconvenient
+// lifetime which doesn't work well with salsa
+// You could also argue why we even bother with salsa for this..
+pub(crate) fn ts_to_rowan<L>(tree: Tree) -> GreenNode
 where
     L: Language,
-    L::Kind: From<u16>,
+    L::Kind: From<&'static str>,
 {
-    Builder::new().build(tree)
+    Builder::<L>::new().build(tree)
 }
 
 struct Builder<L> {
@@ -19,7 +22,7 @@ struct Builder<L> {
 impl<L> Builder<L>
 where
     L: Language,
-    L::Kind: From<u16>,
+    L::Kind: From<&'static str>,
 {
     fn new() -> Self {
         Self {
@@ -28,13 +31,13 @@ where
         }
     }
 
-    fn build(self, tree: Tree) -> SyntaxNode<L> {
+    fn build(self, tree: Tree) -> GreenNode {
         let node = tree.root_node();
-        SyntaxNode::new_root(self.builder.finish())
+        self.builder.finish()
     }
 
     fn visit_node(&mut self, node: Node) {
-        let kind = L::kind_to_raw(L::Kind::from(node.kind_id()));
+        let kind = L::kind_to_raw(L::Kind::from(node.kind()));
         self.builder.start_node(kind);
         for child in node.named_children(&mut node.walk()) {
             self.visit_node(child);

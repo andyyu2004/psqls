@@ -144,7 +144,7 @@ impl Gen {
             }
             _ => quote! {
                 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-                pub struct #name(SyntaxNode);
+                pub struct #name(pub(crate) SyntaxNode);
 
                 impl Node for #name {
                     fn can_cast(kind: SyntaxKind) -> bool {
@@ -321,7 +321,7 @@ fn test_generate_nodes() {
             }
         }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-        pub struct Array(SyntaxNode);
+        pub struct Array(pub(crate) SyntaxNode);
         impl Node for Array {
             fn can_cast(kind: SyntaxKind) -> bool {
                 kind == SyntaxKind::Array
@@ -339,7 +339,7 @@ fn test_generate_nodes() {
             }
         }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-        pub struct Document(SyntaxNode);
+        pub struct Document(pub(crate) SyntaxNode);
         impl Node for Document {
             fn can_cast(kind: SyntaxKind) -> bool {
                 kind == SyntaxKind::Document
@@ -357,7 +357,7 @@ fn test_generate_nodes() {
             }
         }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-        pub struct False(SyntaxNode);
+        pub struct False(pub(crate) SyntaxNode);
         impl Node for False {
             fn can_cast(kind: SyntaxKind) -> bool {
                 kind == SyntaxKind::False
@@ -370,7 +370,7 @@ fn test_generate_nodes() {
             }
         }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-        pub struct Null(SyntaxNode);
+        pub struct Null(pub(crate) SyntaxNode);
         impl Node for Null {
             fn can_cast(kind: SyntaxKind) -> bool {
                 kind == SyntaxKind::Null
@@ -383,7 +383,7 @@ fn test_generate_nodes() {
             }
         }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-        pub struct Number(SyntaxNode);
+        pub struct Number(pub(crate) SyntaxNode);
         impl Node for Number {
             fn can_cast(kind: SyntaxKind) -> bool {
                 kind == SyntaxKind::Number
@@ -396,7 +396,7 @@ fn test_generate_nodes() {
             }
         }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-        pub struct Object(SyntaxNode);
+        pub struct Object(pub(crate) SyntaxNode);
         impl Node for Object {
             fn can_cast(kind: SyntaxKind) -> bool {
                 kind == SyntaxKind::Object
@@ -414,7 +414,7 @@ fn test_generate_nodes() {
             }
         }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-        pub struct Pair(SyntaxNode);
+        pub struct Pair(pub(crate) SyntaxNode);
         impl Node for Pair {
             fn can_cast(kind: SyntaxKind) -> bool {
                 kind == SyntaxKind::Pair
@@ -442,7 +442,7 @@ fn test_generate_nodes() {
             }
         }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-        pub struct String(SyntaxNode);
+        pub struct String(pub(crate) SyntaxNode);
         impl Node for String {
             fn can_cast(kind: SyntaxKind) -> bool {
                 kind == SyntaxKind::String
@@ -455,7 +455,7 @@ fn test_generate_nodes() {
             }
         }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-        pub struct True(SyntaxNode);
+        pub struct True(pub(crate) SyntaxNode);
         impl Node for True {
             fn can_cast(kind: SyntaxKind) -> bool {
                 kind == SyntaxKind::True

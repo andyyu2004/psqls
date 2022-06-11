@@ -20,7 +20,9 @@ use crate::nodes::SyntaxKind;
 pub enum Sql {}
 
 pub type SyntaxNode = rowan::SyntaxNode<Sql>;
+pub type GreenNode = rowan::GreenNode;
 pub type SyntaxNodeChildren = rowan::SyntaxNodeChildren<Sql>;
+
 pub trait Node {
     fn can_cast(kind: SyntaxKind) -> bool
     where

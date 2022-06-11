@@ -9,7 +9,7 @@ impl rowan::Language for Sql {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct False(SyntaxNode);
+pub struct False(pub(crate) SyntaxNode);
 impl Node for False {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::False
@@ -22,7 +22,7 @@ impl Node for False {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Null(SyntaxNode);
+pub struct Null(pub(crate) SyntaxNode);
 impl Node for Null {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Null
@@ -35,7 +35,7 @@ impl Node for Null {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct True(SyntaxNode);
+pub struct True(pub(crate) SyntaxNode);
 impl Node for True {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::True
@@ -48,7 +48,7 @@ impl Node for True {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AlterStatement(SyntaxNode);
+pub struct AlterStatement(pub(crate) SyntaxNode);
 impl Node for AlterStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::AlterStatement
@@ -71,7 +71,7 @@ impl AlterStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AlterTable(SyntaxNode);
+pub struct AlterTable(pub(crate) SyntaxNode);
 impl Node for AlterTable {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::AlterTable
@@ -128,7 +128,7 @@ impl AlterTableAction {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AlterTableActionAdd(SyntaxNode);
+pub struct AlterTableActionAdd(pub(crate) SyntaxNode);
 impl Node for AlterTableActionAdd {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::AlterTableActionAdd
@@ -146,7 +146,7 @@ impl AlterTableActionAdd {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AlterTableActionAlterColumn(SyntaxNode);
+pub struct AlterTableActionAlterColumn(pub(crate) SyntaxNode);
 impl Node for AlterTableActionAlterColumn {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::AlterTableActionAlterColumn
@@ -159,7 +159,7 @@ impl Node for AlterTableActionAlterColumn {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ArgumentReference(SyntaxNode);
+pub struct ArgumentReference(pub(crate) SyntaxNode);
 impl Node for ArgumentReference {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ArgumentReference
@@ -172,7 +172,7 @@ impl Node for ArgumentReference {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ArrayElementAccess(SyntaxNode);
+pub struct ArrayElementAccess(pub(crate) SyntaxNode);
 impl Node for ArrayElementAccess {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ArrayElementAccess
@@ -200,7 +200,7 @@ impl ArrayElementAccess {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ArrayType(SyntaxNode);
+pub struct ArrayType(pub(crate) SyntaxNode);
 impl Node for ArrayType {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ArrayType
@@ -213,7 +213,7 @@ impl Node for ArrayType {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AssigmentExpression(SyntaxNode);
+pub struct AssigmentExpression(pub(crate) SyntaxNode);
 impl Node for AssigmentExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::AssigmentExpression
@@ -236,7 +236,7 @@ impl AssigmentExpression {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AsteriskExpression(SyntaxNode);
+pub struct AsteriskExpression(pub(crate) SyntaxNode);
 impl Node for AsteriskExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::AsteriskExpression
@@ -254,7 +254,7 @@ impl AsteriskExpression {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AutoIncrementConstraint(SyntaxNode);
+pub struct AutoIncrementConstraint(pub(crate) SyntaxNode);
 impl Node for AutoIncrementConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::AutoIncrementConstraint
@@ -267,7 +267,7 @@ impl Node for AutoIncrementConstraint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct BinaryExpression(SyntaxNode);
+pub struct BinaryExpression(pub(crate) SyntaxNode);
 impl Node for BinaryExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::BinaryExpression
@@ -285,7 +285,7 @@ impl BinaryExpression {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct BinaryOperator(SyntaxNode);
+pub struct BinaryOperator(pub(crate) SyntaxNode);
 impl Node for BinaryOperator {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::BinaryOperator
@@ -298,7 +298,7 @@ impl Node for BinaryOperator {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct BooleanExpression(SyntaxNode);
+pub struct BooleanExpression(pub(crate) SyntaxNode);
 impl Node for BooleanExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::BooleanExpression
@@ -316,7 +316,7 @@ impl BooleanExpression {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CheckConstraint(SyntaxNode);
+pub struct CheckConstraint(pub(crate) SyntaxNode);
 impl Node for CheckConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CheckConstraint
@@ -334,7 +334,7 @@ impl CheckConstraint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ColumnDefault(SyntaxNode);
+pub struct ColumnDefault(pub(crate) SyntaxNode);
 impl Node for ColumnDefault {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ColumnDefault
@@ -352,7 +352,7 @@ impl ColumnDefault {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Comment(SyntaxNode);
+pub struct Comment(pub(crate) SyntaxNode);
 impl Node for Comment {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Comment
@@ -365,7 +365,7 @@ impl Node for Comment {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ComparisonOperator(SyntaxNode);
+pub struct ComparisonOperator(pub(crate) SyntaxNode);
 impl Node for ComparisonOperator {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ComparisonOperator
@@ -383,7 +383,7 @@ impl ComparisonOperator {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ConstrainedType(SyntaxNode);
+pub struct ConstrainedType(pub(crate) SyntaxNode);
 impl Node for ConstrainedType {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ConstrainedType
@@ -401,7 +401,7 @@ impl ConstrainedType {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateDomainStatement(SyntaxNode);
+pub struct CreateDomainStatement(pub(crate) SyntaxNode);
 impl Node for CreateDomainStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CreateDomainStatement
@@ -429,7 +429,7 @@ impl CreateDomainStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateExtensionStatement(SyntaxNode);
+pub struct CreateExtensionStatement(pub(crate) SyntaxNode);
 impl Node for CreateExtensionStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CreateExtensionStatement
@@ -447,7 +447,7 @@ impl CreateExtensionStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateFunctionParameter(SyntaxNode);
+pub struct CreateFunctionParameter(pub(crate) SyntaxNode);
 impl Node for CreateFunctionParameter {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CreateFunctionParameter
@@ -475,7 +475,7 @@ impl CreateFunctionParameter {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateFunctionParameters(SyntaxNode);
+pub struct CreateFunctionParameters(pub(crate) SyntaxNode);
 impl Node for CreateFunctionParameters {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CreateFunctionParameters
@@ -493,7 +493,7 @@ impl CreateFunctionParameters {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateFunctionStatement(SyntaxNode);
+pub struct CreateFunctionStatement(pub(crate) SyntaxNode);
 impl Node for CreateFunctionStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CreateFunctionStatement
@@ -536,7 +536,7 @@ impl CreateFunctionStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateIndexStatement(SyntaxNode);
+pub struct CreateIndexStatement(pub(crate) SyntaxNode);
 impl Node for CreateIndexStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CreateIndexStatement
@@ -574,7 +574,7 @@ impl CreateIndexStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateRoleStatement(SyntaxNode);
+pub struct CreateRoleStatement(pub(crate) SyntaxNode);
 impl Node for CreateRoleStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CreateRoleStatement
@@ -592,7 +592,7 @@ impl CreateRoleStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateSchemaStatement(SyntaxNode);
+pub struct CreateSchemaStatement(pub(crate) SyntaxNode);
 impl Node for CreateSchemaStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CreateSchemaStatement
@@ -610,7 +610,7 @@ impl CreateSchemaStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateStatement(SyntaxNode);
+pub struct CreateStatement(pub(crate) SyntaxNode);
 impl Node for CreateStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CreateStatement
@@ -628,7 +628,7 @@ impl CreateStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateTableStatement(SyntaxNode);
+pub struct CreateTableStatement(pub(crate) SyntaxNode);
 impl Node for CreateTableStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CreateTableStatement
@@ -646,7 +646,7 @@ impl CreateTableStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateTypeStatement(SyntaxNode);
+pub struct CreateTypeStatement(pub(crate) SyntaxNode);
 impl Node for CreateTypeStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::CreateTypeStatement
@@ -669,7 +669,7 @@ impl CreateTypeStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct DirectionConstraint(SyntaxNode);
+pub struct DirectionConstraint(pub(crate) SyntaxNode);
 impl Node for DirectionConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::DirectionConstraint
@@ -682,7 +682,7 @@ impl Node for DirectionConstraint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct DistinctFrom(SyntaxNode);
+pub struct DistinctFrom(pub(crate) SyntaxNode);
 impl Node for DistinctFrom {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::DistinctFrom
@@ -700,7 +700,7 @@ impl DistinctFrom {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct DottedName(SyntaxNode);
+pub struct DottedName(pub(crate) SyntaxNode);
 impl Node for DottedName {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::DottedName
@@ -718,7 +718,7 @@ impl DottedName {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct DropStatement(SyntaxNode);
+pub struct DropStatement(pub(crate) SyntaxNode);
 impl Node for DropStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::DropStatement
@@ -731,7 +731,7 @@ impl Node for DropStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ExcludeEntry(SyntaxNode);
+pub struct ExcludeEntry(pub(crate) SyntaxNode);
 impl Node for ExcludeEntry {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ExcludeEntry
@@ -965,7 +965,7 @@ impl Expression {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FieldAccess(SyntaxNode);
+pub struct FieldAccess(pub(crate) SyntaxNode);
 impl Node for FieldAccess {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::FieldAccess
@@ -988,7 +988,7 @@ impl FieldAccess {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FromClause(SyntaxNode);
+pub struct FromClause(pub(crate) SyntaxNode);
 impl Node for FromClause {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::FromClause
@@ -1001,7 +1001,7 @@ impl Node for FromClause {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FunctionBody(SyntaxNode);
+pub struct FunctionBody(pub(crate) SyntaxNode);
 impl Node for FunctionBody {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::FunctionBody
@@ -1019,7 +1019,7 @@ impl FunctionBody {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FunctionCall(SyntaxNode);
+pub struct FunctionCall(pub(crate) SyntaxNode);
 impl Node for FunctionCall {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::FunctionCall
@@ -1042,7 +1042,7 @@ impl FunctionCall {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct GrantStatement(SyntaxNode);
+pub struct GrantStatement(pub(crate) SyntaxNode);
 impl Node for GrantStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::GrantStatement
@@ -1060,7 +1060,7 @@ impl GrantStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct GroupByClause(SyntaxNode);
+pub struct GroupByClause(pub(crate) SyntaxNode);
 impl Node for GroupByClause {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::GroupByClause
@@ -1078,7 +1078,7 @@ impl GroupByClause {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct GroupByClauseBody(SyntaxNode);
+pub struct GroupByClauseBody(pub(crate) SyntaxNode);
 impl Node for GroupByClauseBody {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::GroupByClauseBody
@@ -1096,7 +1096,7 @@ impl GroupByClauseBody {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Identifier(SyntaxNode);
+pub struct Identifier(pub(crate) SyntaxNode);
 impl Node for Identifier {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Identifier
@@ -1109,7 +1109,7 @@ impl Node for Identifier {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct InExpression(SyntaxNode);
+pub struct InExpression(pub(crate) SyntaxNode);
 impl Node for InExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::InExpression
@@ -1132,7 +1132,7 @@ impl InExpression {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct IndexTableParameters(SyntaxNode);
+pub struct IndexTableParameters(pub(crate) SyntaxNode);
 impl Node for IndexTableParameters {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::IndexTableParameters
@@ -1160,7 +1160,7 @@ impl IndexTableParameters {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct InitialMode(SyntaxNode);
+pub struct InitialMode(pub(crate) SyntaxNode);
 impl Node for InitialMode {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::InitialMode
@@ -1173,7 +1173,7 @@ impl Node for InitialMode {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct InsertStatement(SyntaxNode);
+pub struct InsertStatement(pub(crate) SyntaxNode);
 impl Node for InsertStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::InsertStatement
@@ -1191,7 +1191,7 @@ impl InsertStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct IntervalExpression(SyntaxNode);
+pub struct IntervalExpression(pub(crate) SyntaxNode);
 impl Node for IntervalExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::IntervalExpression
@@ -1209,7 +1209,7 @@ impl IntervalExpression {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct IsExpression(SyntaxNode);
+pub struct IsExpression(pub(crate) SyntaxNode);
 impl Node for IsExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::IsExpression
@@ -1247,7 +1247,7 @@ impl IsExpression {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct JoinClause(SyntaxNode);
+pub struct JoinClause(pub(crate) SyntaxNode);
 impl Node for JoinClause {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::JoinClause
@@ -1270,7 +1270,7 @@ impl JoinClause {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct JoinType(SyntaxNode);
+pub struct JoinType(pub(crate) SyntaxNode);
 impl Node for JoinType {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::JoinType
@@ -1283,7 +1283,7 @@ impl Node for JoinType {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Mode(SyntaxNode);
+pub struct Mode(pub(crate) SyntaxNode);
 impl Node for Mode {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Mode
@@ -1296,7 +1296,7 @@ impl Node for Mode {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct NamedConstraint(SyntaxNode);
+pub struct NamedConstraint(pub(crate) SyntaxNode);
 impl Node for NamedConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::NamedConstraint
@@ -1314,7 +1314,7 @@ impl NamedConstraint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct NullConstraint(SyntaxNode);
+pub struct NullConstraint(pub(crate) SyntaxNode);
 impl Node for NullConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::NullConstraint
@@ -1332,7 +1332,7 @@ impl NullConstraint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct NullHint(SyntaxNode);
+pub struct NullHint(pub(crate) SyntaxNode);
 impl Node for NullHint {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::NullHint
@@ -1345,7 +1345,7 @@ impl Node for NullHint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Number(SyntaxNode);
+pub struct Number(pub(crate) SyntaxNode);
 impl Node for Number {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Number
@@ -1358,7 +1358,7 @@ impl Node for Number {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OnDeleteAction(SyntaxNode);
+pub struct OnDeleteAction(pub(crate) SyntaxNode);
 impl Node for OnDeleteAction {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::OnDeleteAction
@@ -1371,7 +1371,7 @@ impl Node for OnDeleteAction {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OnUpdateAction(SyntaxNode);
+pub struct OnUpdateAction(pub(crate) SyntaxNode);
 impl Node for OnUpdateAction {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::OnUpdateAction
@@ -1384,7 +1384,7 @@ impl Node for OnUpdateAction {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OpClass(SyntaxNode);
+pub struct OpClass(pub(crate) SyntaxNode);
 impl Node for OpClass {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::OpClass
@@ -1397,7 +1397,7 @@ impl Node for OpClass {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OptimizerHint(SyntaxNode);
+pub struct OptimizerHint(pub(crate) SyntaxNode);
 impl Node for OptimizerHint {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::OptimizerHint
@@ -1410,7 +1410,7 @@ impl Node for OptimizerHint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OrderByClause(SyntaxNode);
+pub struct OrderByClause(pub(crate) SyntaxNode);
 impl Node for OrderByClause {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::OrderByClause
@@ -1428,7 +1428,7 @@ impl OrderByClause {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OrderByClauseBody(SyntaxNode);
+pub struct OrderByClauseBody(pub(crate) SyntaxNode);
 impl Node for OrderByClauseBody {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::OrderByClauseBody
@@ -1446,7 +1446,7 @@ impl OrderByClauseBody {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OrderedExpression(SyntaxNode);
+pub struct OrderedExpression(pub(crate) SyntaxNode);
 impl Node for OrderedExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::OrderedExpression
@@ -1464,7 +1464,7 @@ impl OrderedExpression {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ParallelHint(SyntaxNode);
+pub struct ParallelHint(pub(crate) SyntaxNode);
 impl Node for ParallelHint {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ParallelHint
@@ -1477,7 +1477,7 @@ impl Node for ParallelHint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Parameter(SyntaxNode);
+pub struct Parameter(pub(crate) SyntaxNode);
 impl Node for Parameter {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Parameter
@@ -1500,7 +1500,7 @@ impl Parameter {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Parameters(SyntaxNode);
+pub struct Parameters(pub(crate) SyntaxNode);
 impl Node for Parameters {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Parameters
@@ -1518,7 +1518,7 @@ impl Parameters {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ParenthesizedExpression(SyntaxNode);
+pub struct ParenthesizedExpression(pub(crate) SyntaxNode);
 impl Node for ParenthesizedExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ParenthesizedExpression
@@ -1536,7 +1536,7 @@ impl ParenthesizedExpression {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct PgCommand(SyntaxNode);
+pub struct PgCommand(pub(crate) SyntaxNode);
 impl Node for PgCommand {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::PgCommand
@@ -1549,7 +1549,7 @@ impl Node for PgCommand {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct PrimaryKeyConstraint(SyntaxNode);
+pub struct PrimaryKeyConstraint(pub(crate) SyntaxNode);
 impl Node for PrimaryKeyConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::PrimaryKeyConstraint
@@ -1562,7 +1562,7 @@ impl Node for PrimaryKeyConstraint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ReferencesConstraint(SyntaxNode);
+pub struct ReferencesConstraint(pub(crate) SyntaxNode);
 impl Node for ReferencesConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ReferencesConstraint
@@ -1590,7 +1590,7 @@ impl ReferencesConstraint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SelectClause(SyntaxNode);
+pub struct SelectClause(pub(crate) SyntaxNode);
 impl Node for SelectClause {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::SelectClause
@@ -1608,7 +1608,7 @@ impl SelectClause {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SelectClauseBody(SyntaxNode);
+pub struct SelectClauseBody(pub(crate) SyntaxNode);
 impl Node for SelectClauseBody {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::SelectClauseBody
@@ -1621,7 +1621,7 @@ impl Node for SelectClauseBody {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SelectStatement(SyntaxNode);
+pub struct SelectStatement(pub(crate) SyntaxNode);
 impl Node for SelectStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::SelectStatement
@@ -1664,7 +1664,7 @@ impl SelectStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SelectSubexpression(SyntaxNode);
+pub struct SelectSubexpression(pub(crate) SyntaxNode);
 impl Node for SelectSubexpression {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::SelectSubexpression
@@ -1682,7 +1682,7 @@ impl SelectSubexpression {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Sequence(SyntaxNode);
+pub struct Sequence(pub(crate) SyntaxNode);
 impl Node for Sequence {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Sequence
@@ -1710,7 +1710,7 @@ impl Sequence {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SetClause(SyntaxNode);
+pub struct SetClause(pub(crate) SyntaxNode);
 impl Node for SetClause {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::SetClause
@@ -1728,7 +1728,7 @@ impl SetClause {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SetClauseBody(SyntaxNode);
+pub struct SetClauseBody(pub(crate) SyntaxNode);
 impl Node for SetClauseBody {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::SetClauseBody
@@ -1746,7 +1746,7 @@ impl SetClauseBody {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SetStatement(SyntaxNode);
+pub struct SetStatement(pub(crate) SyntaxNode);
 impl Node for SetStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::SetStatement
@@ -1769,7 +1769,7 @@ impl SetStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Setof(SyntaxNode);
+pub struct Setof(pub(crate) SyntaxNode);
 impl Node for Setof {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Setof
@@ -1787,7 +1787,7 @@ impl Setof {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SourceFile(SyntaxNode);
+pub struct SourceFile(pub(crate) SyntaxNode);
 impl Node for SourceFile {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::SourceFile
@@ -1805,7 +1805,7 @@ impl SourceFile {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Statement(SyntaxNode);
+pub struct Statement(pub(crate) SyntaxNode);
 impl Node for Statement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Statement
@@ -1903,7 +1903,7 @@ impl Statement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct String(SyntaxNode);
+pub struct String(pub(crate) SyntaxNode);
 impl Node for String {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::String
@@ -1916,7 +1916,7 @@ impl Node for String {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TableColumn(SyntaxNode);
+pub struct TableColumn(pub(crate) SyntaxNode);
 impl Node for TableColumn {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::TableColumn
@@ -1979,7 +1979,7 @@ impl TableColumn {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TableConstraintCheck(SyntaxNode);
+pub struct TableConstraintCheck(pub(crate) SyntaxNode);
 impl Node for TableConstraintCheck {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::TableConstraintCheck
@@ -1997,7 +1997,7 @@ impl TableConstraintCheck {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TableConstraintExclude(SyntaxNode);
+pub struct TableConstraintExclude(pub(crate) SyntaxNode);
 impl Node for TableConstraintExclude {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::TableConstraintExclude
@@ -2015,7 +2015,7 @@ impl TableConstraintExclude {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TableConstraintForeignKey(SyntaxNode);
+pub struct TableConstraintForeignKey(pub(crate) SyntaxNode);
 impl Node for TableConstraintForeignKey {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::TableConstraintForeignKey
@@ -2038,7 +2038,7 @@ impl TableConstraintForeignKey {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TableConstraintPrimaryKey(SyntaxNode);
+pub struct TableConstraintPrimaryKey(pub(crate) SyntaxNode);
 impl Node for TableConstraintPrimaryKey {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::TableConstraintPrimaryKey
@@ -2051,7 +2051,7 @@ impl Node for TableConstraintPrimaryKey {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TableConstraintUnique(SyntaxNode);
+pub struct TableConstraintUnique(pub(crate) SyntaxNode);
 impl Node for TableConstraintUnique {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::TableConstraintUnique
@@ -2064,7 +2064,7 @@ impl Node for TableConstraintUnique {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TableParameters(SyntaxNode);
+pub struct TableParameters(pub(crate) SyntaxNode);
 impl Node for TableParameters {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::TableParameters
@@ -2082,7 +2082,7 @@ impl TableParameters {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TimeZoneConstraint(SyntaxNode);
+pub struct TimeZoneConstraint(pub(crate) SyntaxNode);
 impl Node for TimeZoneConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::TimeZoneConstraint
@@ -2095,7 +2095,7 @@ impl Node for TimeZoneConstraint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Tuple(SyntaxNode);
+pub struct Tuple(pub(crate) SyntaxNode);
 impl Node for Tuple {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Tuple
@@ -2113,7 +2113,7 @@ impl Tuple {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Type(SyntaxNode);
+pub struct Type(pub(crate) SyntaxNode);
 impl Node for Type {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::Type
@@ -2131,7 +2131,7 @@ impl Type {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TypeCast(SyntaxNode);
+pub struct TypeCast(pub(crate) SyntaxNode);
 impl Node for TypeCast {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::TypeCast
@@ -2164,7 +2164,7 @@ impl TypeCast {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct UniqueConstraint(SyntaxNode);
+pub struct UniqueConstraint(pub(crate) SyntaxNode);
 impl Node for UniqueConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::UniqueConstraint
@@ -2177,7 +2177,7 @@ impl Node for UniqueConstraint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct UpdateStatement(SyntaxNode);
+pub struct UpdateStatement(pub(crate) SyntaxNode);
 impl Node for UpdateStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::UpdateStatement
@@ -2205,7 +2205,7 @@ impl UpdateStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct UsingClause(SyntaxNode);
+pub struct UsingClause(pub(crate) SyntaxNode);
 impl Node for UsingClause {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::UsingClause
@@ -2223,7 +2223,7 @@ impl UsingClause {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ValuesClause(SyntaxNode);
+pub struct ValuesClause(pub(crate) SyntaxNode);
 impl Node for ValuesClause {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ValuesClause
@@ -2241,7 +2241,7 @@ impl ValuesClause {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ValuesClauseBody(SyntaxNode);
+pub struct ValuesClauseBody(pub(crate) SyntaxNode);
 impl Node for ValuesClauseBody {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::ValuesClauseBody
@@ -2259,7 +2259,7 @@ impl ValuesClauseBody {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct WhereClause(SyntaxNode);
+pub struct WhereClause(pub(crate) SyntaxNode);
 impl Node for WhereClause {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::WhereClause
