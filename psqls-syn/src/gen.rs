@@ -3,6 +3,7 @@ use std::process::{Command, Stdio};
 
 use convert_case::{Case, Casing};
 use expect_test::expect;
+use itertools::Itertools;
 use quote::__private::{Ident, TokenStream};
 use quote::{format_ident, quote};
 
@@ -118,13 +119,13 @@ impl Gen {
                 box [Rule::NamedSymbol(x), Rule::Choice(
                     box [Rule::Repeat(box Rule::Seq(box [Rule::String(sep), Rule::NamedSymbol(y)])), Rule::Blank],
                 )],
-            ) if x == y && sep == "," => {
-                let pluralized = format_ident!("{}s", x.to_case(Case::Camel));
+            ) if x == y && sep == "," && !x.starts_with('_') => {
+                let pluralized = format_ident!("{}s", x.to_case(Case::Snake));
                 let ty = format_ident!("{}", x.to_case(Case::Pascal));
                 self.push(quote! {
                     impl #name {
                         pub fn #pluralized(&self) -> impl Iterator<Item = #ty> {
-                            todo!()
+                            self.children()
                         }
                     }
                 });
@@ -164,13 +165,9 @@ impl Gen {
 
     fn gen(&mut self, grammar: InputGrammar) {
         let mut syntax_kinds = vec![];
-        self.push(quote! {
-            pub type SyntaxNode = rowan::SyntaxNode<Sql>;
-        });
 
         self.push(quote! {
-            #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
-            pub enum Sql {}
+            use crate::node::*;
 
             impl rowan::Language for Sql {
                 type Kind = SyntaxKind;
@@ -195,6 +192,20 @@ impl Gen {
             self.push(quote! {
                 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
                 pub struct #name(SyntaxNode);
+
+                impl Node for #name {
+                    fn can_cast(kind: SyntaxKind) -> bool {
+                        kind == SyntaxKind::#name
+                    }
+
+                    fn cast(syntax: SyntaxNode) -> Option<Self> {
+                        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+                    }
+
+                    fn syntax(&self) -> &SyntaxNode {
+                        &self.0
+                    }
+                }
             });
 
             self.gen_rule(&name, v.rule.into());
@@ -234,9 +245,7 @@ impl Gen {
 fn test_generate_nodes() {
     let out = generate_grammar(TEST_GRAMMAR);
     expect![[r#"
-        pub type SyntaxNode = rowan::SyntaxNode<Sql>;
-        #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
-        pub enum Sql {}
+        use crate::node::*;
         impl rowan::Language for Sql {
             type Kind = SyntaxKind;
             fn kind_from_raw(raw: rowan::SyntaxKind) -> Self::Kind {
@@ -248,34 +257,144 @@ fn test_generate_nodes() {
         }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Array(SyntaxNode);
+        impl Node for Array {
+            fn can_cast(kind: SyntaxKind) -> bool {
+                kind == SyntaxKind::Array
+            }
+            fn cast(syntax: SyntaxNode) -> Option<Self> {
+                Self::can_cast(syntax.kind()).then(|| Self(syntax))
+            }
+            fn syntax(&self) -> &SyntaxNode {
+                &self.0
+            }
+        }
         impl Array {
             pub fn values(&self) -> impl Iterator<Item = Value> {
-                todo!()
+                self.children()
             }
         }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Document(SyntaxNode);
+        impl Node for Document {
+            fn can_cast(kind: SyntaxKind) -> bool {
+                kind == SyntaxKind::Document
+            }
+            fn cast(syntax: SyntaxNode) -> Option<Self> {
+                Self::can_cast(syntax.kind()).then(|| Self(syntax))
+            }
+            fn syntax(&self) -> &SyntaxNode {
+                &self.0
+            }
+        }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct False(SyntaxNode);
+        impl Node for False {
+            fn can_cast(kind: SyntaxKind) -> bool {
+                kind == SyntaxKind::False
+            }
+            fn cast(syntax: SyntaxNode) -> Option<Self> {
+                Self::can_cast(syntax.kind()).then(|| Self(syntax))
+            }
+            fn syntax(&self) -> &SyntaxNode {
+                &self.0
+            }
+        }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Null(SyntaxNode);
+        impl Node for Null {
+            fn can_cast(kind: SyntaxKind) -> bool {
+                kind == SyntaxKind::Null
+            }
+            fn cast(syntax: SyntaxNode) -> Option<Self> {
+                Self::can_cast(syntax.kind()).then(|| Self(syntax))
+            }
+            fn syntax(&self) -> &SyntaxNode {
+                &self.0
+            }
+        }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Number(SyntaxNode);
+        impl Node for Number {
+            fn can_cast(kind: SyntaxKind) -> bool {
+                kind == SyntaxKind::Number
+            }
+            fn cast(syntax: SyntaxNode) -> Option<Self> {
+                Self::can_cast(syntax.kind()).then(|| Self(syntax))
+            }
+            fn syntax(&self) -> &SyntaxNode {
+                &self.0
+            }
+        }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Object(SyntaxNode);
+        impl Node for Object {
+            fn can_cast(kind: SyntaxKind) -> bool {
+                kind == SyntaxKind::Object
+            }
+            fn cast(syntax: SyntaxNode) -> Option<Self> {
+                Self::can_cast(syntax.kind()).then(|| Self(syntax))
+            }
+            fn syntax(&self) -> &SyntaxNode {
+                &self.0
+            }
+        }
         impl Object {
             pub fn pairs(&self) -> impl Iterator<Item = Pair> {
-                todo!()
+                self.children()
             }
         }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Pair(SyntaxNode);
+        impl Node for Pair {
+            fn can_cast(kind: SyntaxKind) -> bool {
+                kind == SyntaxKind::Pair
+            }
+            fn cast(syntax: SyntaxNode) -> Option<Self> {
+                Self::can_cast(syntax.kind()).then(|| Self(syntax))
+            }
+            fn syntax(&self) -> &SyntaxNode {
+                &self.0
+            }
+        }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct String(SyntaxNode);
+        impl Node for String {
+            fn can_cast(kind: SyntaxKind) -> bool {
+                kind == SyntaxKind::String
+            }
+            fn cast(syntax: SyntaxNode) -> Option<Self> {
+                Self::can_cast(syntax.kind()).then(|| Self(syntax))
+            }
+            fn syntax(&self) -> &SyntaxNode {
+                &self.0
+            }
+        }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct True(SyntaxNode);
+        impl Node for True {
+            fn can_cast(kind: SyntaxKind) -> bool {
+                kind == SyntaxKind::True
+            }
+            fn cast(syntax: SyntaxNode) -> Option<Self> {
+                Self::can_cast(syntax.kind()).then(|| Self(syntax))
+            }
+            fn syntax(&self) -> &SyntaxNode {
+                &self.0
+            }
+        }
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct Value(SyntaxNode);
+        impl Node for Value {
+            fn can_cast(kind: SyntaxKind) -> bool {
+                kind == SyntaxKind::Value
+            }
+            fn cast(syntax: SyntaxNode) -> Option<Self> {
+                Self::can_cast(syntax.kind()).then(|| Self(syntax))
+            }
+            fn syntax(&self) -> &SyntaxNode {
+                &self.0
+            }
+        }
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
         #[repr(u16)]
         pub enum SyntaxKind {
