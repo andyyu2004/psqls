@@ -1,3 +1,4 @@
+// this file is just here to ensure the visitor trait doesn't unexpectedly change
 use crate::nodes::*;
 
 struct TestVisitor {}

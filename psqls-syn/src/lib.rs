@@ -7,6 +7,7 @@ mod db;
 mod lower;
 mod node;
 mod nodes;
+mod visit;
 
 use tree_sitter::{Language, Parser, Tree};
 

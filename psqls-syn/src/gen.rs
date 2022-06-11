@@ -1,4 +1,4 @@
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet};
 use std::io::{Read, Write};
 use std::process::{Command, Stdio};
 
@@ -10,6 +10,7 @@ use quote::{format_ident, quote};
 use self::copy::{parse_grammar, InputGrammar, Symbol, Variable, VariableType};
 
 mod copy;
+mod test_visit;
 
 #[test]
 fn generate_psql_nodes() -> std::io::Result<()> {
@@ -67,10 +68,16 @@ impl From<copy::Rule> for Rule {
     }
 }
 
+#[derive(Debug)]
+pub enum Cardinality {
+    One,
+    Many,
+}
+
 #[derive(Default)]
 struct Gen {
     s: String,
-    methods: HashMap<Ident, HashSet<Ident>>,
+    method_sets: BTreeMap<Ident, BTreeMap<String, Cardinality>>,
     syntax_kinds: BTreeSet<String>,
 }
 
@@ -89,7 +96,64 @@ fn rustfmt(code: &str) -> String {
 impl Gen {
     pub fn generate(mut self, grammar: InputGrammar) -> String {
         self.gen(grammar);
+        self.generate_visitor();
+        self.generate_syntax_kinds();
 
+        rustfmt(&self.s)
+    }
+
+    fn generate_visitor(&mut self) {
+        let visit_methods = self.method_sets.iter().map(|(name, fields)| {
+            let snake = name.to_string().to_case(Case::Snake);
+            let param = format_ident!("r#{}", snake);
+            let f = format_ident!("visit_{}", snake);
+
+            let stmts = fields.iter().map(|(field, cardinality)| {
+                let snake = format_ident!("{}", field.to_case(Case::Snake));
+                let raw_field = format_ident!("r#{snake}");
+                let fields = format_ident!("{snake}s");
+                let visit = format_ident!("visit_{}", snake);
+                if !self
+                    .method_sets
+                    .contains_key(&format_ident!("{}", field.to_case(Case::Pascal)))
+                {
+                    return quote! {};
+                }
+                match cardinality {
+                    Cardinality::One => {
+                        quote! {
+                            for #raw_field in #param.#raw_field() {
+                                self.#visit(#raw_field);
+                            }
+                        }
+                    }
+                    Cardinality::Many => {
+                        quote! {
+                            for #raw_field in #param.#fields() {
+                                self.#visit(#raw_field);
+                            }
+                        }
+                    }
+                }
+            });
+
+            quote! {
+                fn #f(&mut self, #param: #name) {
+                    #(#stmts)*
+                }
+            }
+        });
+
+        let stream = quote! {
+            pub trait Visitor {
+                #(#visit_methods)*
+            }
+        };
+
+        self.push(stream);
+    }
+
+    fn generate_syntax_kinds(&mut self) {
         let variants = self
             .syntax_kinds
             .iter()
@@ -120,8 +184,6 @@ impl Gen {
                 }
             }
         });
-
-        rustfmt(&self.s)
     }
 
     fn push(&mut self, stream: TokenStream) {
@@ -134,6 +196,7 @@ impl Gen {
 
     fn gen_var(&mut self, v: Variable) {
         let name = format_ident!("{}", v.name.to_case(Case::Pascal));
+        self.method_sets.entry(name.clone()).or_default();
         let stream = match &v.rule {
             copy::Rule::Choice(choices)
                 if choices
@@ -209,8 +272,8 @@ impl Gen {
                 if !sym.starts_with("_") {
                     let f = format_ident!("r#{}", sym.to_case(Case::Snake));
                     let ty = format_ident!("{}", sym.to_case(Case::Pascal));
-                    let methods = self.methods.entry(name.clone()).or_default();
-                    if !methods.contains(&f) {
+                    let methods = self.method_sets.entry(name.clone()).or_default();
+                    if !methods.contains_key(&sym) {
                         let stream = quote! {
                             impl #name {
                                 pub fn #f(&self) -> Option<#ty> {
@@ -218,7 +281,7 @@ impl Gen {
                                 }
                             }
                         };
-                        methods.insert(f);
+                        methods.insert(sym, Cardinality::One);
                         self.push(stream);
                     }
                 }
@@ -235,6 +298,12 @@ impl Gen {
     }
 
     fn gen_children_accessor(&mut self, name: &Ident, sym: &str) {
+        let methods = self.method_sets.entry(name.clone()).or_default();
+        match methods.get(sym) {
+            Some(_) => todo!(),
+            None => methods.insert(sym.to_owned(), Cardinality::Many),
+        };
+
         let pluralized = format_ident!("{}s", sym.to_case(Case::Snake));
         let ty = format_ident!("{}", sym.to_case(Case::Pascal));
         self.push(quote! {
@@ -561,6 +630,62 @@ fn test_generate_nodes() {
         impl Value {
             pub fn r#null(&self) -> Option<Null> {
                 self.child()
+            }
+        }
+        pub trait Visitor {
+            fn visit_array(&mut self, r#array: Array) {
+                for r#value in r#array.values() {
+                    self.visit_value(r#value);
+                }
+            }
+            fn visit_document(&mut self, r#document: Document) {
+                for r#value in r#document.r#value() {
+                    self.visit_value(r#value);
+                }
+            }
+            fn visit_false(&mut self, r#false: False) {}
+            fn visit_null(&mut self, r#null: Null) {}
+            fn visit_number(&mut self, r#number: Number) {}
+            fn visit_object(&mut self, r#object: Object) {
+                for r#pair in r#object.pairs() {
+                    self.visit_pair(r#pair);
+                }
+            }
+            fn visit_pair(&mut self, r#pair: Pair) {
+                for r#number in r#pair.r#number() {
+                    self.visit_number(r#number);
+                }
+                for r#string in r#pair.r#string() {
+                    self.visit_string(r#string);
+                }
+                for r#value in r#pair.r#value() {
+                    self.visit_value(r#value);
+                }
+            }
+            fn visit_string(&mut self, r#string: String) {}
+            fn visit_true(&mut self, r#true: True) {}
+            fn visit_value(&mut self, r#value: Value) {
+                for r#array in r#value.r#array() {
+                    self.visit_array(r#array);
+                }
+                for r#false in r#value.r#false() {
+                    self.visit_false(r#false);
+                }
+                for r#null in r#value.r#null() {
+                    self.visit_null(r#null);
+                }
+                for r#number in r#value.r#number() {
+                    self.visit_number(r#number);
+                }
+                for r#object in r#value.r#object() {
+                    self.visit_object(r#object);
+                }
+                for r#string in r#value.r#string() {
+                    self.visit_string(r#string);
+                }
+                for r#true in r#value.r#true() {
+                    self.visit_true(r#true);
+                }
             }
         }
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]

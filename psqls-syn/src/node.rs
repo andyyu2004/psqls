@@ -1,21 +1,5 @@
 use crate::nodes::SyntaxKind;
 
-// // can use this instead of the generated stuff if we need a to generate fresh
-// #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
-// #[repr(u16)]
-// pub enum SyntaxKind {
-//     _Z,
-// }
-// impl rowan::Language for Sql {
-//     type Kind = SyntaxKind;
-//     fn kind_from_raw(raw: rowan::SyntaxKind) -> Self::Kind {
-//         unsafe { std::mem::transmute(raw) }
-//     }
-//     fn kind_to_raw(kind: Self::Kind) -> rowan::SyntaxKind {
-//         unsafe { std::mem::transmute(kind) }
-//     }
-// }
-
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Sql {}
 

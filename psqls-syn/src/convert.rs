@@ -1,4 +1,4 @@
-use std::{marker::PhantomData, sync::Arc};
+use std::sync::Arc;
 
 use rowan::{GreenNode, GreenNodeBuilder, Language};
 use tree_sitter::{Node, Tree};
