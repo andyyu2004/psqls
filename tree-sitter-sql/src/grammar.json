@@ -2133,7 +2133,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "_parenthesized_expression"
+          "name": "parenthesized_expression"
         },
         {
           "type": "SYMBOL",
@@ -4092,7 +4092,7 @@
         ]
       }
     },
-    "_parenthesized_expression": {
+    "parenthesized_expression": {
       "type": "SEQ",
       "members": [
         {
@@ -4584,7 +4584,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "_parenthesized_expression"
+              "name": "parenthesized_expression"
             },
             {
               "type": "SYMBOL",
@@ -4871,7 +4871,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_parenthesized_expression"
+          "name": "parenthesized_expression"
         },
         {
           "type": "SYMBOL",

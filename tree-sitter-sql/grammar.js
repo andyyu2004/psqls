@@ -280,7 +280,7 @@ module.exports = grammar({
     named_constraint: $ => seq("CONSTRAINT", $.identifier),
     _column_default_expression: $ =>
       choice(
-        $._parenthesized_expression,
+        $.parenthesized_expression,
         $.string,
         $.identifier,
         $.function_call,
@@ -467,7 +467,7 @@ module.exports = grammar({
           $.expression,
         ),
       ),
-    _parenthesized_expression: $ => seq("(", $.expression, ")"),
+    parenthesized_expression: $ => seq("(", $.expression, ")"),
     is_expression: $ =>
       prec.left(
         1,
@@ -514,7 +514,7 @@ module.exports = grammar({
       seq(
         // TODO: should be moved to basic expression or something
         choice(
-          $._parenthesized_expression,
+          $.parenthesized_expression,
           $.string,
           $.identifier,
           $.function_call,
@@ -556,7 +556,7 @@ module.exports = grammar({
         $.in_expression,
         $.is_expression,
         $.boolean_expression,
-        $._parenthesized_expression,
+        $.parenthesized_expression,
         $.type_cast,
         $.binary_expression,
         $.array_element_access,

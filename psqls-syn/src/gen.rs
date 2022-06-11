@@ -105,13 +105,16 @@ impl Gen {
             copy::Rule::Choice(choices) => {
                 let variants = choices
                     .iter()
-                    .map(|rule| match rule {
+                    .filter_map(|rule| match rule {
                         copy::Rule::NamedSymbol(sym) => {
-                            format_ident!("{}", sym.to_case(Case::Pascal))
+                            Some(format_ident!("{}", sym.to_case(Case::Pascal)))
                         }
-                        _ => todo!(),
+                        _ => None,
                     })
                     .collect::<Vec<_>>();
+                if variants.is_empty() {
+                    return;
+                }
                 quote! {
                     pub enum #name {
                         #(#variants(#variants)),*
@@ -123,7 +126,10 @@ impl Gen {
                         }
 
                         fn cast(syntax: SyntaxNode) -> Option<Self> {
-                            Self::can_cast(syntax.kind()).then(|| Self(syntax))
+                            match syntax.kind() {
+                                #(SyntaxKind::#variants => Some(#name::#variants(#variants(syntax))),)*
+                                _ => None,
+                            }
                         }
 
                         fn syntax(&self) -> &SyntaxNode {
@@ -482,7 +488,16 @@ fn test_generate_nodes() {
                 )
             }
             fn cast(syntax: SyntaxNode) -> Option<Self> {
-                Self::can_cast(syntax.kind()).then(|| Self(syntax))
+                match syntax.kind() {
+                    SyntaxKind::Object => Some(Value::Object(Object(syntax))),
+                    SyntaxKind::Array => Some(Value::Array(Array(syntax))),
+                    SyntaxKind::Number => Some(Value::Number(Number(syntax))),
+                    SyntaxKind::String => Some(Value::String(String(syntax))),
+                    SyntaxKind::True => Some(Value::True(True(syntax))),
+                    SyntaxKind::False => Some(Value::False(False(syntax))),
+                    SyntaxKind::Null => Some(Value::Null(Null(syntax))),
+                    _ => None,
+                }
             }
             fn syntax(&self) -> &SyntaxNode {
                 match self {
