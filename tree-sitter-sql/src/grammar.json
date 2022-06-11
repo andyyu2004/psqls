@@ -2,85 +2,30 @@
   "name": "sql",
   "rules": {
     "source_file": {
-      "type": "REPEAT",
-      "content": {
-        "type": "SYMBOL",
-        "name": "statement"
-      }
-    },
-    "statement": {
       "type": "SEQ",
       "members": [
         {
-          "type": "CHOICE",
+          "type": "SEQ",
           "members": [
             {
               "type": "SYMBOL",
-              "name": "pg_command"
+              "name": "statement"
             },
             {
-              "type": "SYMBOL",
-              "name": "select_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "update_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "set_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "insert_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "grant_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "drop_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "create_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "alter_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "create_type_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "create_domain_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "create_index_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "create_table_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "create_function_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "create_schema_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "create_role_statement"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "create_extension_statement"
+              "type": "REPEAT",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": ";"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "statement"
+                  }
+                ]
+              }
             }
           ]
         },
@@ -95,6 +40,79 @@
               "type": "BLANK"
             }
           ]
+        }
+      ]
+    },
+    "statement": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "pg_command"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "select_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "update_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "set_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "insert_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "grant_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "drop_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "create_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "alter_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "create_type_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "create_domain_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "create_index_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "create_table_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "create_function_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "create_schema_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "create_role_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "create_extension_statement"
         }
       ]
     },

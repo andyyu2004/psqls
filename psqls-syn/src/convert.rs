@@ -37,6 +37,10 @@ impl Builder {
         for child in node.children(&mut node.walk()) {
             if child.is_named() {
                 self.visit_node(child);
+            } else if child.is_missing() {
+                todo!()
+            } else if child.is_error() {
+                todo!()
             } else {
                 self.builder.token(
                     Sql::kind_to_raw(SyntaxKind::Token),

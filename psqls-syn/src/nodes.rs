@@ -1,3 +1,4 @@
+//! generated, do not edit
 use crate::node::*;
 impl rowan::Language for Sql {
     type Kind = SyntaxKind;
@@ -1644,8 +1645,8 @@ impl SelectStatement {
     }
 }
 impl SelectStatement {
-    pub fn r#join_clause(&self) -> Option<JoinClause> {
-        self.child()
+    pub fn join_clauses(&self) -> impl Iterator<Item = JoinClause> {
+        self.children()
     }
 }
 impl SelectStatement {
@@ -1800,21 +1801,118 @@ impl Node for SourceFile {
     }
 }
 impl SourceFile {
-    pub fn r#statement(&self) -> Option<Statement> {
-        self.child()
+    pub fn statements(&self) -> impl Iterator<Item = Statement> {
+        self.children()
     }
 }
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Statement(pub(crate) SyntaxNode);
+pub enum Statement {
+    PgCommand(PgCommand),
+    SelectStatement(SelectStatement),
+    UpdateStatement(UpdateStatement),
+    SetStatement(SetStatement),
+    InsertStatement(InsertStatement),
+    GrantStatement(GrantStatement),
+    DropStatement(DropStatement),
+    CreateStatement(CreateStatement),
+    AlterStatement(AlterStatement),
+    CreateTypeStatement(CreateTypeStatement),
+    CreateDomainStatement(CreateDomainStatement),
+    CreateIndexStatement(CreateIndexStatement),
+    CreateTableStatement(CreateTableStatement),
+    CreateFunctionStatement(CreateFunctionStatement),
+    CreateSchemaStatement(CreateSchemaStatement),
+    CreateRoleStatement(CreateRoleStatement),
+    CreateExtensionStatement(CreateExtensionStatement),
+}
 impl Node for Statement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Statement
+        matches!(
+            kind,
+            SyntaxKind::PgCommand
+                | SyntaxKind::SelectStatement
+                | SyntaxKind::UpdateStatement
+                | SyntaxKind::SetStatement
+                | SyntaxKind::InsertStatement
+                | SyntaxKind::GrantStatement
+                | SyntaxKind::DropStatement
+                | SyntaxKind::CreateStatement
+                | SyntaxKind::AlterStatement
+                | SyntaxKind::CreateTypeStatement
+                | SyntaxKind::CreateDomainStatement
+                | SyntaxKind::CreateIndexStatement
+                | SyntaxKind::CreateTableStatement
+                | SyntaxKind::CreateFunctionStatement
+                | SyntaxKind::CreateSchemaStatement
+                | SyntaxKind::CreateRoleStatement
+                | SyntaxKind::CreateExtensionStatement
+        )
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+        match syntax.kind() {
+            SyntaxKind::PgCommand => Some(Statement::PgCommand(PgCommand(syntax))),
+            SyntaxKind::SelectStatement => {
+                Some(Statement::SelectStatement(SelectStatement(syntax)))
+            }
+            SyntaxKind::UpdateStatement => {
+                Some(Statement::UpdateStatement(UpdateStatement(syntax)))
+            }
+            SyntaxKind::SetStatement => Some(Statement::SetStatement(SetStatement(syntax))),
+            SyntaxKind::InsertStatement => {
+                Some(Statement::InsertStatement(InsertStatement(syntax)))
+            }
+            SyntaxKind::GrantStatement => Some(Statement::GrantStatement(GrantStatement(syntax))),
+            SyntaxKind::DropStatement => Some(Statement::DropStatement(DropStatement(syntax))),
+            SyntaxKind::CreateStatement => {
+                Some(Statement::CreateStatement(CreateStatement(syntax)))
+            }
+            SyntaxKind::AlterStatement => Some(Statement::AlterStatement(AlterStatement(syntax))),
+            SyntaxKind::CreateTypeStatement => {
+                Some(Statement::CreateTypeStatement(CreateTypeStatement(syntax)))
+            }
+            SyntaxKind::CreateDomainStatement => Some(Statement::CreateDomainStatement(
+                CreateDomainStatement(syntax),
+            )),
+            SyntaxKind::CreateIndexStatement => Some(Statement::CreateIndexStatement(
+                CreateIndexStatement(syntax),
+            )),
+            SyntaxKind::CreateTableStatement => Some(Statement::CreateTableStatement(
+                CreateTableStatement(syntax),
+            )),
+            SyntaxKind::CreateFunctionStatement => Some(Statement::CreateFunctionStatement(
+                CreateFunctionStatement(syntax),
+            )),
+            SyntaxKind::CreateSchemaStatement => Some(Statement::CreateSchemaStatement(
+                CreateSchemaStatement(syntax),
+            )),
+            SyntaxKind::CreateRoleStatement => {
+                Some(Statement::CreateRoleStatement(CreateRoleStatement(syntax)))
+            }
+            SyntaxKind::CreateExtensionStatement => Some(Statement::CreateExtensionStatement(
+                CreateExtensionStatement(syntax),
+            )),
+            _ => None,
+        }
     }
     fn syntax(&self) -> &SyntaxNode {
-        &self.0
+        match self {
+            Self::PgCommand(node) => node.syntax(),
+            Self::SelectStatement(node) => node.syntax(),
+            Self::UpdateStatement(node) => node.syntax(),
+            Self::SetStatement(node) => node.syntax(),
+            Self::InsertStatement(node) => node.syntax(),
+            Self::GrantStatement(node) => node.syntax(),
+            Self::DropStatement(node) => node.syntax(),
+            Self::CreateStatement(node) => node.syntax(),
+            Self::AlterStatement(node) => node.syntax(),
+            Self::CreateTypeStatement(node) => node.syntax(),
+            Self::CreateDomainStatement(node) => node.syntax(),
+            Self::CreateIndexStatement(node) => node.syntax(),
+            Self::CreateTableStatement(node) => node.syntax(),
+            Self::CreateFunctionStatement(node) => node.syntax(),
+            Self::CreateSchemaStatement(node) => node.syntax(),
+            Self::CreateRoleStatement(node) => node.syntax(),
+            Self::CreateExtensionStatement(node) => node.syntax(),
+        }
     }
 }
 impl Statement {

@@ -199,7 +199,7 @@ impl Gen {
     }
 
     fn gen_rule(&mut self, name: &Ident, rule: Rule) {
-        if self.gen_comma_list(name, &rule) {
+        if self.gen_list(name, &rule) {
             return;
         }
 
@@ -223,7 +223,10 @@ impl Gen {
                     }
                 }
             }
-            Rule::Repeat(rule) => self.gen_rule(name, *rule),
+            Rule::Repeat(rule) => match *rule {
+                Rule::NamedSymbol(sym) => self.gen_children_accessor(name, &sym),
+                rule => self.gen_rule(name, rule),
+            },
             Rule::Choice(rules) | Rule::Seq(rules) => rules
                 .into_vec()
                 .into_iter()
@@ -231,22 +234,28 @@ impl Gen {
         }
     }
 
-    fn gen_comma_list(&mut self, name: &Ident, rule: &Rule) -> bool {
+    fn gen_children_accessor(&mut self, name: &Ident, sym: &str) {
+        let pluralized = format_ident!("{}s", sym.to_case(Case::Snake));
+        let ty = format_ident!("{}", sym.to_case(Case::Pascal));
+        self.push(quote! {
+            impl #name {
+                pub fn #pluralized(&self) -> impl Iterator<Item = #ty> {
+                    self.children()
+                }
+            }
+        });
+    }
+
+    // comma separated or semicolon separated for now
+    // there may be patterns that aren't captured by the ones below
+    fn gen_list(&mut self, name: &Ident, rule: &Rule) -> bool {
         match rule {
             Rule::Seq(
                 box [Rule::NamedSymbol(x), Rule::Choice(
                     box [Rule::Repeat(box Rule::Seq(box [Rule::String(sep), Rule::NamedSymbol(y)])), Rule::Blank],
                 )],
-            ) if x == y && sep == "," && !x.starts_with('_') => {
-                let pluralized = format_ident!("{}s", x.to_case(Case::Snake));
-                let ty = format_ident!("{}", x.to_case(Case::Pascal));
-                self.push(quote! {
-                    impl #name {
-                        pub fn #pluralized(&self) -> impl Iterator<Item = #ty> {
-                            self.children()
-                        }
-                    }
-                });
+            ) if x == y && !x.starts_with('_') && [";", ","].contains(&sep.as_str()) => {
+                self.gen_children_accessor(name, x);
                 true
             }
             _ => false,
@@ -282,6 +291,7 @@ impl Gen {
     }
 
     fn gen(&mut self, grammar: InputGrammar) {
+        self.push_str("//! generated, do not edit\n");
         self.push(quote! {
             use crate::node::*;
 
@@ -314,6 +324,7 @@ impl Gen {
 fn test_generate_nodes() {
     let out = generate_grammar(TEST_GRAMMAR);
     expect![[r#"
+        //! generated, do not edit
         use crate::node::*;
         impl rowan::Language for Sql {
             type Kind = SyntaxKind;
