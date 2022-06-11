@@ -26,12 +26,15 @@ fn test_parse_error() {
     let parsed = db.parse("foo".into());
     expect![[r#"
         SourceFile(
-            SourceFile@0..0
-              SelectStatement@0..0
-                SelectClause@0..0
-                  SelectClauseBody@0..0
-                    AsteriskExpression@0..0
-              Err@0..0
+            SourceFile@0..11
+              SelectStatement@0..7
+                SelectClause@0..7
+                  Token@0..6 "select"
+                  SelectClauseBody@6..7
+                    AsteriskExpression@6..7
+                      Token@6..7 "*"
+              Err@7..11
+                Token@7..11 "from"
             ,
         )
     "#]]
@@ -44,13 +47,16 @@ fn test_parse() {
     let parsed = db.parse("foo".into());
     expect![[r#"
         SourceFile(
-            SourceFile@0..0
-              SelectStatement@0..0
-                SelectClause@0..0
-                  SelectClauseBody@0..0
-                    AsteriskExpression@0..0
-                FromClause@0..0
-                  Identifier@0..0
+            SourceFile@0..11
+              SelectStatement@0..11
+                SelectClause@0..7
+                  Token@0..6 "select"
+                  SelectClauseBody@6..7
+                    AsteriskExpression@6..7
+                      Token@6..7 "*"
+                FromClause@7..11
+                  Token@7..11 "from"
+                  Identifier@11..11
             ,
         )
     "#]]
@@ -58,7 +64,8 @@ fn test_parse() {
 }
 
 #[test]
-fn test_parser() {
+fn test_ts_parse() {
     let tree = parse("select * from table");
-    expect!["(source_file (select_statement (select_clause (select_clause_body (asterisk_expression))) (from_clause (identifier))))"].assert_eq(&tree.root_node().to_sexp());
+    expect!["(source_file (select_statement (select_clause (select_clause_body (asterisk_expression))) (from_clause (identifier))))"]
+        .assert_eq(&tree.root_node().to_sexp());
 }

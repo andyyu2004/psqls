@@ -1,32 +1,26 @@
-use std::marker::PhantomData;
+use std::{marker::PhantomData, sync::Arc};
 
 use rowan::{GreenNode, GreenNodeBuilder, Language};
 use tree_sitter::{Node, Tree};
 
+use crate::{node::Sql, nodes::SyntaxKind};
+
 // the reason for using rowan at all is due to treesitter nodes having an inconvenient
 // lifetime which doesn't work well with salsa
 // You could also argue why we even bother with salsa for this..
-pub(crate) fn ts_to_rowan<L>(tree: Tree) -> GreenNode
-where
-    L: Language,
-    L::Kind: From<&'static str>,
-{
-    Builder::<L>::new().build(tree)
+pub(crate) fn ts_to_rowan(text: Arc<str>, tree: Tree) -> GreenNode {
+    Builder::new(text).build(tree)
 }
 
-struct Builder<L> {
+struct Builder {
+    text: Arc<str>,
     builder: GreenNodeBuilder<'static>,
-    _language: PhantomData<L>,
 }
 
-impl<L> Builder<L>
-where
-    L: Language,
-    L::Kind: From<&'static str>,
-{
-    fn new() -> Self {
+impl Builder {
+    fn new(text: Arc<str>) -> Self {
         Self {
-            _language: PhantomData,
+            text,
             builder: Default::default(),
         }
     }
@@ -38,10 +32,17 @@ where
     }
 
     fn visit_node(&mut self, node: Node) {
-        let kind = L::kind_to_raw(L::Kind::from(node.kind()));
+        let kind = Sql::kind_to_raw(SyntaxKind::from(node.kind()));
         self.builder.start_node(kind);
-        for child in node.named_children(&mut node.walk()) {
-            self.visit_node(child);
+        for child in node.children(&mut node.walk()) {
+            if child.is_named() {
+                self.visit_node(child);
+            } else {
+                self.builder.token(
+                    Sql::kind_to_raw(SyntaxKind::Token),
+                    child.utf8_text(self.text.as_bytes()).unwrap(),
+                );
+            }
         }
         self.builder.finish_node();
     }

@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeSet, HashMap, HashSet};
 use std::io::{Read, Write};
 use std::process::{Command, Stdio};
 
@@ -71,6 +71,7 @@ impl From<copy::Rule> for Rule {
 struct Gen {
     s: String,
     methods: HashMap<Ident, HashSet<Ident>>,
+    syntax_kinds: BTreeSet<String>,
 }
 
 fn rustfmt(code: &str) -> String {
@@ -88,6 +89,38 @@ fn rustfmt(code: &str) -> String {
 impl Gen {
     pub fn generate(mut self, grammar: InputGrammar) -> String {
         self.gen(grammar);
+
+        let variants = self
+            .syntax_kinds
+            .iter()
+            .map(|kind| format_ident!("{}", kind.to_case(Case::Pascal)));
+
+        let cases = self.syntax_kinds.iter().map(|kind| {
+            let variant = format_ident!("{}", kind.to_case(Case::Pascal));
+            quote!(#kind => Self::#variant)
+        });
+
+        self.push(quote! {
+            #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+            #[repr(u16)]
+            pub enum SyntaxKind {
+                #(#variants,)*
+                Token, // catchall kind for tokens
+                Err,
+            }
+
+
+            impl From<&'static str> for SyntaxKind {
+                fn from(s: &'static str) -> Self {
+                    match s {
+                        #(#cases,)*
+                        "ERROR" => Self::Err,
+                        s => unreachable!("unexpected SyntaxKind `{}`", s),
+                    }
+                }
+            }
+        });
+
         rustfmt(&self.s)
     }
 
@@ -249,8 +282,6 @@ impl Gen {
     }
 
     fn gen(&mut self, grammar: InputGrammar) {
-        let mut syntax_kinds = vec![];
-
         self.push(quote! {
             use crate::node::*;
 
@@ -273,38 +304,9 @@ impl Gen {
             .filter(|v| v.kind == VariableType::Named)
             .filter(|v| !v.name.starts_with('_'))
             .for_each(|v| {
-                syntax_kinds.push(v.name.clone());
+                self.syntax_kinds.insert(v.name.clone());
                 self.gen_var(v);
             });
-
-        let variants = syntax_kinds
-            .iter()
-            .map(|kind| format_ident!("{}", kind.to_case(Case::Pascal)));
-
-        let cases = syntax_kinds.iter().map(|kind| {
-            let variant = format_ident!("{}", kind.to_case(Case::Pascal));
-            quote!(#kind => Self::#variant)
-        });
-
-        self.push(quote! {
-            #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
-            #[repr(u16)]
-            pub enum SyntaxKind {
-                #(#variants,)*
-                Err,
-            }
-
-
-            impl From<&'static str> for SyntaxKind {
-                fn from(s: &'static str) -> Self {
-                    match s {
-                        #(#cases,)*
-                        "ERROR" => Self::Err,
-                        s => unreachable!("unexpected SyntaxKind `{}`", s),
-                    }
-                }
-            }
-        });
     }
 }
 
@@ -563,6 +565,7 @@ fn test_generate_nodes() {
             String,
             True,
             Value,
+            Token,
             Err,
         }
         impl From<&'static str> for SyntaxKind {

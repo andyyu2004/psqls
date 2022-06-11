@@ -53,8 +53,8 @@ impl<T> Clone for Parse<T> {
 }
 
 fn parse(db: &dyn SyntaxDatabase, url: String) -> Parse<SourceFile> {
-    let tree = db.parse_raw(url);
-    let green = convert::ts_to_rowan::<Sql>(tree);
+    let tree = db.parse_raw(url.clone());
+    let green = convert::ts_to_rowan(db.text(url), tree);
     assert_eq!(green.kind(), Sql::kind_to_raw(SyntaxKind::SourceFile));
     Parse::new(green)
 }

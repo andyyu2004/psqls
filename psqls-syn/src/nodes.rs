@@ -2382,6 +2382,7 @@ pub enum SyntaxKind {
     ValuesClause,
     ValuesClauseBody,
     WhereClause,
+    Token,
     Err,
 }
 impl From<&'static str> for SyntaxKind {
