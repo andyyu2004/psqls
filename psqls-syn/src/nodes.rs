@@ -2382,6 +2382,7 @@ pub enum SyntaxKind {
     ValuesClause,
     ValuesClauseBody,
     WhereClause,
+    Err,
 }
 impl From<&'static str> for SyntaxKind {
     fn from(s: &'static str) -> Self {
@@ -2489,7 +2490,8 @@ impl From<&'static str> for SyntaxKind {
             "values_clause" => Self::ValuesClause,
             "values_clause_body" => Self::ValuesClauseBody,
             "where_clause" => Self::WhereClause,
-            _ => unreachable!(),
+            "ERROR" => Self::Err,
+            s => unreachable!("unexpected SyntaxKind `{}`", s),
         }
     }
 }

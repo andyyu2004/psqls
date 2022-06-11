@@ -21,6 +21,24 @@ impl TestDB {
 impl salsa::Database for TestDB {}
 
 #[test]
+fn test_parse_error() {
+    let db = TestDB::from_str("foo", "select * from");
+    let parsed = db.parse("foo".into());
+    expect![[r#"
+        SourceFile(
+            SourceFile@0..0
+              SelectStatement@0..0
+                SelectClause@0..0
+                  SelectClauseBody@0..0
+                    AsteriskExpression@0..0
+              Err@0..0
+            ,
+        )
+    "#]]
+    .assert_debug_eq(&parsed.root());
+}
+
+#[test]
 fn test_parse() {
     let db = TestDB::from_str("foo", "select * from table");
     let parsed = db.parse("foo".into());

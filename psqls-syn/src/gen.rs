@@ -291,6 +291,7 @@ impl Gen {
             #[repr(u16)]
             pub enum SyntaxKind {
                 #(#variants,)*
+                Err,
             }
 
 
@@ -298,7 +299,8 @@ impl Gen {
                 fn from(s: &'static str) -> Self {
                     match s {
                         #(#cases,)*
-                        _ => unreachable!(),
+                        "ERROR" => Self::Err,
+                        s => unreachable!("unexpected SyntaxKind `{}`", s),
                     }
                 }
             }
@@ -561,6 +563,7 @@ fn test_generate_nodes() {
             String,
             True,
             Value,
+            Err,
         }
         impl From<&'static str> for SyntaxKind {
             fn from(s: &'static str) -> Self {
@@ -575,7 +578,8 @@ fn test_generate_nodes() {
                     "string" => Self::String,
                     "true" => Self::True,
                     "value" => Self::Value,
-                    _ => unreachable!(),
+                    "ERROR" => Self::Err,
+                    s => unreachable!("unexpected SyntaxKind `{}`", s),
                 }
             }
         }
