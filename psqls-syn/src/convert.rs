@@ -3,35 +3,11 @@ use std::marker::PhantomData;
 use rowan::{GreenNodeBuilder, Language, SyntaxNode};
 use tree_sitter::{Node, Tree};
 
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[repr(u16)]
-enum SyntaxKind {
-    Todo,
-}
-
-// From `tree_sitter::Node::kind_id()`
-impl From<u16> for SyntaxKind {
-    fn from(u: u16) -> Self {
-        todo!()
-    }
-}
-
-#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
-enum Sql {}
-
-impl Language for Sql {
-    type Kind = SyntaxKind;
-
-    fn kind_from_raw(raw: rowan::SyntaxKind) -> Self::Kind {
-        unsafe { std::mem::transmute(raw) }
-    }
-
-    fn kind_to_raw(kind: Self::Kind) -> rowan::SyntaxKind {
-        unsafe { std::mem::transmute(kind) }
-    }
-}
-
-fn tree_sitter_to_rowan(tree: Tree) -> SyntaxNode<Sql> {
+fn tree_sitter_to_rowan<L, K>(tree: Tree) -> SyntaxNode<L>
+where
+    L: Language,
+    L::Kind: From<u16>,
+{
     Builder::new().build(tree)
 }
 

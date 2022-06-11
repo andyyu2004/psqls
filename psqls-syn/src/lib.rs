@@ -1,3 +1,5 @@
+#![feature(box_patterns)]
+
 pub use self::db::{SyntaxDatabase, SyntaxDatabaseStorage};
 
 mod convert;
