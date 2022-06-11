@@ -88,17 +88,33 @@ impl AlterTable {
         self.child()
     }
 }
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AlterTableAction(SyntaxNode);
+pub enum AlterTableAction {
+    AlterTableActionAdd(AlterTableActionAdd),
+    AlterTableActionAlterColumn(AlterTableActionAlterColumn),
+}
 impl Node for AlterTableAction {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AlterTableAction
+        matches!(
+            kind,
+            SyntaxKind::AlterTableActionAdd | SyntaxKind::AlterTableActionAlterColumn
+        )
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+        match syntax.kind() {
+            SyntaxKind::AlterTableActionAdd => Some(AlterTableAction::AlterTableActionAdd(
+                AlterTableActionAdd(syntax),
+            )),
+            SyntaxKind::AlterTableActionAlterColumn => Some(
+                AlterTableAction::AlterTableActionAlterColumn(AlterTableActionAlterColumn(syntax)),
+            ),
+            _ => None,
+        }
     }
     fn syntax(&self) -> &SyntaxNode {
-        &self.0
+        match self {
+            Self::AlterTableActionAdd(node) => node.syntax(),
+            Self::AlterTableActionAlterColumn(node) => node.syntax(),
+        }
     }
 }
 impl AlterTableAction {
@@ -737,17 +753,120 @@ impl ExcludeEntry {
         self.child()
     }
 }
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Expression(SyntaxNode);
+pub enum Expression {
+    IntervalExpression(IntervalExpression),
+    FunctionCall(FunctionCall),
+    String(String),
+    FieldAccess(FieldAccess),
+    True(True),
+    False(False),
+    Null(Null),
+    AsteriskExpression(AsteriskExpression),
+    Identifier(Identifier),
+    Number(Number),
+    ComparisonOperator(ComparisonOperator),
+    InExpression(InExpression),
+    IsExpression(IsExpression),
+    BooleanExpression(BooleanExpression),
+    ParenthesizedExpression(ParenthesizedExpression),
+    TypeCast(TypeCast),
+    BinaryExpression(BinaryExpression),
+    ArrayElementAccess(ArrayElementAccess),
+    ArgumentReference(ArgumentReference),
+    SelectSubexpression(SelectSubexpression),
+}
 impl Node for Expression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Expression
+        matches!(
+            kind,
+            SyntaxKind::IntervalExpression
+                | SyntaxKind::FunctionCall
+                | SyntaxKind::String
+                | SyntaxKind::FieldAccess
+                | SyntaxKind::True
+                | SyntaxKind::False
+                | SyntaxKind::Null
+                | SyntaxKind::AsteriskExpression
+                | SyntaxKind::Identifier
+                | SyntaxKind::Number
+                | SyntaxKind::ComparisonOperator
+                | SyntaxKind::InExpression
+                | SyntaxKind::IsExpression
+                | SyntaxKind::BooleanExpression
+                | SyntaxKind::ParenthesizedExpression
+                | SyntaxKind::TypeCast
+                | SyntaxKind::BinaryExpression
+                | SyntaxKind::ArrayElementAccess
+                | SyntaxKind::ArgumentReference
+                | SyntaxKind::SelectSubexpression
+        )
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+        match syntax.kind() {
+            SyntaxKind::IntervalExpression => {
+                Some(Expression::IntervalExpression(IntervalExpression(syntax)))
+            }
+            SyntaxKind::FunctionCall => Some(Expression::FunctionCall(FunctionCall(syntax))),
+            SyntaxKind::String => Some(Expression::String(String(syntax))),
+            SyntaxKind::FieldAccess => Some(Expression::FieldAccess(FieldAccess(syntax))),
+            SyntaxKind::True => Some(Expression::True(True(syntax))),
+            SyntaxKind::False => Some(Expression::False(False(syntax))),
+            SyntaxKind::Null => Some(Expression::Null(Null(syntax))),
+            SyntaxKind::AsteriskExpression => {
+                Some(Expression::AsteriskExpression(AsteriskExpression(syntax)))
+            }
+            SyntaxKind::Identifier => Some(Expression::Identifier(Identifier(syntax))),
+            SyntaxKind::Number => Some(Expression::Number(Number(syntax))),
+            SyntaxKind::ComparisonOperator => {
+                Some(Expression::ComparisonOperator(ComparisonOperator(syntax)))
+            }
+            SyntaxKind::InExpression => Some(Expression::InExpression(InExpression(syntax))),
+            SyntaxKind::IsExpression => Some(Expression::IsExpression(IsExpression(syntax))),
+            SyntaxKind::BooleanExpression => {
+                Some(Expression::BooleanExpression(BooleanExpression(syntax)))
+            }
+            SyntaxKind::ParenthesizedExpression => Some(Expression::ParenthesizedExpression(
+                ParenthesizedExpression(syntax),
+            )),
+            SyntaxKind::TypeCast => Some(Expression::TypeCast(TypeCast(syntax))),
+            SyntaxKind::BinaryExpression => {
+                Some(Expression::BinaryExpression(BinaryExpression(syntax)))
+            }
+            SyntaxKind::ArrayElementAccess => {
+                Some(Expression::ArrayElementAccess(ArrayElementAccess(syntax)))
+            }
+            SyntaxKind::ArgumentReference => {
+                Some(Expression::ArgumentReference(ArgumentReference(syntax)))
+            }
+            SyntaxKind::SelectSubexpression => {
+                Some(Expression::SelectSubexpression(SelectSubexpression(syntax)))
+            }
+            _ => None,
+        }
     }
     fn syntax(&self) -> &SyntaxNode {
-        &self.0
+        match self {
+            Self::IntervalExpression(node) => node.syntax(),
+            Self::FunctionCall(node) => node.syntax(),
+            Self::String(node) => node.syntax(),
+            Self::FieldAccess(node) => node.syntax(),
+            Self::True(node) => node.syntax(),
+            Self::False(node) => node.syntax(),
+            Self::Null(node) => node.syntax(),
+            Self::AsteriskExpression(node) => node.syntax(),
+            Self::Identifier(node) => node.syntax(),
+            Self::Number(node) => node.syntax(),
+            Self::ComparisonOperator(node) => node.syntax(),
+            Self::InExpression(node) => node.syntax(),
+            Self::IsExpression(node) => node.syntax(),
+            Self::BooleanExpression(node) => node.syntax(),
+            Self::ParenthesizedExpression(node) => node.syntax(),
+            Self::TypeCast(node) => node.syntax(),
+            Self::BinaryExpression(node) => node.syntax(),
+            Self::ArrayElementAccess(node) => node.syntax(),
+            Self::ArgumentReference(node) => node.syntax(),
+            Self::SelectSubexpression(node) => node.syntax(),
+        }
     }
 }
 impl Expression {
@@ -812,6 +931,11 @@ impl Expression {
 }
 impl Expression {
     pub fn r#boolean_expression(&self) -> Option<BooleanExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#parenthesized_expression(&self) -> Option<ParenthesizedExpression> {
         self.child()
     }
 }
@@ -1391,6 +1515,24 @@ impl Node for Parameters {
 impl Parameters {
     pub fn parameters(&self) -> impl Iterator<Item = Parameter> {
         self.children()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ParenthesizedExpression(SyntaxNode);
+impl Node for ParenthesizedExpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ParenthesizedExpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl ParenthesizedExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -2002,6 +2144,11 @@ impl Node for TypeCast {
     }
 }
 impl TypeCast {
+    pub fn r#parenthesized_expression(&self) -> Option<ParenthesizedExpression> {
+        self.child()
+    }
+}
+impl TypeCast {
     pub fn r#string(&self) -> Option<String> {
         self.child()
     }
@@ -2202,6 +2349,7 @@ pub enum SyntaxKind {
     ParallelHint,
     Parameter,
     Parameters,
+    ParenthesizedExpression,
     PgCommand,
     PrimaryKeyConstraint,
     ReferencesConstraint,
@@ -2308,6 +2456,7 @@ impl From<&'static str> for SyntaxKind {
             "parallel_hint" => Self::ParallelHint,
             "parameter" => Self::Parameter,
             "parameters" => Self::Parameters,
+            "parenthesized_expression" => Self::ParenthesizedExpression,
             "pg_command" => Self::PgCommand,
             "primary_key_constraint" => Self::PrimaryKeyConstraint,
             "references_constraint" => Self::ReferencesConstraint,

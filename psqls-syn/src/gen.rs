@@ -102,19 +102,21 @@ impl Gen {
     fn gen_var(&mut self, v: Variable) {
         let name = format_ident!("{}", v.name.to_case(Case::Pascal));
         let stream = match &v.rule {
-            copy::Rule::Choice(choices) => {
+            copy::Rule::Choice(choices)
+                if choices
+                    .iter()
+                    .all(|rule| matches!(rule, copy::Rule::NamedSymbol(_))) =>
+            {
                 let variants = choices
                     .iter()
-                    .filter_map(|rule| match rule {
+                    .map(|rule| match rule {
                         copy::Rule::NamedSymbol(sym) => {
                             Some(format_ident!("{}", sym.to_case(Case::Pascal)))
                         }
-                        _ => None,
+                        _ => unreachable!(),
                     })
                     .collect::<Vec<_>>();
-                if variants.is_empty() {
-                    return;
-                }
+
                 quote! {
                     pub enum #name {
                         #(#variants(#variants)),*
