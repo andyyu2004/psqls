@@ -178,6 +178,11 @@ impl ArrayElementAccess {
         self.child()
     }
 }
+impl ArrayElementAccess {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ArrayType(SyntaxNode);
 impl Node for ArrayType {
@@ -206,6 +211,11 @@ impl Node for AssigmentExpression {
 }
 impl AssigmentExpression {
     pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl AssigmentExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
         self.child()
     }
 }
@@ -253,6 +263,11 @@ impl Node for BinaryExpression {
         &self.0
     }
 }
+impl BinaryExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct BinaryOperator(SyntaxNode);
 impl Node for BinaryOperator {
@@ -279,6 +294,11 @@ impl Node for BooleanExpression {
         &self.0
     }
 }
+impl BooleanExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CheckConstraint(SyntaxNode);
 impl Node for CheckConstraint {
@@ -290,6 +310,11 @@ impl Node for CheckConstraint {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl CheckConstraint {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -334,6 +359,11 @@ impl Node for ComparisonOperator {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl ComparisonOperator {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -420,6 +450,11 @@ impl CreateFunctionParameter {
 }
 impl CreateFunctionParameter {
     pub fn r#constrained_type(&self) -> Option<ConstrainedType> {
+        self.child()
+    }
+}
+impl CreateFunctionParameter {
+    pub fn r#expression(&self) -> Option<Expression> {
         self.child()
     }
 }
@@ -643,6 +678,11 @@ impl Node for DistinctFrom {
         &self.0
     }
 }
+impl DistinctFrom {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct DottedName(SyntaxNode);
 impl Node for DottedName {
@@ -694,6 +734,109 @@ impl ExcludeEntry {
 }
 impl ExcludeEntry {
     pub fn r#binary_operator(&self) -> Option<BinaryOperator> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Expression(SyntaxNode);
+impl Node for Expression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Expression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl Expression {
+    pub fn r#interval_expression(&self) -> Option<IntervalExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#function_call(&self) -> Option<FunctionCall> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#string(&self) -> Option<String> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#field_access(&self) -> Option<FieldAccess> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#true(&self) -> Option<True> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#false(&self) -> Option<False> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#null(&self) -> Option<Null> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#asterisk_expression(&self) -> Option<AsteriskExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#number(&self) -> Option<Number> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#comparison_operator(&self) -> Option<ComparisonOperator> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#in_expression(&self) -> Option<InExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#is_expression(&self) -> Option<IsExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#boolean_expression(&self) -> Option<BooleanExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#type_cast(&self) -> Option<TypeCast> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#binary_expression(&self) -> Option<BinaryExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#array_element_access(&self) -> Option<ArrayElementAccess> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#argument_reference(&self) -> Option<ArgumentReference> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#select_subexpression(&self) -> Option<SelectSubexpression> {
         self.child()
     }
 }
@@ -769,6 +912,11 @@ impl FunctionCall {
         self.child()
     }
 }
+impl FunctionCall {
+    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
+        self.children()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct GrantStatement(SyntaxNode);
 impl Node for GrantStatement {
@@ -818,6 +966,11 @@ impl Node for GroupByClauseBody {
         &self.0
     }
 }
+impl GroupByClauseBody {
+    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
+        self.children()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Identifier(SyntaxNode);
 impl Node for Identifier {
@@ -845,6 +998,11 @@ impl Node for InExpression {
     }
 }
 impl InExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+impl InExpression {
     pub fn r#tuple(&self) -> Option<Tuple> {
         self.child()
     }
@@ -860,6 +1018,11 @@ impl Node for IndexTableParameters {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl IndexTableParameters {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
     }
 }
 impl IndexTableParameters {
@@ -935,6 +1098,11 @@ impl Node for IsExpression {
     }
 }
 impl IsExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+impl IsExpression {
     pub fn r#null(&self) -> Option<Null> {
         self.child()
     }
@@ -969,6 +1137,11 @@ impl Node for JoinClause {
 }
 impl JoinClause {
     pub fn r#join_type(&self) -> Option<JoinType> {
+        self.child()
+    }
+}
+impl JoinClause {
+    pub fn r#expression(&self) -> Option<Expression> {
         self.child()
     }
 }
@@ -1143,6 +1316,11 @@ impl Node for OrderByClauseBody {
         &self.0
     }
 }
+impl OrderByClauseBody {
+    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
+        self.children()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct OrderedExpression(SyntaxNode);
 impl Node for OrderedExpression {
@@ -1154,6 +1332,11 @@ impl Node for OrderedExpression {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl OrderedExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1438,6 +1621,11 @@ impl SetStatement {
         self.child()
     }
 }
+impl SetStatement {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Setof(SyntaxNode);
 impl Node for Setof {
@@ -1467,6 +1655,109 @@ impl Node for SourceFile {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl SourceFile {
+    pub fn r#statement(&self) -> Option<Statement> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Statement(SyntaxNode);
+impl Node for Statement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Statement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl Statement {
+    pub fn r#pg_command(&self) -> Option<PgCommand> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#select_statement(&self) -> Option<SelectStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#update_statement(&self) -> Option<UpdateStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#set_statement(&self) -> Option<SetStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#insert_statement(&self) -> Option<InsertStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#grant_statement(&self) -> Option<GrantStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#drop_statement(&self) -> Option<DropStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#create_statement(&self) -> Option<CreateStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#alter_statement(&self) -> Option<AlterStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#create_type_statement(&self) -> Option<CreateTypeStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#create_domain_statement(&self) -> Option<CreateDomainStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#create_index_statement(&self) -> Option<CreateIndexStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#create_table_statement(&self) -> Option<CreateTableStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#create_function_statement(&self) -> Option<CreateFunctionStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#create_schema_statement(&self) -> Option<CreateSchemaStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#create_role_statement(&self) -> Option<CreateRoleStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#create_extension_statement(&self) -> Option<CreateExtensionStatement> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1556,6 +1847,11 @@ impl Node for TableConstraintCheck {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl TableConstraintCheck {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1667,6 +1963,11 @@ impl Node for Tuple {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl Tuple {
+    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
+        self.children()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1805,6 +2106,11 @@ impl Node for ValuesClauseBody {
         &self.0
     }
 }
+impl ValuesClauseBody {
+    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
+        self.children()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct WhereClause(SyntaxNode);
 impl Node for WhereClause {
@@ -1816,6 +2122,11 @@ impl Node for WhereClause {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl WhereClause {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
     }
 }
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -1859,6 +2170,7 @@ pub enum SyntaxKind {
     DottedName,
     DropStatement,
     ExcludeEntry,
+    Expression,
     FieldAccess,
     FromClause,
     FunctionBody,
@@ -1903,6 +2215,7 @@ pub enum SyntaxKind {
     SetStatement,
     Setof,
     SourceFile,
+    Statement,
     String,
     TableColumn,
     TableConstraintCheck,
@@ -1963,6 +2276,7 @@ impl From<&'static str> for SyntaxKind {
             "dotted_name" => Self::DottedName,
             "drop_statement" => Self::DropStatement,
             "exclude_entry" => Self::ExcludeEntry,
+            "expression" => Self::Expression,
             "field_access" => Self::FieldAccess,
             "from_clause" => Self::FromClause,
             "function_body" => Self::FunctionBody,
@@ -2007,6 +2321,7 @@ impl From<&'static str> for SyntaxKind {
             "set_statement" => Self::SetStatement,
             "setof" => Self::Setof,
             "source_file" => Self::SourceFile,
+            "statement" => Self::Statement,
             "string" => Self::String,
             "table_column" => Self::TableColumn,
             "table_constraint_check" => Self::TableConstraintCheck,

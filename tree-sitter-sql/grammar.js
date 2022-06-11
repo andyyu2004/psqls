@@ -41,9 +41,9 @@ module.exports = grammar({
   name: "sql",
   extras: $ => [$.comment, /[\s\f\uFEFF\u2060\u200B]|\\\r?\n/],
   rules: {
-    source_file: $ => repeat($._statement),
+    source_file: $ => repeat($.statement),
 
-    _statement: $ =>
+    statement: $ =>
       seq(
         choice(
           $.pg_command,
@@ -160,7 +160,7 @@ module.exports = grammar({
         ),
         optional($.identifier),
         choice($._type, $.constrained_type),
-        optional(seq("=", alias($._expression, $.default))),
+        optional(seq("=", alias($.expression, $.default))),
       ),
     create_function_parameters: $ =>
       seq("(", commaSep1($.create_function_parameter), ")"),
@@ -196,7 +196,7 @@ module.exports = grammar({
         field("scope", optional(choice(kw("SESSION"), kw("LOCAL")))),
         $.identifier,
         choice("=", kw("TO")),
-        choice($._expression, kw("DEFAULT")),
+        choice($.expression, kw("DEFAULT")),
       ),
     grant_statement: $ =>
       seq(
@@ -310,7 +310,7 @@ module.exports = grammar({
         optional($.mode),
         optional($.initial_mode),
       ),
-    table_constraint_check: $ => seq(kw("CHECK"), $._expression),
+    table_constraint_check: $ => seq(kw("CHECK"), $.expression),
     op_class: $ => $._identifier,
     exclude_entry: $ =>
       seq(
@@ -354,7 +354,7 @@ module.exports = grammar({
         "(",
         commaSep1(
           seq(
-            choice($._expression, $.ordered_expression),
+            choice($.expression, $.ordered_expression),
             optional($.op_class),
           ),
         ),
@@ -371,15 +371,15 @@ module.exports = grammar({
         optional($.group_by_clause),
         optional($.order_by_clause),
       ),
-    group_by_clause_body: $ => commaSep1($._expression),
+    group_by_clause_body: $ => commaSep1($.expression),
     group_by_clause: $ => seq(kw("GROUP BY"), $.group_by_clause_body),
-    order_by_clause_body: $ => commaSep1($._expression),
+    order_by_clause_body: $ => commaSep1($.expression),
     order_by_clause: $ => seq(kw("ORDER BY"), $.order_by_clause_body),
-    where_clause: $ => seq(kw("WHERE"), $._expression),
+    where_clause: $ => seq(kw("WHERE"), $.expression),
     _aliased_expression: $ =>
-      seq($._expression, optional(kw("AS")), $.identifier),
+      seq($.expression, optional(kw("AS")), $.identifier),
     _aliasable_expression: $ =>
-      choice($._expression, alias($._aliased_expression, $.alias)),
+      choice($.expression, alias($._aliased_expression, $.alias)),
     select_clause_body: $ => commaSep1($._aliasable_expression),
     select_clause: $ =>
       prec.left(seq(kw("SELECT"), optional($.select_clause_body))),
@@ -400,7 +400,7 @@ module.exports = grammar({
         kw("JOIN"),
         $._identifier,
         kw("ON"),
-        $._expression,
+        $.expression,
       ),
     select_subexpression: $ => seq("(", $.select_statement, ")"),
 
@@ -410,20 +410,20 @@ module.exports = grammar({
 
     set_clause: $ => seq(kw("SET"), $.set_clause_body),
     set_clause_body: $ => seq(commaSep1($.assigment_expression)),
-    assigment_expression: $ => seq($.identifier, "=", $._expression),
+    assigment_expression: $ => seq($.identifier, "=", $.expression),
 
     // INSERT
     insert_statement: $ =>
       seq(kw("INSERT"), kw("INTO"), $._identifier, $.values_clause),
     values_clause: $ => seq(kw("VALUES"), "(", $.values_clause_body, ")"),
-    values_clause_body: $ => commaSep1($._expression),
+    values_clause_body: $ => commaSep1($.expression),
     in_expression: $ =>
-      prec.left(1, seq($._expression, optional(kw("NOT")), kw("IN"), $.tuple)),
+      prec.left(1, seq($.expression, optional(kw("NOT")), kw("IN"), $.tuple)),
     tuple: $ =>
       seq(
         // TODO: maybe collapse with function arguments, but make sure to preserve clarity
         "(",
-        field("elements", commaSep1($._expression)),
+        field("elements", commaSep1($.expression)),
         ")",
       ),
     // TODO: named constraints
@@ -443,7 +443,7 @@ module.exports = grammar({
       choice(kw("RESTRICT"), kw("CASCADE"), kw("SET NULL")),
     unique_constraint: $ => kw("UNIQUE"),
     null_constraint: $ => seq(optional(kw("NOT")), $.NULL),
-    check_constraint: $ => seq(kw("CHECK"), $._expression),
+    check_constraint: $ => seq(kw("CHECK"), $.expression),
     _constraint: $ =>
       seq(
         choice($.null_constraint, $.check_constraint),
@@ -455,35 +455,35 @@ module.exports = grammar({
       seq(
         field("function", $.identifier),
         "(",
-        optional(field("arguments", commaSep1($._expression))),
+        optional(field("arguments", commaSep1($.expression))),
         ")",
       ),
     comparison_operator: $ =>
       prec.left(
         6,
         seq(
-          $._expression,
+          $.expression,
           field("operator", choice("<", "<=", "<>", "=", ">", ">=")),
-          $._expression,
+          $.expression,
         ),
       ),
-    _parenthesized_expression: $ => seq("(", $._expression, ")"),
+    _parenthesized_expression: $ => seq("(", $.expression, ")"),
     is_expression: $ =>
       prec.left(
         1,
         seq(
-          $._expression,
+          $.expression,
           kw("IS"),
           optional(kw("NOT")),
           choice($.NULL, $.TRUE, $.FALSE, $.distinct_from),
         ),
       ),
-    distinct_from: $ => prec.left(seq(kw("DISTINCT FROM"), $._expression)),
+    distinct_from: $ => prec.left(seq(kw("DISTINCT FROM"), $.expression)),
     boolean_expression: $ =>
       choice(
-        prec.left(5, seq(kw("NOT"), $._expression)),
-        prec.left(4, seq($._expression, kw("AND"), $._expression)),
-        prec.left(3, seq($._expression, kw("OR"), $._expression)),
+        prec.left(5, seq(kw("NOT"), $.expression)),
+        prec.left(4, seq($.expression, kw("AND"), $.expression)),
+        prec.left(3, seq($.expression, kw("OR"), $.expression)),
       ),
     NULL: $ => kw("NULL"),
     TRUE: $ => kw("TRUE"),
@@ -507,7 +507,7 @@ module.exports = grammar({
       ),
     field_access: $ => seq($.identifier, "->>", $.string),
     ordered_expression: $ =>
-      seq($._expression, field("order", choice(kw("ASC"), kw("DESC")))),
+      seq($.expression, field("order", choice(kw("ASC"), kw("DESC")))),
     array_type: $ => seq($._type, "[", "]"),
     _type: $ => choice($.type, $.array_type),
     type_cast: $ =>
@@ -528,19 +528,19 @@ module.exports = grammar({
         choice(seq("--", /.*/), seq("/*", /[^*]*\*+([^/*][^*]*\*+)*/, "/")),
       ),
     array_element_access: $ =>
-      seq(choice($.identifier, $.argument_reference), "[", $._expression, "]"),
+      seq(choice($.identifier, $.argument_reference), "[", $.expression, "]"),
     binary_expression: $ =>
       prec.left(
         choice(
-          seq($._expression, "~", $._expression),
-          seq($._expression, "+", $._expression),
+          seq($.expression, "~", $.expression),
+          seq($.expression, "+", $.expression),
         ),
       ),
     binary_operator: $ => choice("=", "&&", "||"),
     asterisk_expression: $ => seq(optional(seq($.identifier, ".")), "*"),
     interval_expression: $ => seq(token(prec(1, kw("INTERVAL"))), $.string),
     argument_reference: $ => seq("$", /\d+/),
-    _expression: $ =>
+    expression: $ =>
       choice(
         $.interval_expression,
         $.function_call,
