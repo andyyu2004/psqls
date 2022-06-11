@@ -7,7 +7,7 @@ use expect_test::expect;
 use quote::__private::{Ident, TokenStream};
 use quote::{format_ident, quote};
 
-use self::copy::{parse_grammar, InputGrammar, Symbol, VariableType};
+use self::copy::{parse_grammar, InputGrammar, Symbol, Variable, VariableType};
 
 mod copy;
 
@@ -32,6 +32,7 @@ fn generate_nodes(grammar: InputGrammar) -> String {
     Gen::default().generate(grammar)
 }
 
+// basically the same as `copy::Rule` but easier to pattern match on
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 enum Rule {
     Blank,
@@ -96,6 +97,64 @@ impl Gen {
 
     fn push_str(&mut self, string: &str) {
         self.s.push_str(string);
+    }
+
+    fn gen_var(&mut self, v: Variable) {
+        let name = format_ident!("{}", v.name.to_case(Case::Pascal));
+        let stream = match &v.rule {
+            copy::Rule::Choice(choices) => {
+                let variants = choices
+                    .iter()
+                    .map(|rule| match rule {
+                        copy::Rule::NamedSymbol(sym) => {
+                            format_ident!("{}", sym.to_case(Case::Pascal))
+                        }
+                        _ => todo!(),
+                    })
+                    .collect::<Vec<_>>();
+                quote! {
+                    pub enum #name {
+                        #(#variants(#variants)),*
+                    }
+
+                    impl Node for #name {
+                        fn can_cast(kind: SyntaxKind) -> bool {
+                            matches!(kind, #(SyntaxKind::#variants)|*)
+                        }
+
+                        fn cast(syntax: SyntaxNode) -> Option<Self> {
+                            Self::can_cast(syntax.kind()).then(|| Self(syntax))
+                        }
+
+                        fn syntax(&self) -> &SyntaxNode {
+                            match self {
+                                #(Self::#variants(node) => node.syntax()),*
+                            }
+                        }
+                    }
+                }
+            }
+            _ => quote! {
+                #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+                pub struct #name(SyntaxNode);
+
+                impl Node for #name {
+                    fn can_cast(kind: SyntaxKind) -> bool {
+                        kind == SyntaxKind::#name
+                    }
+
+                    fn cast(syntax: SyntaxNode) -> Option<Self> {
+                        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+                    }
+
+                    fn syntax(&self) -> &SyntaxNode {
+                        &self.0
+                    }
+                }
+            },
+        };
+        self.push(stream);
+        self.gen_rule(&name, v.rule.into());
     }
 
     fn gen_rule(&mut self, name: &Ident, rule: Rule) {
@@ -200,35 +259,15 @@ impl Gen {
             }
         });
 
-        for v in grammar
+        grammar
             .variables
             .into_iter()
             .filter(|v| v.kind == VariableType::Named)
             .filter(|v| !v.name.starts_with('_'))
-        {
-            let name = format_ident!("{}", v.name.to_case(Case::Pascal));
-            self.push(quote! {
-                #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-                pub struct #name(SyntaxNode);
-
-                impl Node for #name {
-                    fn can_cast(kind: SyntaxKind) -> bool {
-                        kind == SyntaxKind::#name
-                    }
-
-                    fn cast(syntax: SyntaxNode) -> Option<Self> {
-                        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-                    }
-
-                    fn syntax(&self) -> &SyntaxNode {
-                        &self.0
-                    }
-                }
+            .for_each(|v| {
+                syntax_kinds.push(v.name.clone());
+                self.gen_var(v);
             });
-
-            self.gen_rule(&name, v.rule.into());
-            syntax_kinds.push(v.name);
-        }
 
         let variants = syntax_kinds
             .iter()
@@ -420,17 +459,41 @@ fn test_generate_nodes() {
                 &self.0
             }
         }
-        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-        pub struct Value(SyntaxNode);
+        pub enum Value {
+            Object(Object),
+            Array(Array),
+            Number(Number),
+            String(String),
+            True(True),
+            False(False),
+            Null(Null),
+        }
         impl Node for Value {
             fn can_cast(kind: SyntaxKind) -> bool {
-                kind == SyntaxKind::Value
+                matches!(
+                    kind,
+                    SyntaxKind::Object
+                        | SyntaxKind::Array
+                        | SyntaxKind::Number
+                        | SyntaxKind::String
+                        | SyntaxKind::True
+                        | SyntaxKind::False
+                        | SyntaxKind::Null
+                )
             }
             fn cast(syntax: SyntaxNode) -> Option<Self> {
                 Self::can_cast(syntax.kind()).then(|| Self(syntax))
             }
             fn syntax(&self) -> &SyntaxNode {
-                &self.0
+                match self {
+                    Self::Object(node) => node.syntax(),
+                    Self::Array(node) => node.syntax(),
+                    Self::Number(node) => node.syntax(),
+                    Self::String(node) => node.syntax(),
+                    Self::True(node) => node.syntax(),
+                    Self::False(node) => node.syntax(),
+                    Self::Null(node) => node.syntax(),
+                }
             }
         }
         impl Value {
