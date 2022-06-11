@@ -31,8 +31,9 @@ where
         }
     }
 
-    fn build(self, tree: Tree) -> GreenNode {
+    fn build(mut self, tree: Tree) -> GreenNode {
         let node = tree.root_node();
+        self.visit_node(node);
         self.builder.finish()
     }
 
