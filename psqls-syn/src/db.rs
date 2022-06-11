@@ -5,8 +5,8 @@ use rowan::Language;
 use tree_sitter::Tree;
 
 use crate::convert;
+use crate::generated::{SourceFile, SyntaxKind};
 use crate::node::{GreenNode, Node, Sql, SyntaxNode};
-use crate::nodes::{SourceFile, SyntaxKind};
 
 #[salsa::query_group(SyntaxDatabaseStorage)]
 pub trait SyntaxDatabase {

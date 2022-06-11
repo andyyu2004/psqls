@@ -4,9 +4,10 @@ pub use self::db::{SyntaxDatabase, SyntaxDatabaseStorage};
 
 mod convert;
 mod db;
+mod generated;
 mod lower;
 mod node;
-mod nodes;
+mod validation;
 mod visit;
 
 use tree_sitter::{Language, Parser, Tree};

@@ -1,4 +1,4 @@
-use crate::nodes::SyntaxKind;
+use crate::generated::SyntaxKind;
 
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Sql {}

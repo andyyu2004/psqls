@@ -3,7 +3,7 @@ use std::sync::Arc;
 use rowan::{GreenNode, GreenNodeBuilder, Language};
 use tree_sitter::{Node, Tree};
 
-use crate::{node::Sql, nodes::SyntaxKind};
+use crate::{generated::SyntaxKind, node::Sql};
 
 // the reason for using rowan at all is due to treesitter nodes having an inconvenient
 // lifetime which doesn't work well with salsa

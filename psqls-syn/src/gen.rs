@@ -18,7 +18,7 @@ fn generate_psql_nodes() -> std::io::Result<()> {
         .join("../tree-sitter-sql/src/grammar.json");
     let grammar = parse_grammar(&std::fs::read_to_string(path)?).unwrap();
     let out = generate_nodes(grammar);
-    let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src/nodes.rs");
+    let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src/generated.rs");
     let mut file = std::fs::File::create(path)?;
     file.write_all(out.as_bytes())?;
     Ok(())
