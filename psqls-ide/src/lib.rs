@@ -1,19 +1,33 @@
+pub use self::highlight::{Highlight, HighlightRange};
+pub use psqls_syn::{Rope, SyntaxDatabase, TextRange, TextSize};
+
 mod highlight;
 
-use psqls_syn::SyntaxDatabase;
+use std::ops::Deref;
+use std::sync::Arc;
+
 use salsa::ParallelDatabase;
 
 #[derive(Default)]
 pub struct Ide {
     db: IdeDatabase,
 }
+
 pub struct Snapshot {
     snapshot: salsa::Snapshot<IdeDatabase>,
 }
 
+impl Deref for Snapshot {
+    type Target = salsa::Snapshot<IdeDatabase>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.snapshot
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Change {
-    pub uri: String,
+    pub uri: Arc<str>,
     pub text: String,
 }
 

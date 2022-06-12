@@ -1,7 +1,12 @@
-use psqls_ide::{Change, Ide};
+use std::sync::Arc;
+
+use psqls_ide::{Change, Ide, SyntaxDatabase};
 use tokio::sync::Mutex;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{jsonrpc, Client, LanguageServer};
+
+use crate::convert::{Convert, ConvertWith};
+use crate::tokens::{self, SemanticTokensBuilder};
 
 pub struct Lsp {
     ide: Mutex<Ide>,
@@ -32,8 +37,8 @@ impl LanguageServer for Lsp {
                     SemanticTokensServerCapabilities::SemanticTokensOptions(
                         SemanticTokensOptions {
                             legend: SemanticTokensLegend {
-                                token_types: vec![],
-                                token_modifiers: vec![],
+                                token_types: tokens::TYPES.to_vec(),
+                                token_modifiers: tokens::MODIFIERS.to_vec(),
                             },
                             range: Some(false),
                             full: Some(SemanticTokensFullOptions::Bool(true)),
@@ -55,7 +60,7 @@ impl LanguageServer for Lsp {
     async fn did_change(&self, mut params: DidChangeTextDocumentParams) {
         assert_eq!(params.content_changes.len(), 1);
         self.ide.lock().await.apply(Change {
-            uri: params.text_document.uri.to_string(),
+            uri: params.text_document.uri.to_string().into(),
             text: params.content_changes.swap_remove(0).text,
         });
     }
@@ -64,8 +69,13 @@ impl LanguageServer for Lsp {
         &self,
         params: SemanticTokensParams,
     ) -> jsonrpc::Result<Option<SemanticTokensResult>> {
-        let ide = self.ide.lock().await.snapshot().highlight();
-        todo!()
+        let url: Arc<str> = params.text_document.uri.to_string().into();
+        let ide = self.ide.lock().await;
+        let snapshot = ide.snapshot();
+        let rope = snapshot.rope(Arc::clone(&url));
+        let highlights = snapshot.highlight(url.clone());
+        let tokens = tokens::convert(&rope, highlights);
+        Ok(Some(SemanticTokensResult::Tokens(tokens)))
     }
 
     async fn shutdown(&self) -> jsonrpc::Result<()> {

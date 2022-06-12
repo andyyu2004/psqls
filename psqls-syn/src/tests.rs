@@ -11,7 +11,7 @@ struct TestDB {
 }
 
 impl TestDB {
-    pub fn from_str(url: impl Into<String>, s: impl Into<Arc<str>>) -> Self {
+    pub fn from_str(url: impl Into<Arc<str>>, s: impl Into<Arc<str>>) -> Self {
         let mut db = Self::default();
         db.set_text(url.into(), s.into());
         db

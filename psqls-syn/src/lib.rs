@@ -1,6 +1,10 @@
-#![feature(box_patterns)]
+#![cfg_attr(test, feature(box_patterns))]
 
 pub use self::db::{SyntaxDatabase, SyntaxDatabaseStorage};
+pub use self::generated::*;
+pub use self::node::Node;
+pub use ropey::Rope;
+pub use rowan::{TextRange, TextSize};
 
 mod convert;
 mod db;

@@ -1,6 +1,7 @@
 use std::marker::PhantomData;
 use std::sync::Arc;
 
+use ropey::Rope;
 use rowan::Language;
 use tree_sitter::Tree;
 
@@ -11,16 +12,29 @@ use crate::node::{GreenNode, Node, Sql, SyntaxNode};
 #[salsa::query_group(SyntaxDatabaseStorage)]
 pub trait SyntaxDatabase {
     #[salsa::input]
-    fn text(&self, url: String) -> Arc<str>;
+    fn text(&self, url: Arc<str>) -> Arc<str>;
+
+    fn rope(&self, url: Arc<str>) -> Rope;
 
     #[salsa::dependencies]
-    fn parse_raw(&self, url: String) -> Tree;
+    fn parse_raw(&self, url: Arc<str>) -> Tree;
 
-    fn parse(&self, url: String) -> Parse<SourceFile>;
+    fn parse(&self, url: Arc<str>) -> Parse<SourceFile>;
 }
 
-fn parse_raw(db: &dyn SyntaxDatabase, url: String) -> Tree {
+fn rope(db: &dyn SyntaxDatabase, url: Arc<str>) -> Rope {
+    Rope::from_str(db.text(url).as_ref())
+}
+
+fn parse_raw(db: &dyn SyntaxDatabase, url: Arc<str>) -> Tree {
     crate::parse(&db.text(url))
+}
+
+fn parse(db: &dyn SyntaxDatabase, url: Arc<str>) -> Parse<SourceFile> {
+    let tree = db.parse_raw(url.clone());
+    let green = convert::ts_to_rowan(db.text(url), tree);
+    assert_eq!(green.kind(), Sql::kind_to_raw(SyntaxKind::SourceFile));
+    Parse::new(green)
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -50,11 +64,4 @@ impl<T> Clone for Parse<T> {
             _type: PhantomData,
         }
     }
-}
-
-fn parse(db: &dyn SyntaxDatabase, url: String) -> Parse<SourceFile> {
-    let tree = db.parse_raw(url.clone());
-    let green = convert::ts_to_rowan(db.text(url), tree);
-    assert_eq!(green.kind(), Sql::kind_to_raw(SyntaxKind::SourceFile));
-    Parse::new(green)
 }
