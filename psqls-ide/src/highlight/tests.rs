@@ -1,5 +1,4 @@
 use expect_test::expect;
-use psqls_syn::SyntaxDatabase;
 
 use crate::{url, Ide};
 
@@ -9,7 +8,16 @@ fn test_highlight_keywords() {
     let ide = Ide::test(url.clone(), "select * from bar");
     let highlights = ide.snapshot().highlight(url);
     expect![[r#"
-        []
+        [
+            HighlightRange {
+                range: 7..11,
+                hl: Keyword,
+            },
+            HighlightRange {
+                range: 0..6,
+                hl: Keyword,
+            },
+        ]
     "#]]
     .assert_debug_eq(&highlights);
 }

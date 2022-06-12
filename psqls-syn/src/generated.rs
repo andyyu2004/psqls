@@ -3311,13 +3311,11 @@ pub trait Visitor {
         }
     }
     fn visit_alter_table_action(&mut self, r#alter_table_action: AlterTableAction) {
-        for r#alter_table_action_add in r#alter_table_action.r#alter_table_action_add() {
-            self.visit_alter_table_action_add(r#alter_table_action_add);
-        }
-        for r#alter_table_action_alter_column in
-            r#alter_table_action.r#alter_table_action_alter_column()
-        {
-            self.visit_alter_table_action_alter_column(r#alter_table_action_alter_column);
+        match r#alter_table_action {
+            AlterTableAction::AlterTableActionAdd(node) => self.visit_alter_table_action_add(node),
+            AlterTableAction::AlterTableActionAlterColumn(node) => {
+                self.visit_alter_table_action_alter_column(node)
+            }
         }
     }
     fn visit_alter_table_action_add(&mut self, r#alter_table_action_add: AlterTableActionAdd) {
@@ -3720,62 +3718,27 @@ pub trait Visitor {
         }
     }
     fn visit_expression(&mut self, r#expression: Expression) {
-        for r#false in r#expression.r#false() {
-            self.visit_false(r#false);
-        }
-        for r#null in r#expression.r#null() {
-            self.visit_null(r#null);
-        }
-        for r#true in r#expression.r#true() {
-            self.visit_true(r#true);
-        }
-        for r#argument_reference in r#expression.r#argument_reference() {
-            self.visit_argument_reference(r#argument_reference);
-        }
-        for r#array_element_access in r#expression.r#array_element_access() {
-            self.visit_array_element_access(r#array_element_access);
-        }
-        for r#asterisk_expression in r#expression.r#asterisk_expression() {
-            self.visit_asterisk_expression(r#asterisk_expression);
-        }
-        for r#binary_expression in r#expression.r#binary_expression() {
-            self.visit_binary_expression(r#binary_expression);
-        }
-        for r#boolean_expression in r#expression.r#boolean_expression() {
-            self.visit_boolean_expression(r#boolean_expression);
-        }
-        for r#comparison_operator in r#expression.r#comparison_operator() {
-            self.visit_comparison_operator(r#comparison_operator);
-        }
-        for r#field_access in r#expression.r#field_access() {
-            self.visit_field_access(r#field_access);
-        }
-        for r#function_call in r#expression.r#function_call() {
-            self.visit_function_call(r#function_call);
-        }
-        for r#in_expression in r#expression.r#in_expression() {
-            self.visit_in_expression(r#in_expression);
-        }
-        for r#interval_expression in r#expression.r#interval_expression() {
-            self.visit_interval_expression(r#interval_expression);
-        }
-        for r#is_expression in r#expression.r#is_expression() {
-            self.visit_is_expression(r#is_expression);
-        }
-        for r#number in r#expression.r#number() {
-            self.visit_number(r#number);
-        }
-        for r#parenthesized_expression in r#expression.r#parenthesized_expression() {
-            self.visit_parenthesized_expression(r#parenthesized_expression);
-        }
-        for r#select_subexpression in r#expression.r#select_subexpression() {
-            self.visit_select_subexpression(r#select_subexpression);
-        }
-        for r#string in r#expression.r#string() {
-            self.visit_string(r#string);
-        }
-        for r#type_cast in r#expression.r#type_cast() {
-            self.visit_type_cast(r#type_cast);
+        match r#expression {
+            Expression::IntervalExpression(node) => self.visit_interval_expression(node),
+            Expression::FunctionCall(node) => self.visit_function_call(node),
+            Expression::String(node) => self.visit_string(node),
+            Expression::FieldAccess(node) => self.visit_field_access(node),
+            Expression::True(node) => self.visit_true(node),
+            Expression::False(node) => self.visit_false(node),
+            Expression::Null(node) => self.visit_null(node),
+            Expression::AsteriskExpression(node) => self.visit_asterisk_expression(node),
+            Expression::Identifier(node) => self.visit_identifier(node),
+            Expression::Number(node) => self.visit_number(node),
+            Expression::ComparisonOperator(node) => self.visit_comparison_operator(node),
+            Expression::InExpression(node) => self.visit_in_expression(node),
+            Expression::IsExpression(node) => self.visit_is_expression(node),
+            Expression::BooleanExpression(node) => self.visit_boolean_expression(node),
+            Expression::ParenthesizedExpression(node) => self.visit_parenthesized_expression(node),
+            Expression::TypeCast(node) => self.visit_type_cast(node),
+            Expression::BinaryExpression(node) => self.visit_binary_expression(node),
+            Expression::ArrayElementAccess(node) => self.visit_array_element_access(node),
+            Expression::ArgumentReference(node) => self.visit_argument_reference(node),
+            Expression::SelectSubexpression(node) => self.visit_select_subexpression(node),
         }
     }
     fn visit_false(&mut self, r#false: False) {
@@ -4306,56 +4269,26 @@ pub trait Visitor {
         }
     }
     fn visit_statement(&mut self, r#statement: Statement) {
-        for r#alter_statement in r#statement.r#alter_statement() {
-            self.visit_alter_statement(r#alter_statement);
-        }
-        for r#create_domain_statement in r#statement.r#create_domain_statement() {
-            self.visit_create_domain_statement(r#create_domain_statement);
-        }
-        for r#create_extension_statement in r#statement.r#create_extension_statement() {
-            self.visit_create_extension_statement(r#create_extension_statement);
-        }
-        for r#create_function_statement in r#statement.r#create_function_statement() {
-            self.visit_create_function_statement(r#create_function_statement);
-        }
-        for r#create_index_statement in r#statement.r#create_index_statement() {
-            self.visit_create_index_statement(r#create_index_statement);
-        }
-        for r#create_role_statement in r#statement.r#create_role_statement() {
-            self.visit_create_role_statement(r#create_role_statement);
-        }
-        for r#create_schema_statement in r#statement.r#create_schema_statement() {
-            self.visit_create_schema_statement(r#create_schema_statement);
-        }
-        for r#create_statement in r#statement.r#create_statement() {
-            self.visit_create_statement(r#create_statement);
-        }
-        for r#create_table_statement in r#statement.r#create_table_statement() {
-            self.visit_create_table_statement(r#create_table_statement);
-        }
-        for r#create_type_statement in r#statement.r#create_type_statement() {
-            self.visit_create_type_statement(r#create_type_statement);
-        }
-        for r#drop_statement in r#statement.r#drop_statement() {
-            self.visit_drop_statement(r#drop_statement);
-        }
-        for r#grant_statement in r#statement.r#grant_statement() {
-            self.visit_grant_statement(r#grant_statement);
-        }
-        for r#insert_statement in r#statement.r#insert_statement() {
-            self.visit_insert_statement(r#insert_statement);
-        }
-        for r#pg_command in r#statement.r#pg_command() {
-            self.visit_pg_command(r#pg_command);
-        }
-        for r#select_statement in r#statement.r#select_statement() {
-            self.visit_select_statement(r#select_statement);
-        }
-        for r#set_statement in r#statement.r#set_statement() {
-            self.visit_set_statement(r#set_statement);
-        }
-        for r#update_statement in r#statement.r#update_statement() {
-            self.visit_update_statement(r#update_statement);
+        match r#statement {
+            Statement::PgCommand(node) => self.visit_pg_command(node),
+            Statement::SelectStatement(node) => self.visit_select_statement(node),
+            Statement::UpdateStatement(node) => self.visit_update_statement(node),
+            Statement::SetStatement(node) => self.visit_set_statement(node),
+            Statement::InsertStatement(node) => self.visit_insert_statement(node),
+            Statement::GrantStatement(node) => self.visit_grant_statement(node),
+            Statement::DropStatement(node) => self.visit_drop_statement(node),
+            Statement::CreateStatement(node) => self.visit_create_statement(node),
+            Statement::AlterStatement(node) => self.visit_alter_statement(node),
+            Statement::CreateTypeStatement(node) => self.visit_create_type_statement(node),
+            Statement::CreateDomainStatement(node) => self.visit_create_domain_statement(node),
+            Statement::CreateIndexStatement(node) => self.visit_create_index_statement(node),
+            Statement::CreateTableStatement(node) => self.visit_create_table_statement(node),
+            Statement::CreateFunctionStatement(node) => self.visit_create_function_statement(node),
+            Statement::CreateSchemaStatement(node) => self.visit_create_schema_statement(node),
+            Statement::CreateRoleStatement(node) => self.visit_create_role_statement(node),
+            Statement::CreateExtensionStatement(node) => {
+                self.visit_create_extension_statement(node)
+            }
         }
     }
     fn visit_string(&mut self, r#string: String) {}

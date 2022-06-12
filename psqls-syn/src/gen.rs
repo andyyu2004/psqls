@@ -77,8 +77,14 @@ pub enum Cardinality {
 #[derive(Default)]
 struct Gen {
     s: String,
+    enums: BTreeMap<Ident, EnumData>,
     method_sets: BTreeMap<Ident, BTreeMap<String, Cardinality>>,
     syntax_kinds: BTreeSet<(String, SyntaxKindSort)>,
+}
+
+#[derive(Debug)]
+struct EnumData {
+    variants: Vec<Ident>,
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -114,48 +120,65 @@ impl Gen {
             let param = format_ident!("r#{}", snake);
             let f = format_ident!("visit_{}", snake);
 
-            let stmts = fields.iter().map(|(field, &cardinality)| {
-                let snake = format_ident!("{}", field.to_case(Case::Snake));
-                let raw_field = format_ident!("r#{snake}");
-                let fields = format_ident!("{snake}s");
-                let visit = format_ident!("visit_{}", snake);
+            match self.enums.get(&name) {
+                None => {
+                    let stmts = fields.iter().map(|(field, &cardinality)| {
+                        let snake = format_ident!("{}", field.to_case(Case::Snake));
+                        let raw_field = format_ident!("r#{snake}");
+                        let fields = format_ident!("{snake}s");
+                        let visit = format_ident!("visit_{}", snake);
 
-                if field.ends_with("Kw") {
-                    assert_eq!(cardinality, Cardinality::One);
-                    return quote! {
-                        if let Some(kw) = #param.#snake() {
-                            self.visit_kw(kw);
+                        if field.ends_with("Kw") {
+                            assert_eq!(cardinality, Cardinality::One);
+                            return quote! {
+                                if let Some(kw) = #param.#snake() {
+                                    self.visit_kw(kw);
+                                }
+                            };
                         }
-                    };
-                }
 
-                if !self
-                    .method_sets
-                    .contains_key(&format_ident!("{}", field.to_case(Case::Pascal)))
-                {
-                    return quote! {};
+                        if !self
+                            .method_sets
+                            .contains_key(&format_ident!("{}", field.to_case(Case::Pascal)))
+                        {
+                            return quote! {};
+                        }
+                        match cardinality {
+                            Cardinality::One => {
+                                quote! {
+                                    for #raw_field in #param.#raw_field() {
+                                        self.#visit(#raw_field);
+                                    }
+                                }
+                            }
+                            Cardinality::Many => {
+                                quote! {
+                                    for #raw_field in #param.#fields() {
+                                        self.#visit(#raw_field);
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    quote! {
+                        fn #f(&mut self, #param: #name) {
+                            #(#stmts)*
+                        }
+                    }
                 }
-                match cardinality {
-                    Cardinality::One => {
-                        quote! {
-                            for #raw_field in #param.#raw_field() {
-                                self.#visit(#raw_field);
+                Some(data) => {
+                    let variants = &data.variants;
+                    let visits = variants.iter().map(|field| {
+                        format_ident!("visit_{}", field.to_string().to_case(Case::Snake))
+                    });
+                    quote! {
+                        fn #f(&mut self, #param: #name) {
+                            match #param {
+                                #(#name::#variants(node) => self.#visits(node),)*
                             }
                         }
                     }
-                    Cardinality::Many => {
-                        quote! {
-                            for #raw_field in #param.#fields() {
-                                self.#visit(#raw_field);
-                            }
-                        }
-                    }
-                }
-            });
-
-            quote! {
-                fn #f(&mut self, #param: #name) {
-                    #(#stmts)*
                 }
             }
         });
@@ -234,13 +257,13 @@ impl Gen {
                     .iter()
                     .map(|rule| match rule {
                         copy::Rule::NamedSymbol(sym) => {
-                            Some(format_ident!("{}", sym.to_case(Case::Pascal)))
+                            format_ident!("{}", sym.to_case(Case::Pascal))
                         }
                         _ => unreachable!(),
                     })
-                    .collect::<Vec<_>>();
+                    .collect::<Vec<Ident>>();
 
-                quote! {
+                let tokens = quote! {
                     pub enum #name {
                         #(#variants(#variants)),*
                     }
@@ -263,7 +286,12 @@ impl Gen {
                             }
                         }
                     }
-                }
+                };
+                assert!(self
+                    .enums
+                    .insert(name.clone(), EnumData { variants })
+                    .is_none());
+                tokens
             }
             _ => quote! {
                 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -735,26 +763,14 @@ fn test_generate_nodes() {
             fn visit_string(&mut self, r#string: String) {}
             fn visit_true(&mut self, r#true: True) {}
             fn visit_value(&mut self, r#value: Value) {
-                for r#array in r#value.r#array() {
-                    self.visit_array(r#array);
-                }
-                for r#false in r#value.r#false() {
-                    self.visit_false(r#false);
-                }
-                for r#null in r#value.r#null() {
-                    self.visit_null(r#null);
-                }
-                for r#number in r#value.r#number() {
-                    self.visit_number(r#number);
-                }
-                for r#object in r#value.r#object() {
-                    self.visit_object(r#object);
-                }
-                for r#string in r#value.r#string() {
-                    self.visit_string(r#string);
-                }
-                for r#true in r#value.r#true() {
-                    self.visit_true(r#true);
+                match r#value {
+                    Value::Object(node) => self.visit_object(node),
+                    Value::Array(node) => self.visit_array(node),
+                    Value::Number(node) => self.visit_number(node),
+                    Value::String(node) => self.visit_string(node),
+                    Value::True(node) => self.visit_true(node),
+                    Value::False(node) => self.visit_false(node),
+                    Value::Null(node) => self.visit_null(node),
                 }
             }
         }
