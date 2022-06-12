@@ -29,12 +29,12 @@ fn test_parse_error() {
             SourceFile@0..11
               SelectStatement@0..7
                 SelectClause@0..7
-                  Token@0..6 "select"
+                  SelectKw@0..6 "select"
                   SelectClauseBody@6..7
                     AsteriskExpression@6..7
                       Token@6..7 "*"
               Err@7..11
-                Token@7..11 "from"
+                FromKw@7..11 "from"
             ,
         )
     "#]]
@@ -50,12 +50,12 @@ fn test_parse() {
             SourceFile@0..11
               SelectStatement@0..11
                 SelectClause@0..7
-                  Token@0..6 "select"
+                  SelectKw@0..6 "select"
                   SelectClauseBody@6..7
                     AsteriskExpression@6..7
                       Token@6..7 "*"
                 FromClause@7..11
-                  Token@7..11 "from"
+                  FromKw@7..11 "from"
                   Identifier@11..11
             ,
         )

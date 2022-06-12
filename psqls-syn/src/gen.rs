@@ -4,6 +4,7 @@ use std::process::{Command, Stdio};
 
 use convert_case::{Case, Casing};
 use expect_test::expect;
+use itertools::Itertools;
 use quote::__private::{Ident, TokenStream};
 use quote::{format_ident, quote};
 
@@ -78,7 +79,13 @@ pub enum Cardinality {
 struct Gen {
     s: String,
     method_sets: BTreeMap<Ident, BTreeMap<String, Cardinality>>,
-    syntax_kinds: BTreeSet<String>,
+    syntax_kinds: BTreeSet<(String, SyntaxKindSort)>,
+}
+
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+enum SyntaxKindSort {
+    Sym,
+    Kw,
 }
 
 fn rustfmt(code: &str) -> String {
@@ -154,14 +161,23 @@ impl Gen {
     }
 
     fn generate_syntax_kinds(&mut self) {
-        let variants = self
-            .syntax_kinds
-            .iter()
-            .map(|kind| format_ident!("{}", kind.to_case(Case::Pascal)));
+        let variants = self.syntax_kinds.iter().map(|(kind, sort)| match sort {
+            SyntaxKindSort::Sym => format_ident!("{}", kind.to_case(Case::Pascal)),
+            SyntaxKindSort::Kw => format_ident!("{}Kw", kind.to_case(Case::Pascal)),
+        });
 
-        let cases = self.syntax_kinds.iter().map(|kind| {
-            let variant = format_ident!("{}", kind.to_case(Case::Pascal));
-            quote!(#kind => Self::#variant)
+        let cases = self.syntax_kinds.iter().map(|(kind, sort)| {
+            let (kind, variant) = match sort {
+                SyntaxKindSort::Sym => (
+                    kind.to_case(Case::Snake),
+                    format_ident!("{}", kind.to_case(Case::Pascal)),
+                ),
+                SyntaxKindSort::Kw => (
+                    kind.to_case(Case::ScreamingSnake),
+                    format_ident!("{}Kw", kind.to_case(Case::Pascal)),
+                ),
+            };
+            quote!(#kind => Ok(Self::#variant))
         });
 
         self.push(quote! {
@@ -173,13 +189,13 @@ impl Gen {
                 Err,
             }
 
-
-            impl From<&'static str> for SyntaxKind {
-                fn from(s: &'static str) -> Self {
+            impl TryFrom<&'static str> for SyntaxKind {
+                type Error = ();
+                fn try_from(s: &'static str) -> Result<Self, Self::Error> {
                     match s {
                         #(#cases,)*
-                        "ERROR" => Self::Err,
-                        s => unreachable!("unexpected SyntaxKind `{}`", s),
+                        "ERROR" => Ok(Self::Err),
+                        _ => Err(())
                     }
                 }
             }
@@ -267,7 +283,46 @@ impl Gen {
         }
 
         match rule {
-            Rule::Blank | Rule::String(_) | Rule::Pattern(_) | Rule::Symbol(_) => {}
+            Rule::Blank => {}
+            Rule::Pattern(pat) => {
+                // look for patterns of the form `[fF][aA][lL][sS][eE]`
+                // which represent case insensitive keywords
+                if pat.len() % 4 != 0 {
+                    return;
+                }
+                let kw = pat
+                    .as_bytes()
+                    .chunks_exact(4)
+                    .filter_map(|chunk| {
+                        if chunk[0] != b'[' || chunk[3] != b']' || !chunk[1].is_ascii_alphabetic() {
+                            return None;
+                        }
+                        Some(chunk[1] as char)
+                    })
+                    .collect::<String>();
+
+                if kw.is_empty() {
+                    return;
+                }
+
+                let kind = format!("{}Kw", kw.to_case(Case::Pascal));
+                self.syntax_kinds.insert((kw, SyntaxKindSort::Kw));
+                let f = format_ident!("{}", kind.to_case(Case::Snake));
+                let variant = format_ident!("{kind}");
+                let methods = self.method_sets.entry(name.clone()).or_default();
+                if !methods.contains_key(&kind) {
+                    let stream = quote! {
+                        impl #name {
+                            pub fn #f(&self) -> Option<SyntaxToken> {
+                                self.token(SyntaxKind::#variant)
+                            }
+                        }
+                    };
+                    methods.insert(kind, Cardinality::One);
+                    self.push(stream);
+                }
+            }
+            Rule::String(_) | Rule::Symbol(_) => {}
             Rule::NamedSymbol(sym) => {
                 if !sym.starts_with("_") {
                     let f = format_ident!("r#{}", sym.to_case(Case::Snake));
@@ -383,7 +438,8 @@ impl Gen {
             .filter(|v| v.kind == VariableType::Named)
             .filter(|v| !v.name.starts_with('_'))
             .for_each(|v| {
-                self.syntax_kinds.insert(v.name.clone());
+                self.syntax_kinds
+                    .insert((v.name.clone(), SyntaxKindSort::Sym));
                 self.gen_var(v);
             });
     }
@@ -704,21 +760,22 @@ fn test_generate_nodes() {
             Token,
             Err,
         }
-        impl From<&'static str> for SyntaxKind {
-            fn from(s: &'static str) -> Self {
+        impl TryFrom<&'static str> for SyntaxKind {
+            type Error = ();
+            fn try_from(s: &'static str) -> Result<Self, Self::Error> {
                 match s {
-                    "array" => Self::Array,
-                    "document" => Self::Document,
-                    "false" => Self::False,
-                    "null" => Self::Null,
-                    "number" => Self::Number,
-                    "object" => Self::Object,
-                    "pair" => Self::Pair,
-                    "string" => Self::String,
-                    "true" => Self::True,
-                    "value" => Self::Value,
-                    "ERROR" => Self::Err,
-                    s => unreachable!("unexpected SyntaxKind `{}`", s),
+                    "array" => Ok(Self::Array),
+                    "document" => Ok(Self::Document),
+                    "false" => Ok(Self::False),
+                    "null" => Ok(Self::Null),
+                    "number" => Ok(Self::Number),
+                    "object" => Ok(Self::Object),
+                    "pair" => Ok(Self::Pair),
+                    "string" => Ok(Self::String),
+                    "true" => Ok(Self::True),
+                    "value" => Ok(Self::Value),
+                    "ERROR" => Ok(Self::Err),
+                    _ => Err(()),
                 }
             }
         }

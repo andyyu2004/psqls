@@ -22,6 +22,11 @@ impl Node for False {
         &self.0
     }
 }
+impl False {
+    pub fn false_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::FalseKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Null(pub(crate) SyntaxNode);
 impl Node for Null {
@@ -33,6 +38,11 @@ impl Node for Null {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl Null {
+    pub fn null_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NullKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -48,6 +58,11 @@ impl Node for True {
         &self.0
     }
 }
+impl True {
+    pub fn true_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TrueKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct AlterStatement(pub(crate) SyntaxNode);
 impl Node for AlterStatement {
@@ -59,6 +74,11 @@ impl Node for AlterStatement {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl AlterStatement {
+    pub fn alter_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AlterKw)
     }
 }
 impl AlterStatement {
@@ -82,6 +102,26 @@ impl Node for AlterTable {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl AlterTable {
+    pub fn table_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TableKw)
+    }
+}
+impl AlterTable {
+    pub fn if_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IfKw)
+    }
+}
+impl AlterTable {
+    pub fn exists_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExistsKw)
+    }
+}
+impl AlterTable {
+    pub fn only_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnlyKw)
     }
 }
 impl AlterTable {
@@ -142,6 +182,16 @@ impl Node for AlterTableActionAdd {
     }
 }
 impl AlterTableActionAdd {
+    pub fn add_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AddKw)
+    }
+}
+impl AlterTableActionAdd {
+    pub fn column_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ColumnKw)
+    }
+}
+impl AlterTableActionAdd {
     pub fn r#table_column(&self) -> Option<TableColumn> {
         self.child()
     }
@@ -157,6 +207,26 @@ impl Node for AlterTableActionAlterColumn {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl AlterTableActionAlterColumn {
+    pub fn alter_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AlterKw)
+    }
+}
+impl AlterTableActionAlterColumn {
+    pub fn column_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ColumnKw)
+    }
+}
+impl AlterTableActionAlterColumn {
+    pub fn set_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SetKw)
+    }
+}
+impl AlterTableActionAlterColumn {
+    pub fn default_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DefaultKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -267,6 +337,11 @@ impl Node for AutoIncrementConstraint {
         &self.0
     }
 }
+impl AutoIncrementConstraint {
+    pub fn autoincrement_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AutoincrementKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct BinaryExpression(pub(crate) SyntaxNode);
 impl Node for BinaryExpression {
@@ -312,8 +387,23 @@ impl Node for BooleanExpression {
     }
 }
 impl BooleanExpression {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl BooleanExpression {
     pub fn r#expression(&self) -> Option<Expression> {
         self.child()
+    }
+}
+impl BooleanExpression {
+    pub fn and_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AndKw)
+    }
+}
+impl BooleanExpression {
+    pub fn or_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OrKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -327,6 +417,11 @@ impl Node for CheckConstraint {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl CheckConstraint {
+    pub fn check_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CheckKw)
     }
 }
 impl CheckConstraint {
@@ -345,6 +440,11 @@ impl Node for ColumnDefault {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl ColumnDefault {
+    pub fn default_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DefaultKw)
     }
 }
 impl ColumnDefault {
@@ -415,8 +515,23 @@ impl Node for CreateDomainStatement {
     }
 }
 impl CreateDomainStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateDomainStatement {
+    pub fn domain_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DomainKw)
+    }
+}
+impl CreateDomainStatement {
     pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
+    }
+}
+impl CreateDomainStatement {
+    pub fn as_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AsKw)
     }
 }
 impl CreateDomainStatement {
@@ -443,6 +558,31 @@ impl Node for CreateExtensionStatement {
     }
 }
 impl CreateExtensionStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateExtensionStatement {
+    pub fn extension_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExtensionKw)
+    }
+}
+impl CreateExtensionStatement {
+    pub fn if_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IfKw)
+    }
+}
+impl CreateExtensionStatement {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl CreateExtensionStatement {
+    pub fn exists_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExistsKw)
+    }
+}
+impl CreateExtensionStatement {
     pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
@@ -458,6 +598,26 @@ impl Node for CreateFunctionParameter {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl CreateFunctionParameter {
+    pub fn in_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InKw)
+    }
+}
+impl CreateFunctionParameter {
+    pub fn out_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OutKw)
+    }
+}
+impl CreateFunctionParameter {
+    pub fn inout_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InoutKw)
+    }
+}
+impl CreateFunctionParameter {
+    pub fn variadic_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::VariadicKw)
     }
 }
 impl CreateFunctionParameter {
@@ -507,6 +667,21 @@ impl Node for CreateFunctionStatement {
     }
 }
 impl CreateFunctionStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateFunctionStatement {
+    pub fn orreplace_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OrreplaceKw)
+    }
+}
+impl CreateFunctionStatement {
+    pub fn function_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::FunctionKw)
+    }
+}
+impl CreateFunctionStatement {
     pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
@@ -514,6 +689,11 @@ impl CreateFunctionStatement {
 impl CreateFunctionStatement {
     pub fn r#create_function_parameters(&self) -> Option<CreateFunctionParameters> {
         self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn returns_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ReturnsKw)
     }
 }
 impl CreateFunctionStatement {
@@ -550,13 +730,28 @@ impl Node for CreateIndexStatement {
     }
 }
 impl CreateIndexStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateIndexStatement {
     pub fn r#unique_constraint(&self) -> Option<UniqueConstraint> {
         self.child()
     }
 }
 impl CreateIndexStatement {
+    pub fn index_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IndexKw)
+    }
+}
+impl CreateIndexStatement {
     pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
+    }
+}
+impl CreateIndexStatement {
+    pub fn on_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnKw)
     }
 }
 impl CreateIndexStatement {
@@ -588,8 +783,23 @@ impl Node for CreateRoleStatement {
     }
 }
 impl CreateRoleStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateRoleStatement {
+    pub fn role_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::RoleKw)
+    }
+}
+impl CreateRoleStatement {
     pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
+    }
+}
+impl CreateRoleStatement {
+    pub fn with_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WithKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -603,6 +813,31 @@ impl Node for CreateSchemaStatement {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl CreateSchemaStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateSchemaStatement {
+    pub fn schema_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SchemaKw)
+    }
+}
+impl CreateSchemaStatement {
+    pub fn if_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IfKw)
+    }
+}
+impl CreateSchemaStatement {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl CreateSchemaStatement {
+    pub fn exists_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExistsKw)
     }
 }
 impl CreateSchemaStatement {
@@ -624,6 +859,21 @@ impl Node for CreateStatement {
     }
 }
 impl CreateStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateStatement {
+    pub fn temp_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TempKw)
+    }
+}
+impl CreateStatement {
+    pub fn temporary_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TemporaryKw)
+    }
+}
+impl CreateStatement {
     pub fn r#sequence(&self) -> Option<Sequence> {
         self.child()
     }
@@ -639,6 +889,36 @@ impl Node for CreateTableStatement {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl CreateTableStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateTableStatement {
+    pub fn temporary_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TemporaryKw)
+    }
+}
+impl CreateTableStatement {
+    pub fn table_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TableKw)
+    }
+}
+impl CreateTableStatement {
+    pub fn if_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IfKw)
+    }
+}
+impl CreateTableStatement {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl CreateTableStatement {
+    pub fn exists_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExistsKw)
     }
 }
 impl CreateTableStatement {
@@ -660,8 +940,23 @@ impl Node for CreateTypeStatement {
     }
 }
 impl CreateTypeStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateTypeStatement {
+    pub fn type_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TypeKw)
+    }
+}
+impl CreateTypeStatement {
     pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
+    }
+}
+impl CreateTypeStatement {
+    pub fn as_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AsKw)
     }
 }
 impl CreateTypeStatement {
@@ -682,6 +977,16 @@ impl Node for DirectionConstraint {
         &self.0
     }
 }
+impl DirectionConstraint {
+    pub fn asc_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AscKw)
+    }
+}
+impl DirectionConstraint {
+    pub fn desc_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DescKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct DistinctFrom(pub(crate) SyntaxNode);
 impl Node for DistinctFrom {
@@ -693,6 +998,16 @@ impl Node for DistinctFrom {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl DistinctFrom {
+    pub fn distinct_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DistinctKw)
+    }
+}
+impl DistinctFrom {
+    pub fn from_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::FromKw)
     }
 }
 impl DistinctFrom {
@@ -731,6 +1046,46 @@ impl Node for DropStatement {
         &self.0
     }
 }
+impl DropStatement {
+    pub fn drop_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DropKw)
+    }
+}
+impl DropStatement {
+    pub fn table_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TableKw)
+    }
+}
+impl DropStatement {
+    pub fn view_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ViewKw)
+    }
+}
+impl DropStatement {
+    pub fn tablespace_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TablespaceKw)
+    }
+}
+impl DropStatement {
+    pub fn extension_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExtensionKw)
+    }
+}
+impl DropStatement {
+    pub fn index_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IndexKw)
+    }
+}
+impl DropStatement {
+    pub fn if_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IfKw)
+    }
+}
+impl DropStatement {
+    pub fn exists_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExistsKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ExcludeEntry(pub(crate) SyntaxNode);
 impl Node for ExcludeEntry {
@@ -747,6 +1102,11 @@ impl Node for ExcludeEntry {
 impl ExcludeEntry {
     pub fn r#op_class(&self) -> Option<OpClass> {
         self.child()
+    }
+}
+impl ExcludeEntry {
+    pub fn with_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WithKw)
     }
 }
 impl ExcludeEntry {
@@ -1001,6 +1361,11 @@ impl Node for FromClause {
         &self.0
     }
 }
+impl FromClause {
+    pub fn from_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::FromKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct FunctionBody(pub(crate) SyntaxNode);
 impl Node for FunctionBody {
@@ -1012,6 +1377,11 @@ impl Node for FunctionBody {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl FunctionBody {
+    pub fn as_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AsKw)
     }
 }
 impl FunctionBody {
@@ -1056,8 +1426,113 @@ impl Node for GrantStatement {
     }
 }
 impl GrantStatement {
+    pub fn grant_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::GrantKw)
+    }
+}
+impl GrantStatement {
+    pub fn all_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AllKw)
+    }
+}
+impl GrantStatement {
+    pub fn privileges_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::PrivilegesKw)
+    }
+}
+impl GrantStatement {
+    pub fn select_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SelectKw)
+    }
+}
+impl GrantStatement {
+    pub fn insert_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InsertKw)
+    }
+}
+impl GrantStatement {
+    pub fn update_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UpdateKw)
+    }
+}
+impl GrantStatement {
+    pub fn delete_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DeleteKw)
+    }
+}
+impl GrantStatement {
+    pub fn truncate_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TruncateKw)
+    }
+}
+impl GrantStatement {
+    pub fn references_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ReferencesKw)
+    }
+}
+impl GrantStatement {
+    pub fn trigger_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TriggerKw)
+    }
+}
+impl GrantStatement {
+    pub fn usage_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UsageKw)
+    }
+}
+impl GrantStatement {
+    pub fn on_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnKw)
+    }
+}
+impl GrantStatement {
+    pub fn schema_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SchemaKw)
+    }
+}
+impl GrantStatement {
+    pub fn database_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DatabaseKw)
+    }
+}
+impl GrantStatement {
+    pub fn sequence_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SequenceKw)
+    }
+}
+impl GrantStatement {
+    pub fn table_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TableKw)
+    }
+}
+impl GrantStatement {
     pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
+    }
+}
+impl GrantStatement {
+    pub fn to_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ToKw)
+    }
+}
+impl GrantStatement {
+    pub fn group_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::GroupKw)
+    }
+}
+impl GrantStatement {
+    pub fn public_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::PublicKw)
+    }
+}
+impl GrantStatement {
+    pub fn with_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WithKw)
+    }
+}
+impl GrantStatement {
+    pub fn option_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OptionKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1071,6 +1546,16 @@ impl Node for GroupByClause {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl GroupByClause {
+    pub fn group_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::GroupKw)
+    }
+}
+impl GroupByClause {
+    pub fn by_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ByKw)
     }
 }
 impl GroupByClause {
@@ -1128,6 +1613,16 @@ impl InExpression {
     }
 }
 impl InExpression {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl InExpression {
+    pub fn in_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InKw)
+    }
+}
+impl InExpression {
     pub fn r#tuple(&self) -> Option<Tuple> {
         self.child()
     }
@@ -1173,6 +1668,21 @@ impl Node for InitialMode {
         &self.0
     }
 }
+impl InitialMode {
+    pub fn initially_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InitiallyKw)
+    }
+}
+impl InitialMode {
+    pub fn deferred_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DeferredKw)
+    }
+}
+impl InitialMode {
+    pub fn immediate_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ImmediateKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct InsertStatement(pub(crate) SyntaxNode);
 impl Node for InsertStatement {
@@ -1184,6 +1694,16 @@ impl Node for InsertStatement {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl InsertStatement {
+    pub fn insert_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InsertKw)
+    }
+}
+impl InsertStatement {
+    pub fn into_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IntoKw)
     }
 }
 impl InsertStatement {
@@ -1202,6 +1722,11 @@ impl Node for IntervalExpression {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl IntervalExpression {
+    pub fn interval_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IntervalKw)
     }
 }
 impl IntervalExpression {
@@ -1225,6 +1750,16 @@ impl Node for IsExpression {
 impl IsExpression {
     pub fn r#expression(&self) -> Option<Expression> {
         self.child()
+    }
+}
+impl IsExpression {
+    pub fn is_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IsKw)
+    }
+}
+impl IsExpression {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
     }
 }
 impl IsExpression {
@@ -1266,6 +1801,16 @@ impl JoinClause {
     }
 }
 impl JoinClause {
+    pub fn join_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::JoinKw)
+    }
+}
+impl JoinClause {
+    pub fn on_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnKw)
+    }
+}
+impl JoinClause {
     pub fn r#expression(&self) -> Option<Expression> {
         self.child()
     }
@@ -1283,6 +1828,31 @@ impl Node for JoinType {
         &self.0
     }
 }
+impl JoinType {
+    pub fn inner_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InnerKw)
+    }
+}
+impl JoinType {
+    pub fn left_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::LeftKw)
+    }
+}
+impl JoinType {
+    pub fn right_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::RightKw)
+    }
+}
+impl JoinType {
+    pub fn full_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::FullKw)
+    }
+}
+impl JoinType {
+    pub fn outer_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OuterKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Mode(pub(crate) SyntaxNode);
 impl Node for Mode {
@@ -1296,6 +1866,16 @@ impl Node for Mode {
         &self.0
     }
 }
+impl Mode {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl Mode {
+    pub fn deferrable_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DeferrableKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct NamedConstraint(pub(crate) SyntaxNode);
 impl Node for NamedConstraint {
@@ -1307,6 +1887,11 @@ impl Node for NamedConstraint {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl NamedConstraint {
+    pub fn constraint_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ConstraintKw)
     }
 }
 impl NamedConstraint {
@@ -1328,6 +1913,11 @@ impl Node for NullConstraint {
     }
 }
 impl NullConstraint {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl NullConstraint {
     pub fn r#null(&self) -> Option<Null> {
         self.child()
     }
@@ -1343,6 +1933,36 @@ impl Node for NullHint {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl NullHint {
+    pub fn called_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CalledKw)
+    }
+}
+impl NullHint {
+    pub fn on_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnKw)
+    }
+}
+impl NullHint {
+    pub fn null_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NullKw)
+    }
+}
+impl NullHint {
+    pub fn input_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InputKw)
+    }
+}
+impl NullHint {
+    pub fn returns_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ReturnsKw)
+    }
+}
+impl NullHint {
+    pub fn strict_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::StrictKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1371,6 +1991,16 @@ impl Node for OnDeleteAction {
         &self.0
     }
 }
+impl OnDeleteAction {
+    pub fn on_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnKw)
+    }
+}
+impl OnDeleteAction {
+    pub fn delete_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DeleteKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct OnUpdateAction(pub(crate) SyntaxNode);
 impl Node for OnUpdateAction {
@@ -1382,6 +2012,16 @@ impl Node for OnUpdateAction {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl OnUpdateAction {
+    pub fn on_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnKw)
+    }
+}
+impl OnUpdateAction {
+    pub fn update_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UpdateKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1410,6 +2050,21 @@ impl Node for OptimizerHint {
         &self.0
     }
 }
+impl OptimizerHint {
+    pub fn volatile_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::VolatileKw)
+    }
+}
+impl OptimizerHint {
+    pub fn immutable_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ImmutableKw)
+    }
+}
+impl OptimizerHint {
+    pub fn stable_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::StableKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct OrderByClause(pub(crate) SyntaxNode);
 impl Node for OrderByClause {
@@ -1421,6 +2076,16 @@ impl Node for OrderByClause {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl OrderByClause {
+    pub fn order_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OrderKw)
+    }
+}
+impl OrderByClause {
+    pub fn by_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ByKw)
     }
 }
 impl OrderByClause {
@@ -1464,6 +2129,16 @@ impl OrderedExpression {
         self.child()
     }
 }
+impl OrderedExpression {
+    pub fn asc_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AscKw)
+    }
+}
+impl OrderedExpression {
+    pub fn desc_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DescKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ParallelHint(pub(crate) SyntaxNode);
 impl Node for ParallelHint {
@@ -1475,6 +2150,26 @@ impl Node for ParallelHint {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl ParallelHint {
+    pub fn parallel_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ParallelKw)
+    }
+}
+impl ParallelHint {
+    pub fn safe_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SafeKw)
+    }
+}
+impl ParallelHint {
+    pub fn unsafe_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UnsafeKw)
+    }
+}
+impl ParallelHint {
+    pub fn restricted_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::RestrictedKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1562,6 +2257,16 @@ impl Node for PrimaryKeyConstraint {
         &self.0
     }
 }
+impl PrimaryKeyConstraint {
+    pub fn primary_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::PrimaryKw)
+    }
+}
+impl PrimaryKeyConstraint {
+    pub fn key_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::KeyKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ReferencesConstraint(pub(crate) SyntaxNode);
 impl Node for ReferencesConstraint {
@@ -1573,6 +2278,11 @@ impl Node for ReferencesConstraint {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl ReferencesConstraint {
+    pub fn references_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ReferencesKw)
     }
 }
 impl ReferencesConstraint {
@@ -1601,6 +2311,11 @@ impl Node for SelectClause {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl SelectClause {
+    pub fn select_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SelectKw)
     }
 }
 impl SelectClause {
@@ -1696,13 +2411,83 @@ impl Node for Sequence {
     }
 }
 impl Sequence {
+    pub fn sequence_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SequenceKw)
+    }
+}
+impl Sequence {
+    pub fn if_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IfKw)
+    }
+}
+impl Sequence {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl Sequence {
+    pub fn exists_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExistsKw)
+    }
+}
+impl Sequence {
+    pub fn as_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AsKw)
+    }
+}
+impl Sequence {
     pub fn r#type(&self) -> Option<Type> {
         self.child()
     }
 }
 impl Sequence {
+    pub fn start_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::StartKw)
+    }
+}
+impl Sequence {
+    pub fn with_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WithKw)
+    }
+}
+impl Sequence {
     pub fn r#number(&self) -> Option<Number> {
         self.child()
+    }
+}
+impl Sequence {
+    pub fn increment_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IncrementKw)
+    }
+}
+impl Sequence {
+    pub fn by_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ByKw)
+    }
+}
+impl Sequence {
+    pub fn no_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NoKw)
+    }
+}
+impl Sequence {
+    pub fn minvalue_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::MinvalueKw)
+    }
+}
+impl Sequence {
+    pub fn maxvalue_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::MaxvalueKw)
+    }
+}
+impl Sequence {
+    pub fn cache_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CacheKw)
+    }
+}
+impl Sequence {
+    pub fn owned_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OwnedKw)
     }
 }
 impl Sequence {
@@ -1721,6 +2506,11 @@ impl Node for SetClause {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl SetClause {
+    pub fn set_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SetKw)
     }
 }
 impl SetClause {
@@ -1760,13 +2550,38 @@ impl Node for SetStatement {
     }
 }
 impl SetStatement {
+    pub fn set_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SetKw)
+    }
+}
+impl SetStatement {
+    pub fn session_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SessionKw)
+    }
+}
+impl SetStatement {
+    pub fn local_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::LocalKw)
+    }
+}
+impl SetStatement {
     pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
 impl SetStatement {
+    pub fn to_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ToKw)
+    }
+}
+impl SetStatement {
     pub fn r#expression(&self) -> Option<Expression> {
         self.child()
+    }
+}
+impl SetStatement {
+    pub fn default_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DefaultKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1780,6 +2595,11 @@ impl Node for Setof {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl Setof {
+    pub fn setof_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SetofKw)
     }
 }
 impl Setof {
@@ -2090,6 +2910,11 @@ impl Node for TableConstraintCheck {
     }
 }
 impl TableConstraintCheck {
+    pub fn check_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CheckKw)
+    }
+}
+impl TableConstraintCheck {
     pub fn r#expression(&self) -> Option<Expression> {
         self.child()
     }
@@ -2108,6 +2933,16 @@ impl Node for TableConstraintExclude {
     }
 }
 impl TableConstraintExclude {
+    pub fn exclude_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExcludeKw)
+    }
+}
+impl TableConstraintExclude {
+    pub fn using_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UsingKw)
+    }
+}
+impl TableConstraintExclude {
     pub fn exclude_entrys(&self) -> impl Iterator<Item = ExcludeEntry> {
         self.children()
     }
@@ -2123,6 +2958,16 @@ impl Node for TableConstraintForeignKey {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl TableConstraintForeignKey {
+    pub fn foreign_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ForeignKw)
+    }
+}
+impl TableConstraintForeignKey {
+    pub fn key_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::KeyKw)
     }
 }
 impl TableConstraintForeignKey {
@@ -2148,6 +2993,16 @@ impl Node for TableConstraintPrimaryKey {
         &self.0
     }
 }
+impl TableConstraintPrimaryKey {
+    pub fn primary_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::PrimaryKw)
+    }
+}
+impl TableConstraintPrimaryKey {
+    pub fn key_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::KeyKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TableConstraintUnique(pub(crate) SyntaxNode);
 impl Node for TableConstraintUnique {
@@ -2159,6 +3014,11 @@ impl Node for TableConstraintUnique {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl TableConstraintUnique {
+    pub fn unique_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UniqueKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -2190,6 +3050,26 @@ impl Node for TimeZoneConstraint {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl TimeZoneConstraint {
+    pub fn with_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WithKw)
+    }
+}
+impl TimeZoneConstraint {
+    pub fn without_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WithoutKw)
+    }
+}
+impl TimeZoneConstraint {
+    pub fn time_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TimeKw)
+    }
+}
+impl TimeZoneConstraint {
+    pub fn zone_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ZoneKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -2274,6 +3154,11 @@ impl Node for UniqueConstraint {
         &self.0
     }
 }
+impl UniqueConstraint {
+    pub fn unique_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UniqueKw)
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct UpdateStatement(pub(crate) SyntaxNode);
 impl Node for UpdateStatement {
@@ -2285,6 +3170,11 @@ impl Node for UpdateStatement {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl UpdateStatement {
+    pub fn update_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UpdateKw)
     }
 }
 impl UpdateStatement {
@@ -2316,6 +3206,11 @@ impl Node for UsingClause {
     }
 }
 impl UsingClause {
+    pub fn using_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UsingKw)
+    }
+}
+impl UsingClause {
     pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
@@ -2331,6 +3226,11 @@ impl Node for ValuesClause {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl ValuesClause {
+    pub fn values_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ValuesKw)
     }
 }
 impl ValuesClause {
@@ -2367,6 +3267,11 @@ impl Node for WhereClause {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl WhereClause {
+    pub fn where_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WhereKw)
     }
 }
 impl WhereClause {
@@ -3081,25 +3986,39 @@ pub enum SyntaxKind {
     False,
     Null,
     True,
+    AddKw,
+    AllKw,
+    AlterKw,
     AlterStatement,
     AlterTable,
     AlterTableAction,
     AlterTableActionAdd,
     AlterTableActionAlterColumn,
+    AndKw,
     ArgumentReference,
     ArrayElementAccess,
     ArrayType,
+    AsKw,
+    AscKw,
     AssigmentExpression,
     AsteriskExpression,
     AutoIncrementConstraint,
+    AutoincrementKw,
     BinaryExpression,
     BinaryOperator,
     BooleanExpression,
+    ByKw,
+    CacheKw,
+    CalledKw,
+    CheckKw,
     CheckConstraint,
+    ColumnKw,
     ColumnDefault,
     Comment,
     ComparisonOperator,
     ConstrainedType,
+    ConstraintKw,
+    CreateKw,
     CreateDomainStatement,
     CreateExtensionStatement,
     CreateFunctionParameter,
@@ -3111,59 +4030,130 @@ pub enum SyntaxKind {
     CreateStatement,
     CreateTableStatement,
     CreateTypeStatement,
+    DatabaseKw,
+    DefaultKw,
+    DeferrableKw,
+    DeferredKw,
+    DeleteKw,
+    DescKw,
     DirectionConstraint,
+    DistinctKw,
     DistinctFrom,
+    DomainKw,
     DottedName,
+    DropKw,
     DropStatement,
+    ExcludeKw,
     ExcludeEntry,
+    ExistsKw,
     Expression,
+    ExtensionKw,
+    FalseKw,
     FieldAccess,
+    ForeignKw,
+    FromKw,
     FromClause,
+    FullKw,
+    FunctionKw,
     FunctionBody,
     FunctionCall,
+    GrantKw,
     GrantStatement,
+    GroupKw,
     GroupByClause,
     GroupByClauseBody,
     Identifier,
+    IfKw,
+    ImmediateKw,
+    ImmutableKw,
+    InKw,
     InExpression,
+    IncrementKw,
+    IndexKw,
     IndexTableParameters,
     InitialMode,
+    InitiallyKw,
+    InnerKw,
+    InoutKw,
+    InputKw,
+    InsertKw,
     InsertStatement,
+    IntervalKw,
     IntervalExpression,
+    IntoKw,
+    IsKw,
     IsExpression,
+    JoinKw,
     JoinClause,
     JoinType,
+    KeyKw,
+    LeftKw,
+    LocalKw,
+    MaxvalueKw,
+    MinvalueKw,
     Mode,
     NamedConstraint,
+    NoKw,
+    NotKw,
+    NullKw,
     NullConstraint,
     NullHint,
     Number,
+    OnKw,
     OnDeleteAction,
     OnUpdateAction,
+    OnlyKw,
     OpClass,
     OptimizerHint,
+    OptionKw,
+    OrKw,
+    OrderKw,
     OrderByClause,
     OrderByClauseBody,
     OrderedExpression,
+    OrreplaceKw,
+    OutKw,
+    OuterKw,
+    OwnedKw,
+    ParallelKw,
     ParallelHint,
     Parameter,
     Parameters,
     ParenthesizedExpression,
     PgCommand,
+    PrimaryKw,
     PrimaryKeyConstraint,
+    PrivilegesKw,
+    PublicKw,
+    ReferencesKw,
     ReferencesConstraint,
+    RestrictedKw,
+    ReturnsKw,
+    RightKw,
+    RoleKw,
+    SafeKw,
+    SchemaKw,
+    SelectKw,
     SelectClause,
     SelectClauseBody,
     SelectStatement,
     SelectSubexpression,
     Sequence,
+    SequenceKw,
+    SessionKw,
+    SetKw,
     SetClause,
     SetClauseBody,
     SetStatement,
     Setof,
+    SetofKw,
     SourceFile,
+    StableKw,
+    StartKw,
     Statement,
+    StrictKw,
     String,
+    TableKw,
     TableColumn,
     TableConstraintCheck,
     TableConstraintExclude,
@@ -3171,127 +4161,257 @@ pub enum SyntaxKind {
     TableConstraintPrimaryKey,
     TableConstraintUnique,
     TableParameters,
+    TablespaceKw,
+    TempKw,
+    TemporaryKw,
+    TimeKw,
     TimeZoneConstraint,
+    ToKw,
+    TriggerKw,
+    TrueKw,
+    TruncateKw,
     Tuple,
     Type,
+    TypeKw,
     TypeCast,
+    UniqueKw,
     UniqueConstraint,
+    UnsafeKw,
+    UpdateKw,
     UpdateStatement,
+    UsageKw,
+    UsingKw,
     UsingClause,
+    ValuesKw,
     ValuesClause,
     ValuesClauseBody,
+    VariadicKw,
+    ViewKw,
+    VolatileKw,
+    WhereKw,
     WhereClause,
+    WithKw,
+    WithoutKw,
+    ZoneKw,
     Token,
     Err,
 }
-impl From<&'static str> for SyntaxKind {
-    fn from(s: &'static str) -> Self {
+impl TryFrom<&'static str> for SyntaxKind {
+    type Error = ();
+    fn try_from(s: &'static str) -> Result<Self, Self::Error> {
         match s {
-            "FALSE" => Self::False,
-            "NULL" => Self::Null,
-            "TRUE" => Self::True,
-            "alter_statement" => Self::AlterStatement,
-            "alter_table" => Self::AlterTable,
-            "alter_table_action" => Self::AlterTableAction,
-            "alter_table_action_add" => Self::AlterTableActionAdd,
-            "alter_table_action_alter_column" => Self::AlterTableActionAlterColumn,
-            "argument_reference" => Self::ArgumentReference,
-            "array_element_access" => Self::ArrayElementAccess,
-            "array_type" => Self::ArrayType,
-            "assigment_expression" => Self::AssigmentExpression,
-            "asterisk_expression" => Self::AsteriskExpression,
-            "auto_increment_constraint" => Self::AutoIncrementConstraint,
-            "binary_expression" => Self::BinaryExpression,
-            "binary_operator" => Self::BinaryOperator,
-            "boolean_expression" => Self::BooleanExpression,
-            "check_constraint" => Self::CheckConstraint,
-            "column_default" => Self::ColumnDefault,
-            "comment" => Self::Comment,
-            "comparison_operator" => Self::ComparisonOperator,
-            "constrained_type" => Self::ConstrainedType,
-            "create_domain_statement" => Self::CreateDomainStatement,
-            "create_extension_statement" => Self::CreateExtensionStatement,
-            "create_function_parameter" => Self::CreateFunctionParameter,
-            "create_function_parameters" => Self::CreateFunctionParameters,
-            "create_function_statement" => Self::CreateFunctionStatement,
-            "create_index_statement" => Self::CreateIndexStatement,
-            "create_role_statement" => Self::CreateRoleStatement,
-            "create_schema_statement" => Self::CreateSchemaStatement,
-            "create_statement" => Self::CreateStatement,
-            "create_table_statement" => Self::CreateTableStatement,
-            "create_type_statement" => Self::CreateTypeStatement,
-            "direction_constraint" => Self::DirectionConstraint,
-            "distinct_from" => Self::DistinctFrom,
-            "dotted_name" => Self::DottedName,
-            "drop_statement" => Self::DropStatement,
-            "exclude_entry" => Self::ExcludeEntry,
-            "expression" => Self::Expression,
-            "field_access" => Self::FieldAccess,
-            "from_clause" => Self::FromClause,
-            "function_body" => Self::FunctionBody,
-            "function_call" => Self::FunctionCall,
-            "grant_statement" => Self::GrantStatement,
-            "group_by_clause" => Self::GroupByClause,
-            "group_by_clause_body" => Self::GroupByClauseBody,
-            "identifier" => Self::Identifier,
-            "in_expression" => Self::InExpression,
-            "index_table_parameters" => Self::IndexTableParameters,
-            "initial_mode" => Self::InitialMode,
-            "insert_statement" => Self::InsertStatement,
-            "interval_expression" => Self::IntervalExpression,
-            "is_expression" => Self::IsExpression,
-            "join_clause" => Self::JoinClause,
-            "join_type" => Self::JoinType,
-            "mode" => Self::Mode,
-            "named_constraint" => Self::NamedConstraint,
-            "null_constraint" => Self::NullConstraint,
-            "null_hint" => Self::NullHint,
-            "number" => Self::Number,
-            "on_delete_action" => Self::OnDeleteAction,
-            "on_update_action" => Self::OnUpdateAction,
-            "op_class" => Self::OpClass,
-            "optimizer_hint" => Self::OptimizerHint,
-            "order_by_clause" => Self::OrderByClause,
-            "order_by_clause_body" => Self::OrderByClauseBody,
-            "ordered_expression" => Self::OrderedExpression,
-            "parallel_hint" => Self::ParallelHint,
-            "parameter" => Self::Parameter,
-            "parameters" => Self::Parameters,
-            "parenthesized_expression" => Self::ParenthesizedExpression,
-            "pg_command" => Self::PgCommand,
-            "primary_key_constraint" => Self::PrimaryKeyConstraint,
-            "references_constraint" => Self::ReferencesConstraint,
-            "select_clause" => Self::SelectClause,
-            "select_clause_body" => Self::SelectClauseBody,
-            "select_statement" => Self::SelectStatement,
-            "select_subexpression" => Self::SelectSubexpression,
-            "sequence" => Self::Sequence,
-            "set_clause" => Self::SetClause,
-            "set_clause_body" => Self::SetClauseBody,
-            "set_statement" => Self::SetStatement,
-            "setof" => Self::Setof,
-            "source_file" => Self::SourceFile,
-            "statement" => Self::Statement,
-            "string" => Self::String,
-            "table_column" => Self::TableColumn,
-            "table_constraint_check" => Self::TableConstraintCheck,
-            "table_constraint_exclude" => Self::TableConstraintExclude,
-            "table_constraint_foreign_key" => Self::TableConstraintForeignKey,
-            "table_constraint_primary_key" => Self::TableConstraintPrimaryKey,
-            "table_constraint_unique" => Self::TableConstraintUnique,
-            "table_parameters" => Self::TableParameters,
-            "time_zone_constraint" => Self::TimeZoneConstraint,
-            "tuple" => Self::Tuple,
-            "type" => Self::Type,
-            "type_cast" => Self::TypeCast,
-            "unique_constraint" => Self::UniqueConstraint,
-            "update_statement" => Self::UpdateStatement,
-            "using_clause" => Self::UsingClause,
-            "values_clause" => Self::ValuesClause,
-            "values_clause_body" => Self::ValuesClauseBody,
-            "where_clause" => Self::WhereClause,
-            "ERROR" => Self::Err,
-            s => unreachable!("unexpected SyntaxKind `{}`", s),
+            "false" => Ok(Self::False),
+            "null" => Ok(Self::Null),
+            "true" => Ok(Self::True),
+            "ADD" => Ok(Self::AddKw),
+            "ALL" => Ok(Self::AllKw),
+            "ALTER" => Ok(Self::AlterKw),
+            "alter_statement" => Ok(Self::AlterStatement),
+            "alter_table" => Ok(Self::AlterTable),
+            "alter_table_action" => Ok(Self::AlterTableAction),
+            "alter_table_action_add" => Ok(Self::AlterTableActionAdd),
+            "alter_table_action_alter_column" => Ok(Self::AlterTableActionAlterColumn),
+            "AND" => Ok(Self::AndKw),
+            "argument_reference" => Ok(Self::ArgumentReference),
+            "array_element_access" => Ok(Self::ArrayElementAccess),
+            "array_type" => Ok(Self::ArrayType),
+            "AS" => Ok(Self::AsKw),
+            "ASC" => Ok(Self::AscKw),
+            "assigment_expression" => Ok(Self::AssigmentExpression),
+            "asterisk_expression" => Ok(Self::AsteriskExpression),
+            "auto_increment_constraint" => Ok(Self::AutoIncrementConstraint),
+            "AUTOINCREMENT" => Ok(Self::AutoincrementKw),
+            "binary_expression" => Ok(Self::BinaryExpression),
+            "binary_operator" => Ok(Self::BinaryOperator),
+            "boolean_expression" => Ok(Self::BooleanExpression),
+            "BY" => Ok(Self::ByKw),
+            "CACHE" => Ok(Self::CacheKw),
+            "CALLED" => Ok(Self::CalledKw),
+            "CHECK" => Ok(Self::CheckKw),
+            "check_constraint" => Ok(Self::CheckConstraint),
+            "COLUMN" => Ok(Self::ColumnKw),
+            "column_default" => Ok(Self::ColumnDefault),
+            "comment" => Ok(Self::Comment),
+            "comparison_operator" => Ok(Self::ComparisonOperator),
+            "constrained_type" => Ok(Self::ConstrainedType),
+            "CONSTRAINT" => Ok(Self::ConstraintKw),
+            "CREATE" => Ok(Self::CreateKw),
+            "create_domain_statement" => Ok(Self::CreateDomainStatement),
+            "create_extension_statement" => Ok(Self::CreateExtensionStatement),
+            "create_function_parameter" => Ok(Self::CreateFunctionParameter),
+            "create_function_parameters" => Ok(Self::CreateFunctionParameters),
+            "create_function_statement" => Ok(Self::CreateFunctionStatement),
+            "create_index_statement" => Ok(Self::CreateIndexStatement),
+            "create_role_statement" => Ok(Self::CreateRoleStatement),
+            "create_schema_statement" => Ok(Self::CreateSchemaStatement),
+            "create_statement" => Ok(Self::CreateStatement),
+            "create_table_statement" => Ok(Self::CreateTableStatement),
+            "create_type_statement" => Ok(Self::CreateTypeStatement),
+            "DATABASE" => Ok(Self::DatabaseKw),
+            "DEFAULT" => Ok(Self::DefaultKw),
+            "DEFERRABLE" => Ok(Self::DeferrableKw),
+            "DEFERRED" => Ok(Self::DeferredKw),
+            "DELETE" => Ok(Self::DeleteKw),
+            "DESC" => Ok(Self::DescKw),
+            "direction_constraint" => Ok(Self::DirectionConstraint),
+            "DISTINCT" => Ok(Self::DistinctKw),
+            "distinct_from" => Ok(Self::DistinctFrom),
+            "DOMAIN" => Ok(Self::DomainKw),
+            "dotted_name" => Ok(Self::DottedName),
+            "DROP" => Ok(Self::DropKw),
+            "drop_statement" => Ok(Self::DropStatement),
+            "EXCLUDE" => Ok(Self::ExcludeKw),
+            "exclude_entry" => Ok(Self::ExcludeEntry),
+            "EXISTS" => Ok(Self::ExistsKw),
+            "expression" => Ok(Self::Expression),
+            "EXTENSION" => Ok(Self::ExtensionKw),
+            "FALSE" => Ok(Self::FalseKw),
+            "field_access" => Ok(Self::FieldAccess),
+            "FOREIGN" => Ok(Self::ForeignKw),
+            "FROM" => Ok(Self::FromKw),
+            "from_clause" => Ok(Self::FromClause),
+            "FULL" => Ok(Self::FullKw),
+            "FUNCTION" => Ok(Self::FunctionKw),
+            "function_body" => Ok(Self::FunctionBody),
+            "function_call" => Ok(Self::FunctionCall),
+            "GRANT" => Ok(Self::GrantKw),
+            "grant_statement" => Ok(Self::GrantStatement),
+            "GROUP" => Ok(Self::GroupKw),
+            "group_by_clause" => Ok(Self::GroupByClause),
+            "group_by_clause_body" => Ok(Self::GroupByClauseBody),
+            "identifier" => Ok(Self::Identifier),
+            "IF" => Ok(Self::IfKw),
+            "IMMEDIATE" => Ok(Self::ImmediateKw),
+            "IMMUTABLE" => Ok(Self::ImmutableKw),
+            "IN" => Ok(Self::InKw),
+            "in_expression" => Ok(Self::InExpression),
+            "INCREMENT" => Ok(Self::IncrementKw),
+            "INDEX" => Ok(Self::IndexKw),
+            "index_table_parameters" => Ok(Self::IndexTableParameters),
+            "initial_mode" => Ok(Self::InitialMode),
+            "INITIALLY" => Ok(Self::InitiallyKw),
+            "INNER" => Ok(Self::InnerKw),
+            "INOUT" => Ok(Self::InoutKw),
+            "INPUT" => Ok(Self::InputKw),
+            "INSERT" => Ok(Self::InsertKw),
+            "insert_statement" => Ok(Self::InsertStatement),
+            "INTERVAL" => Ok(Self::IntervalKw),
+            "interval_expression" => Ok(Self::IntervalExpression),
+            "INTO" => Ok(Self::IntoKw),
+            "IS" => Ok(Self::IsKw),
+            "is_expression" => Ok(Self::IsExpression),
+            "JOIN" => Ok(Self::JoinKw),
+            "join_clause" => Ok(Self::JoinClause),
+            "join_type" => Ok(Self::JoinType),
+            "KEY" => Ok(Self::KeyKw),
+            "LEFT" => Ok(Self::LeftKw),
+            "LOCAL" => Ok(Self::LocalKw),
+            "MAXVALUE" => Ok(Self::MaxvalueKw),
+            "MINVALUE" => Ok(Self::MinvalueKw),
+            "mode" => Ok(Self::Mode),
+            "named_constraint" => Ok(Self::NamedConstraint),
+            "NO" => Ok(Self::NoKw),
+            "NOT" => Ok(Self::NotKw),
+            "NULL" => Ok(Self::NullKw),
+            "null_constraint" => Ok(Self::NullConstraint),
+            "null_hint" => Ok(Self::NullHint),
+            "number" => Ok(Self::Number),
+            "ON" => Ok(Self::OnKw),
+            "on_delete_action" => Ok(Self::OnDeleteAction),
+            "on_update_action" => Ok(Self::OnUpdateAction),
+            "ONLY" => Ok(Self::OnlyKw),
+            "op_class" => Ok(Self::OpClass),
+            "optimizer_hint" => Ok(Self::OptimizerHint),
+            "OPTION" => Ok(Self::OptionKw),
+            "OR" => Ok(Self::OrKw),
+            "ORDER" => Ok(Self::OrderKw),
+            "order_by_clause" => Ok(Self::OrderByClause),
+            "order_by_clause_body" => Ok(Self::OrderByClauseBody),
+            "ordered_expression" => Ok(Self::OrderedExpression),
+            "ORREPLACE" => Ok(Self::OrreplaceKw),
+            "OUT" => Ok(Self::OutKw),
+            "OUTER" => Ok(Self::OuterKw),
+            "OWNED" => Ok(Self::OwnedKw),
+            "PARALLEL" => Ok(Self::ParallelKw),
+            "parallel_hint" => Ok(Self::ParallelHint),
+            "parameter" => Ok(Self::Parameter),
+            "parameters" => Ok(Self::Parameters),
+            "parenthesized_expression" => Ok(Self::ParenthesizedExpression),
+            "pg_command" => Ok(Self::PgCommand),
+            "PRIMARY" => Ok(Self::PrimaryKw),
+            "primary_key_constraint" => Ok(Self::PrimaryKeyConstraint),
+            "PRIVILEGES" => Ok(Self::PrivilegesKw),
+            "PUBLIC" => Ok(Self::PublicKw),
+            "REFERENCES" => Ok(Self::ReferencesKw),
+            "references_constraint" => Ok(Self::ReferencesConstraint),
+            "RESTRICTED" => Ok(Self::RestrictedKw),
+            "RETURNS" => Ok(Self::ReturnsKw),
+            "RIGHT" => Ok(Self::RightKw),
+            "ROLE" => Ok(Self::RoleKw),
+            "SAFE" => Ok(Self::SafeKw),
+            "SCHEMA" => Ok(Self::SchemaKw),
+            "SELECT" => Ok(Self::SelectKw),
+            "select_clause" => Ok(Self::SelectClause),
+            "select_clause_body" => Ok(Self::SelectClauseBody),
+            "select_statement" => Ok(Self::SelectStatement),
+            "select_subexpression" => Ok(Self::SelectSubexpression),
+            "sequence" => Ok(Self::Sequence),
+            "SEQUENCE" => Ok(Self::SequenceKw),
+            "SESSION" => Ok(Self::SessionKw),
+            "SET" => Ok(Self::SetKw),
+            "set_clause" => Ok(Self::SetClause),
+            "set_clause_body" => Ok(Self::SetClauseBody),
+            "set_statement" => Ok(Self::SetStatement),
+            "setof" => Ok(Self::Setof),
+            "SETOF" => Ok(Self::SetofKw),
+            "source_file" => Ok(Self::SourceFile),
+            "STABLE" => Ok(Self::StableKw),
+            "START" => Ok(Self::StartKw),
+            "statement" => Ok(Self::Statement),
+            "STRICT" => Ok(Self::StrictKw),
+            "string" => Ok(Self::String),
+            "TABLE" => Ok(Self::TableKw),
+            "table_column" => Ok(Self::TableColumn),
+            "table_constraint_check" => Ok(Self::TableConstraintCheck),
+            "table_constraint_exclude" => Ok(Self::TableConstraintExclude),
+            "table_constraint_foreign_key" => Ok(Self::TableConstraintForeignKey),
+            "table_constraint_primary_key" => Ok(Self::TableConstraintPrimaryKey),
+            "table_constraint_unique" => Ok(Self::TableConstraintUnique),
+            "table_parameters" => Ok(Self::TableParameters),
+            "TABLESPACE" => Ok(Self::TablespaceKw),
+            "TEMP" => Ok(Self::TempKw),
+            "TEMPORARY" => Ok(Self::TemporaryKw),
+            "TIME" => Ok(Self::TimeKw),
+            "time_zone_constraint" => Ok(Self::TimeZoneConstraint),
+            "TO" => Ok(Self::ToKw),
+            "TRIGGER" => Ok(Self::TriggerKw),
+            "TRUE" => Ok(Self::TrueKw),
+            "TRUNCATE" => Ok(Self::TruncateKw),
+            "tuple" => Ok(Self::Tuple),
+            "type" => Ok(Self::Type),
+            "TYPE" => Ok(Self::TypeKw),
+            "type_cast" => Ok(Self::TypeCast),
+            "UNIQUE" => Ok(Self::UniqueKw),
+            "unique_constraint" => Ok(Self::UniqueConstraint),
+            "UNSAFE" => Ok(Self::UnsafeKw),
+            "UPDATE" => Ok(Self::UpdateKw),
+            "update_statement" => Ok(Self::UpdateStatement),
+            "USAGE" => Ok(Self::UsageKw),
+            "USING" => Ok(Self::UsingKw),
+            "using_clause" => Ok(Self::UsingClause),
+            "VALUES" => Ok(Self::ValuesKw),
+            "values_clause" => Ok(Self::ValuesClause),
+            "values_clause_body" => Ok(Self::ValuesClauseBody),
+            "VARIADIC" => Ok(Self::VariadicKw),
+            "VIEW" => Ok(Self::ViewKw),
+            "VOLATILE" => Ok(Self::VolatileKw),
+            "WHERE" => Ok(Self::WhereKw),
+            "where_clause" => Ok(Self::WhereClause),
+            "WITH" => Ok(Self::WithKw),
+            "WITHOUT" => Ok(Self::WithoutKw),
+            "ZONE" => Ok(Self::ZoneKw),
+            "ERROR" => Ok(Self::Err),
+            _ => Err(()),
         }
     }
 }

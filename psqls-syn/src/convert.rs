@@ -32,7 +32,7 @@ impl Builder {
     }
 
     fn visit_node(&mut self, node: Node) {
-        let kind = Sql::kind_to_raw(SyntaxKind::from(node.kind()));
+        let kind = Sql::kind_to_raw(SyntaxKind::try_from(node.kind()).unwrap());
         self.builder.start_node(kind);
         for child in node.children(&mut node.walk()) {
             if child.is_named() {
@@ -42,8 +42,9 @@ impl Builder {
             } else if child.is_error() {
                 todo!()
             } else {
+                let kind = SyntaxKind::try_from(child.kind()).unwrap_or(SyntaxKind::Token);
                 self.builder.token(
-                    Sql::kind_to_raw(SyntaxKind::Token),
+                    Sql::kind_to_raw(kind),
                     child.utf8_text(self.text.as_bytes()).unwrap(),
                 );
             }

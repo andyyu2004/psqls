@@ -183,7 +183,7 @@ module.exports = grammar({
     drop_statement: $ =>
       seq(
         kw("DROP"),
-        choice("TABLE", "VIEW", "TABLESPACE", "EXTENSION", "INDEX"),
+        choice(kw("TABLE"), kw("VIEW"), kw("TABLESPACE"), kw("EXTENSION"), kw("INDEX")),
         optional(kw("IF EXISTS")),
         $._identifier,
       ),
@@ -274,7 +274,7 @@ module.exports = grammar({
     direction_constraint: _ => choice(kw("ASC"), kw("DESC")),
     time_zone_constraint: _ =>
       seq(choice(kw("WITH"), kw("WITHOUT")), kw("TIME ZONE")),
-    named_constraint: $ => seq("CONSTRAINT", $.identifier),
+    named_constraint: $ => seq(kw("CONSTRAINT"), $.identifier),
     _column_default_expression: $ =>
       choice(
         $.parenthesized_expression,

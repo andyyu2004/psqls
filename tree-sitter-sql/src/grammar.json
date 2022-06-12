@@ -1372,23 +1372,48 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
+              "type": "ALIAS",
+              "content": {
+                "type": "PATTERN",
+                "value": "[tT][aA][bB][lL][eE]"
+              },
+              "named": false,
               "value": "TABLE"
             },
             {
-              "type": "STRING",
+              "type": "ALIAS",
+              "content": {
+                "type": "PATTERN",
+                "value": "[vV][iI][eE][wW]"
+              },
+              "named": false,
               "value": "VIEW"
             },
             {
-              "type": "STRING",
+              "type": "ALIAS",
+              "content": {
+                "type": "PATTERN",
+                "value": "[tT][aA][bB][lL][eE][sS][pP][aA][cC][eE]"
+              },
+              "named": false,
               "value": "TABLESPACE"
             },
             {
-              "type": "STRING",
+              "type": "ALIAS",
+              "content": {
+                "type": "PATTERN",
+                "value": "[eE][xX][tT][eE][nN][sS][iI][oO][nN]"
+              },
+              "named": false,
               "value": "EXTENSION"
             },
             {
-              "type": "STRING",
+              "type": "ALIAS",
+              "content": {
+                "type": "PATTERN",
+                "value": "[iI][nN][dD][eE][xX]"
+              },
+              "named": false,
               "value": "INDEX"
             }
           ]
@@ -2137,7 +2162,12 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
+          "type": "ALIAS",
+          "content": {
+            "type": "PATTERN",
+            "value": "[cC][oO][nN][sS][tT][rR][aA][iI][nN][tT]"
+          },
+          "named": false,
           "value": "CONSTRAINT"
         },
         {

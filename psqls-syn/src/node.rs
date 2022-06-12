@@ -4,6 +4,7 @@ use crate::generated::SyntaxKind;
 pub enum Sql {}
 
 pub type SyntaxNode = rowan::SyntaxNode<Sql>;
+pub type SyntaxToken = rowan::SyntaxToken<Sql>;
 pub type GreenNode = rowan::GreenNode;
 pub type SyntaxNodeChildren = rowan::SyntaxNodeChildren<Sql>;
 
@@ -20,6 +21,12 @@ pub trait Node {
     }
     fn child<C: Node>(&self) -> Option<C> {
         self.syntax().children().find_map(C::cast)
+    }
+    fn token(&self, kind: SyntaxKind) -> Option<SyntaxToken> {
+        self.syntax()
+            .children_with_tokens()
+            .filter_map(|it| it.into_token())
+            .find(|it| it.kind() == kind)
     }
 }
 
