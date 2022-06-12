@@ -68,7 +68,7 @@ impl From<copy::Rule> for Rule {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Cardinality {
     One,
     Many,
@@ -114,11 +114,21 @@ impl Gen {
             let param = format_ident!("r#{}", snake);
             let f = format_ident!("visit_{}", snake);
 
-            let stmts = fields.iter().map(|(field, cardinality)| {
+            let stmts = fields.iter().map(|(field, &cardinality)| {
                 let snake = format_ident!("{}", field.to_case(Case::Snake));
                 let raw_field = format_ident!("r#{snake}");
                 let fields = format_ident!("{snake}s");
                 let visit = format_ident!("visit_{}", snake);
+
+                if field.ends_with("Kw") {
+                    assert_eq!(cardinality, Cardinality::One);
+                    return quote! {
+                        if let Some(kw) = #param.#snake() {
+                            self.visit_kw(kw);
+                        }
+                    };
+                }
+
                 if !self
                     .method_sets
                     .contains_key(&format_ident!("{}", field.to_case(Case::Pascal)))
@@ -152,6 +162,8 @@ impl Gen {
 
         let stream = quote! {
             pub trait Visitor {
+                fn visit_kw(&mut self, kw: SyntaxToken) {}
+
                 #(#visit_methods)*
             }
         };
@@ -450,6 +462,7 @@ fn test_generate_nodes() {
     let out = generate_grammar(TEST_GRAMMAR);
     expect![[r#"
         //! generated, do not edit
+        #![allow(unused)]
         use crate::node::*;
         impl rowan::Language for Sql {
             type Kind = SyntaxKind;
@@ -689,6 +702,7 @@ fn test_generate_nodes() {
             }
         }
         pub trait Visitor {
+            fn visit_kw(&mut self, kw: SyntaxToken) {}
             fn visit_array(&mut self, r#array: Array) {
                 for r#value in r#array.values() {
                     self.visit_value(r#value);

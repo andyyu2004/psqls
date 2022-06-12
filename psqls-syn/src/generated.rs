@@ -3281,7 +3281,11 @@ impl WhereClause {
     }
 }
 pub trait Visitor {
+    fn visit_kw(&mut self, kw: SyntaxToken) {}
     fn visit_alter_statement(&mut self, r#alter_statement: AlterStatement) {
+        if let Some(kw) = r#alter_statement.alter_kw() {
+            self.visit_kw(kw);
+        }
         for r#alter_table in r#alter_statement.r#alter_table() {
             self.visit_alter_table(r#alter_table);
         }
@@ -3290,6 +3294,18 @@ pub trait Visitor {
         }
     }
     fn visit_alter_table(&mut self, r#alter_table: AlterTable) {
+        if let Some(kw) = r#alter_table.exists_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#alter_table.if_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#alter_table.only_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#alter_table.table_kw() {
+            self.visit_kw(kw);
+        }
         for r#alter_table_action in r#alter_table.r#alter_table_action() {
             self.visit_alter_table_action(r#alter_table_action);
         }
@@ -3305,6 +3321,12 @@ pub trait Visitor {
         }
     }
     fn visit_alter_table_action_add(&mut self, r#alter_table_action_add: AlterTableActionAdd) {
+        if let Some(kw) = r#alter_table_action_add.add_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#alter_table_action_add.column_kw() {
+            self.visit_kw(kw);
+        }
         for r#table_column in r#alter_table_action_add.r#table_column() {
             self.visit_table_column(r#table_column);
         }
@@ -3313,6 +3335,18 @@ pub trait Visitor {
         &mut self,
         r#alter_table_action_alter_column: AlterTableActionAlterColumn,
     ) {
+        if let Some(kw) = r#alter_table_action_alter_column.alter_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#alter_table_action_alter_column.column_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#alter_table_action_alter_column.default_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#alter_table_action_alter_column.set_kw() {
+            self.visit_kw(kw);
+        }
     }
     fn visit_argument_reference(&mut self, r#argument_reference: ArgumentReference) {}
     fn visit_array_element_access(&mut self, r#array_element_access: ArrayElementAccess) {
@@ -3344,6 +3378,9 @@ pub trait Visitor {
         &mut self,
         r#auto_increment_constraint: AutoIncrementConstraint,
     ) {
+        if let Some(kw) = r#auto_increment_constraint.autoincrement_kw() {
+            self.visit_kw(kw);
+        }
     }
     fn visit_binary_expression(&mut self, r#binary_expression: BinaryExpression) {
         for r#expression in r#binary_expression.r#expression() {
@@ -3352,16 +3389,31 @@ pub trait Visitor {
     }
     fn visit_binary_operator(&mut self, r#binary_operator: BinaryOperator) {}
     fn visit_boolean_expression(&mut self, r#boolean_expression: BooleanExpression) {
+        if let Some(kw) = r#boolean_expression.and_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#boolean_expression.not_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#boolean_expression.or_kw() {
+            self.visit_kw(kw);
+        }
         for r#expression in r#boolean_expression.r#expression() {
             self.visit_expression(r#expression);
         }
     }
     fn visit_check_constraint(&mut self, r#check_constraint: CheckConstraint) {
+        if let Some(kw) = r#check_constraint.check_kw() {
+            self.visit_kw(kw);
+        }
         for r#expression in r#check_constraint.r#expression() {
             self.visit_expression(r#expression);
         }
     }
     fn visit_column_default(&mut self, r#column_default: ColumnDefault) {
+        if let Some(kw) = r#column_default.default_kw() {
+            self.visit_kw(kw);
+        }
         for r#type_cast in r#column_default.r#type_cast() {
             self.visit_type_cast(r#type_cast);
         }
@@ -3378,6 +3430,15 @@ pub trait Visitor {
         }
     }
     fn visit_create_domain_statement(&mut self, r#create_domain_statement: CreateDomainStatement) {
+        if let Some(kw) = r#create_domain_statement.as_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_domain_statement.create_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_domain_statement.domain_kw() {
+            self.visit_kw(kw);
+        }
         for r#check_constraint in r#create_domain_statement.r#check_constraint() {
             self.visit_check_constraint(r#check_constraint);
         }
@@ -3392,6 +3453,21 @@ pub trait Visitor {
         &mut self,
         r#create_extension_statement: CreateExtensionStatement,
     ) {
+        if let Some(kw) = r#create_extension_statement.create_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_extension_statement.exists_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_extension_statement.extension_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_extension_statement.if_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_extension_statement.not_kw() {
+            self.visit_kw(kw);
+        }
         for r#identifier in r#create_extension_statement.r#identifier() {
             self.visit_identifier(r#identifier);
         }
@@ -3400,6 +3476,18 @@ pub trait Visitor {
         &mut self,
         r#create_function_parameter: CreateFunctionParameter,
     ) {
+        if let Some(kw) = r#create_function_parameter.in_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_function_parameter.inout_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_function_parameter.out_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_function_parameter.variadic_kw() {
+            self.visit_kw(kw);
+        }
         for r#constrained_type in r#create_function_parameter.r#constrained_type() {
             self.visit_constrained_type(r#constrained_type);
         }
@@ -3423,6 +3511,18 @@ pub trait Visitor {
         &mut self,
         r#create_function_statement: CreateFunctionStatement,
     ) {
+        if let Some(kw) = r#create_function_statement.create_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_function_statement.function_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_function_statement.orreplace_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_function_statement.returns_kw() {
+            self.visit_kw(kw);
+        }
         for r#create_function_parameters in
             r#create_function_statement.r#create_function_parameters()
         {
@@ -3445,6 +3545,15 @@ pub trait Visitor {
         }
     }
     fn visit_create_index_statement(&mut self, r#create_index_statement: CreateIndexStatement) {
+        if let Some(kw) = r#create_index_statement.create_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_index_statement.index_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_index_statement.on_kw() {
+            self.visit_kw(kw);
+        }
         for r#identifier in r#create_index_statement.r#identifier() {
             self.visit_identifier(r#identifier);
         }
@@ -3462,26 +3571,86 @@ pub trait Visitor {
         }
     }
     fn visit_create_role_statement(&mut self, r#create_role_statement: CreateRoleStatement) {
+        if let Some(kw) = r#create_role_statement.create_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_role_statement.role_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_role_statement.with_kw() {
+            self.visit_kw(kw);
+        }
         for r#identifier in r#create_role_statement.r#identifier() {
             self.visit_identifier(r#identifier);
         }
     }
     fn visit_create_schema_statement(&mut self, r#create_schema_statement: CreateSchemaStatement) {
+        if let Some(kw) = r#create_schema_statement.create_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_schema_statement.exists_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_schema_statement.if_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_schema_statement.not_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_schema_statement.schema_kw() {
+            self.visit_kw(kw);
+        }
         for r#identifier in r#create_schema_statement.r#identifier() {
             self.visit_identifier(r#identifier);
         }
     }
     fn visit_create_statement(&mut self, r#create_statement: CreateStatement) {
+        if let Some(kw) = r#create_statement.create_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_statement.temp_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_statement.temporary_kw() {
+            self.visit_kw(kw);
+        }
         for r#sequence in r#create_statement.r#sequence() {
             self.visit_sequence(r#sequence);
         }
     }
     fn visit_create_table_statement(&mut self, r#create_table_statement: CreateTableStatement) {
+        if let Some(kw) = r#create_table_statement.create_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_table_statement.exists_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_table_statement.if_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_table_statement.not_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_table_statement.table_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_table_statement.temporary_kw() {
+            self.visit_kw(kw);
+        }
         for r#table_parameters in r#create_table_statement.r#table_parameters() {
             self.visit_table_parameters(r#table_parameters);
         }
     }
     fn visit_create_type_statement(&mut self, r#create_type_statement: CreateTypeStatement) {
+        if let Some(kw) = r#create_type_statement.as_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_type_statement.create_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_type_statement.type_kw() {
+            self.visit_kw(kw);
+        }
         for r#identifier in r#create_type_statement.r#identifier() {
             self.visit_identifier(r#identifier);
         }
@@ -3489,8 +3658,21 @@ pub trait Visitor {
             self.visit_parameters(r#parameters);
         }
     }
-    fn visit_direction_constraint(&mut self, r#direction_constraint: DirectionConstraint) {}
+    fn visit_direction_constraint(&mut self, r#direction_constraint: DirectionConstraint) {
+        if let Some(kw) = r#direction_constraint.asc_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#direction_constraint.desc_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_distinct_from(&mut self, r#distinct_from: DistinctFrom) {
+        if let Some(kw) = r#distinct_from.distinct_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#distinct_from.from_kw() {
+            self.visit_kw(kw);
+        }
         for r#expression in r#distinct_from.r#expression() {
             self.visit_expression(r#expression);
         }
@@ -3500,8 +3682,36 @@ pub trait Visitor {
             self.visit_identifier(r#identifier);
         }
     }
-    fn visit_drop_statement(&mut self, r#drop_statement: DropStatement) {}
+    fn visit_drop_statement(&mut self, r#drop_statement: DropStatement) {
+        if let Some(kw) = r#drop_statement.drop_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#drop_statement.exists_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#drop_statement.extension_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#drop_statement.if_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#drop_statement.index_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#drop_statement.table_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#drop_statement.tablespace_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#drop_statement.view_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_exclude_entry(&mut self, r#exclude_entry: ExcludeEntry) {
+        if let Some(kw) = r#exclude_entry.with_kw() {
+            self.visit_kw(kw);
+        }
         for r#binary_operator in r#exclude_entry.r#binary_operator() {
             self.visit_binary_operator(r#binary_operator);
         }
@@ -3568,7 +3778,11 @@ pub trait Visitor {
             self.visit_type_cast(r#type_cast);
         }
     }
-    fn visit_false(&mut self, r#false: False) {}
+    fn visit_false(&mut self, r#false: False) {
+        if let Some(kw) = r#false.false_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_field_access(&mut self, r#field_access: FieldAccess) {
         for r#identifier in r#field_access.r#identifier() {
             self.visit_identifier(r#identifier);
@@ -3577,8 +3791,15 @@ pub trait Visitor {
             self.visit_string(r#string);
         }
     }
-    fn visit_from_clause(&mut self, r#from_clause: FromClause) {}
+    fn visit_from_clause(&mut self, r#from_clause: FromClause) {
+        if let Some(kw) = r#from_clause.from_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_function_body(&mut self, r#function_body: FunctionBody) {
+        if let Some(kw) = r#function_body.as_kw() {
+            self.visit_kw(kw);
+        }
         for r#select_statement in r#function_body.r#select_statement() {
             self.visit_select_statement(r#select_statement);
         }
@@ -3592,11 +3813,80 @@ pub trait Visitor {
         }
     }
     fn visit_grant_statement(&mut self, r#grant_statement: GrantStatement) {
+        if let Some(kw) = r#grant_statement.all_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.database_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.delete_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.grant_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.group_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.insert_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.on_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.option_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.privileges_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.public_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.references_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.schema_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.select_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.sequence_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.table_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.to_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.trigger_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.truncate_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.update_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.usage_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#grant_statement.with_kw() {
+            self.visit_kw(kw);
+        }
         for r#identifier in r#grant_statement.r#identifier() {
             self.visit_identifier(r#identifier);
         }
     }
     fn visit_group_by_clause(&mut self, r#group_by_clause: GroupByClause) {
+        if let Some(kw) = r#group_by_clause.by_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#group_by_clause.group_kw() {
+            self.visit_kw(kw);
+        }
         for r#group_by_clause_body in r#group_by_clause.r#group_by_clause_body() {
             self.visit_group_by_clause_body(r#group_by_clause_body);
         }
@@ -3608,6 +3898,12 @@ pub trait Visitor {
     }
     fn visit_identifier(&mut self, r#identifier: Identifier) {}
     fn visit_in_expression(&mut self, r#in_expression: InExpression) {
+        if let Some(kw) = r#in_expression.in_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#in_expression.not_kw() {
+            self.visit_kw(kw);
+        }
         for r#expression in r#in_expression.r#expression() {
             self.visit_expression(r#expression);
         }
@@ -3626,13 +3922,32 @@ pub trait Visitor {
             self.visit_ordered_expression(r#ordered_expression);
         }
     }
-    fn visit_initial_mode(&mut self, r#initial_mode: InitialMode) {}
+    fn visit_initial_mode(&mut self, r#initial_mode: InitialMode) {
+        if let Some(kw) = r#initial_mode.deferred_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#initial_mode.immediate_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#initial_mode.initially_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_insert_statement(&mut self, r#insert_statement: InsertStatement) {
+        if let Some(kw) = r#insert_statement.insert_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#insert_statement.into_kw() {
+            self.visit_kw(kw);
+        }
         for r#values_clause in r#insert_statement.r#values_clause() {
             self.visit_values_clause(r#values_clause);
         }
     }
     fn visit_interval_expression(&mut self, r#interval_expression: IntervalExpression) {
+        if let Some(kw) = r#interval_expression.interval_kw() {
+            self.visit_kw(kw);
+        }
         for r#string in r#interval_expression.r#string() {
             self.visit_string(r#string);
         }
@@ -3641,8 +3956,14 @@ pub trait Visitor {
         for r#false in r#is_expression.r#false() {
             self.visit_false(r#false);
         }
+        if let Some(kw) = r#is_expression.is_kw() {
+            self.visit_kw(kw);
+        }
         for r#null in r#is_expression.r#null() {
             self.visit_null(r#null);
+        }
+        if let Some(kw) = r#is_expression.not_kw() {
+            self.visit_kw(kw);
         }
         for r#true in r#is_expression.r#true() {
             self.visit_true(r#true);
@@ -3655,6 +3976,12 @@ pub trait Visitor {
         }
     }
     fn visit_join_clause(&mut self, r#join_clause: JoinClause) {
+        if let Some(kw) = r#join_clause.join_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#join_clause.on_kw() {
+            self.visit_kw(kw);
+        }
         for r#expression in r#join_clause.r#expression() {
             self.visit_expression(r#expression);
         }
@@ -3662,26 +3989,108 @@ pub trait Visitor {
             self.visit_join_type(r#join_type);
         }
     }
-    fn visit_join_type(&mut self, r#join_type: JoinType) {}
-    fn visit_mode(&mut self, r#mode: Mode) {}
+    fn visit_join_type(&mut self, r#join_type: JoinType) {
+        if let Some(kw) = r#join_type.full_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#join_type.inner_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#join_type.left_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#join_type.outer_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#join_type.right_kw() {
+            self.visit_kw(kw);
+        }
+    }
+    fn visit_mode(&mut self, r#mode: Mode) {
+        if let Some(kw) = r#mode.deferrable_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#mode.not_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_named_constraint(&mut self, r#named_constraint: NamedConstraint) {
+        if let Some(kw) = r#named_constraint.constraint_kw() {
+            self.visit_kw(kw);
+        }
         for r#identifier in r#named_constraint.r#identifier() {
             self.visit_identifier(r#identifier);
         }
     }
-    fn visit_null(&mut self, r#null: Null) {}
+    fn visit_null(&mut self, r#null: Null) {
+        if let Some(kw) = r#null.null_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_null_constraint(&mut self, r#null_constraint: NullConstraint) {
         for r#null in r#null_constraint.r#null() {
             self.visit_null(r#null);
         }
+        if let Some(kw) = r#null_constraint.not_kw() {
+            self.visit_kw(kw);
+        }
     }
-    fn visit_null_hint(&mut self, r#null_hint: NullHint) {}
+    fn visit_null_hint(&mut self, r#null_hint: NullHint) {
+        if let Some(kw) = r#null_hint.called_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#null_hint.input_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#null_hint.null_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#null_hint.on_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#null_hint.returns_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#null_hint.strict_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_number(&mut self, r#number: Number) {}
-    fn visit_on_delete_action(&mut self, r#on_delete_action: OnDeleteAction) {}
-    fn visit_on_update_action(&mut self, r#on_update_action: OnUpdateAction) {}
+    fn visit_on_delete_action(&mut self, r#on_delete_action: OnDeleteAction) {
+        if let Some(kw) = r#on_delete_action.delete_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#on_delete_action.on_kw() {
+            self.visit_kw(kw);
+        }
+    }
+    fn visit_on_update_action(&mut self, r#on_update_action: OnUpdateAction) {
+        if let Some(kw) = r#on_update_action.on_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#on_update_action.update_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_op_class(&mut self, r#op_class: OpClass) {}
-    fn visit_optimizer_hint(&mut self, r#optimizer_hint: OptimizerHint) {}
+    fn visit_optimizer_hint(&mut self, r#optimizer_hint: OptimizerHint) {
+        if let Some(kw) = r#optimizer_hint.immutable_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#optimizer_hint.stable_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#optimizer_hint.volatile_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_order_by_clause(&mut self, r#order_by_clause: OrderByClause) {
+        if let Some(kw) = r#order_by_clause.by_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#order_by_clause.order_kw() {
+            self.visit_kw(kw);
+        }
         for r#order_by_clause_body in r#order_by_clause.r#order_by_clause_body() {
             self.visit_order_by_clause_body(r#order_by_clause_body);
         }
@@ -3692,11 +4101,30 @@ pub trait Visitor {
         }
     }
     fn visit_ordered_expression(&mut self, r#ordered_expression: OrderedExpression) {
+        if let Some(kw) = r#ordered_expression.asc_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#ordered_expression.desc_kw() {
+            self.visit_kw(kw);
+        }
         for r#expression in r#ordered_expression.r#expression() {
             self.visit_expression(r#expression);
         }
     }
-    fn visit_parallel_hint(&mut self, r#parallel_hint: ParallelHint) {}
+    fn visit_parallel_hint(&mut self, r#parallel_hint: ParallelHint) {
+        if let Some(kw) = r#parallel_hint.parallel_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#parallel_hint.restricted_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#parallel_hint.safe_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#parallel_hint.unsafe_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_parameter(&mut self, r#parameter: Parameter) {
         for r#constrained_type in r#parameter.r#constrained_type() {
             self.visit_constrained_type(r#constrained_type);
@@ -3719,8 +4147,18 @@ pub trait Visitor {
         }
     }
     fn visit_pg_command(&mut self, r#pg_command: PgCommand) {}
-    fn visit_primary_key_constraint(&mut self, r#primary_key_constraint: PrimaryKeyConstraint) {}
+    fn visit_primary_key_constraint(&mut self, r#primary_key_constraint: PrimaryKeyConstraint) {
+        if let Some(kw) = r#primary_key_constraint.key_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#primary_key_constraint.primary_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_references_constraint(&mut self, r#references_constraint: ReferencesConstraint) {
+        if let Some(kw) = r#references_constraint.references_kw() {
+            self.visit_kw(kw);
+        }
         for r#identifier in r#references_constraint.identifiers() {
             self.visit_identifier(r#identifier);
         }
@@ -3732,6 +4170,9 @@ pub trait Visitor {
         }
     }
     fn visit_select_clause(&mut self, r#select_clause: SelectClause) {
+        if let Some(kw) = r#select_clause.select_kw() {
+            self.visit_kw(kw);
+        }
         for r#select_clause_body in r#select_clause.r#select_clause_body() {
             self.visit_select_clause_body(r#select_clause_body);
         }
@@ -3763,6 +4204,48 @@ pub trait Visitor {
         }
     }
     fn visit_sequence(&mut self, r#sequence: Sequence) {
+        if let Some(kw) = r#sequence.as_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.by_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.cache_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.exists_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.if_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.increment_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.maxvalue_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.minvalue_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.no_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.not_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.owned_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.sequence_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.start_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#sequence.with_kw() {
+            self.visit_kw(kw);
+        }
         for r#dotted_name in r#sequence.r#dotted_name() {
             self.visit_dotted_name(r#dotted_name);
         }
@@ -3774,6 +4257,9 @@ pub trait Visitor {
         }
     }
     fn visit_set_clause(&mut self, r#set_clause: SetClause) {
+        if let Some(kw) = r#set_clause.set_kw() {
+            self.visit_kw(kw);
+        }
         for r#set_clause_body in r#set_clause.r#set_clause_body() {
             self.visit_set_clause_body(r#set_clause_body);
         }
@@ -3784,6 +4270,21 @@ pub trait Visitor {
         }
     }
     fn visit_set_statement(&mut self, r#set_statement: SetStatement) {
+        if let Some(kw) = r#set_statement.default_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#set_statement.local_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#set_statement.session_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#set_statement.set_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#set_statement.to_kw() {
+            self.visit_kw(kw);
+        }
         for r#expression in r#set_statement.r#expression() {
             self.visit_expression(r#expression);
         }
@@ -3792,6 +4293,9 @@ pub trait Visitor {
         }
     }
     fn visit_setof(&mut self, r#setof: Setof) {
+        if let Some(kw) = r#setof.setof_kw() {
+            self.visit_kw(kw);
+        }
         for r#constrained_type in r#setof.r#constrained_type() {
             self.visit_constrained_type(r#constrained_type);
         }
@@ -3888,6 +4392,9 @@ pub trait Visitor {
         }
     }
     fn visit_table_constraint_check(&mut self, r#table_constraint_check: TableConstraintCheck) {
+        if let Some(kw) = r#table_constraint_check.check_kw() {
+            self.visit_kw(kw);
+        }
         for r#expression in r#table_constraint_check.r#expression() {
             self.visit_expression(r#expression);
         }
@@ -3896,6 +4403,12 @@ pub trait Visitor {
         &mut self,
         r#table_constraint_exclude: TableConstraintExclude,
     ) {
+        if let Some(kw) = r#table_constraint_exclude.exclude_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#table_constraint_exclude.using_kw() {
+            self.visit_kw(kw);
+        }
         for r#exclude_entry in r#table_constraint_exclude.exclude_entrys() {
             self.visit_exclude_entry(r#exclude_entry);
         }
@@ -3904,6 +4417,12 @@ pub trait Visitor {
         &mut self,
         r#table_constraint_foreign_key: TableConstraintForeignKey,
     ) {
+        if let Some(kw) = r#table_constraint_foreign_key.foreign_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#table_constraint_foreign_key.key_kw() {
+            self.visit_kw(kw);
+        }
         for r#identifier in r#table_constraint_foreign_key.identifiers() {
             self.visit_identifier(r#identifier);
         }
@@ -3915,15 +4434,42 @@ pub trait Visitor {
         &mut self,
         r#table_constraint_primary_key: TableConstraintPrimaryKey,
     ) {
+        if let Some(kw) = r#table_constraint_primary_key.key_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#table_constraint_primary_key.primary_kw() {
+            self.visit_kw(kw);
+        }
     }
-    fn visit_table_constraint_unique(&mut self, r#table_constraint_unique: TableConstraintUnique) {}
+    fn visit_table_constraint_unique(&mut self, r#table_constraint_unique: TableConstraintUnique) {
+        if let Some(kw) = r#table_constraint_unique.unique_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_table_parameters(&mut self, r#table_parameters: TableParameters) {
         for r#table_column in r#table_parameters.r#table_column() {
             self.visit_table_column(r#table_column);
         }
     }
-    fn visit_time_zone_constraint(&mut self, r#time_zone_constraint: TimeZoneConstraint) {}
-    fn visit_true(&mut self, r#true: True) {}
+    fn visit_time_zone_constraint(&mut self, r#time_zone_constraint: TimeZoneConstraint) {
+        if let Some(kw) = r#time_zone_constraint.time_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#time_zone_constraint.with_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#time_zone_constraint.without_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#time_zone_constraint.zone_kw() {
+            self.visit_kw(kw);
+        }
+    }
+    fn visit_true(&mut self, r#true: True) {
+        if let Some(kw) = r#true.true_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_tuple(&mut self, r#tuple: Tuple) {
         for r#expression in r#tuple.expressions() {
             self.visit_expression(r#expression);
@@ -3948,8 +4494,15 @@ pub trait Visitor {
             self.visit_string(r#string);
         }
     }
-    fn visit_unique_constraint(&mut self, r#unique_constraint: UniqueConstraint) {}
+    fn visit_unique_constraint(&mut self, r#unique_constraint: UniqueConstraint) {
+        if let Some(kw) = r#unique_constraint.unique_kw() {
+            self.visit_kw(kw);
+        }
+    }
     fn visit_update_statement(&mut self, r#update_statement: UpdateStatement) {
+        if let Some(kw) = r#update_statement.update_kw() {
+            self.visit_kw(kw);
+        }
         for r#identifier in r#update_statement.r#identifier() {
             self.visit_identifier(r#identifier);
         }
@@ -3961,11 +4514,17 @@ pub trait Visitor {
         }
     }
     fn visit_using_clause(&mut self, r#using_clause: UsingClause) {
+        if let Some(kw) = r#using_clause.using_kw() {
+            self.visit_kw(kw);
+        }
         for r#identifier in r#using_clause.r#identifier() {
             self.visit_identifier(r#identifier);
         }
     }
     fn visit_values_clause(&mut self, r#values_clause: ValuesClause) {
+        if let Some(kw) = r#values_clause.values_kw() {
+            self.visit_kw(kw);
+        }
         for r#values_clause_body in r#values_clause.r#values_clause_body() {
             self.visit_values_clause_body(r#values_clause_body);
         }
@@ -3976,6 +4535,9 @@ pub trait Visitor {
         }
     }
     fn visit_where_clause(&mut self, r#where_clause: WhereClause) {
+        if let Some(kw) = r#where_clause.where_kw() {
+            self.visit_kw(kw);
+        }
         for r#expression in r#where_clause.r#expression() {
             self.visit_expression(r#expression);
         }
