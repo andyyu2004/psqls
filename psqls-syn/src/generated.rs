@@ -1,4 +1,5 @@
 //! generated, do not edit
+#![allow(unused)]
 use crate::node::*;
 impl rowan::Language for Sql {
     type Kind = SyntaxKind;

@@ -4,7 +4,6 @@ use std::process::{Command, Stdio};
 
 use convert_case::{Case, Casing};
 use expect_test::expect;
-use itertools::Itertools;
 use quote::__private::{Ident, TokenStream};
 use quote::{format_ident, quote};
 
@@ -417,6 +416,7 @@ impl Gen {
     fn gen(&mut self, grammar: InputGrammar) {
         self.push_str("//! generated, do not edit\n");
         self.push(quote! {
+            #![allow(unused)]
             use crate::node::*;
 
             impl rowan::Language for Sql {

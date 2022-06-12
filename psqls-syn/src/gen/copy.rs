@@ -1,3 +1,4 @@
+#![allow(dead_code, unused)]
 // copied required bits from tree-sitter-cli
 // this stuff is understandably private
 
