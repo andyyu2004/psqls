@@ -5,12 +5,12 @@ function kw(keyword) {
     throw new Error(`Expected upper case keyword got ${keyword}`);
   }
   const words = keyword.split(" ");
-  const regExps = words.map(createCaseInsensitiveRegex);
 
-  if (regExps.length == 1) {
-    return alias(regExps[0], keyword);
+  if (words.length == 1) {
+    const regex = createCaseInsensitiveRegex(words[0]);
+    return alias(regex, keyword);
   } else {
-    return alias(seq(...regExps), keyword.replace(/ /g, "_"));
+    return alias(seq(...words.map(kw)), keyword);
   }
 }
 
@@ -20,8 +20,8 @@ function createOrReplace(item) {
   }
   return alias(
     seq(
-      createCaseInsensitiveRegex("CREATE"),
-      field("replace", optional(createCaseInsensitiveRegex("OR REPLACE"))),
+      kw("CREATE"),
+      field("replace", optional(kw("OR REPLACE"))),
       createCaseInsensitiveRegex(item),
     ),
     `CREATE_OR_REPLACE_${item}`,

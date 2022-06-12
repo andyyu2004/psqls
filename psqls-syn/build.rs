@@ -1,10 +1,10 @@
 fn main() {
     let package = "tree-sitter-sql";
-    let source_directory = format!("../../{}/src", package);
-    let source_file = format!("{}/parser.c", source_directory);
+    let dir = format!("../{}/src", package);
+    let source_file = format!("{}/parser.c", dir);
 
     cc::Build::new()
         .file(source_file)
-        .include(source_directory)
+        .include(dir)
         .compile(package);
 }

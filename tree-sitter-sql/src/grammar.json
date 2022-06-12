@@ -228,17 +228,27 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "PATTERN",
-                    "value": "[iI][fF]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[iI][fF]"
+                    },
+                    "named": false,
+                    "value": "IF"
                   },
                   {
-                    "type": "PATTERN",
-                    "value": "[eE][xX][iI][sS][tT][sS]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[eE][xX][iI][sS][tT][sS]"
+                    },
+                    "named": false,
+                    "value": "EXISTS"
                   }
                 ]
               },
               "named": false,
-              "value": "IF_EXISTS"
+              "value": "IF EXISTS"
             },
             {
               "type": "BLANK"
@@ -281,17 +291,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[aA][lL][tT][eE][rR]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[aA][lL][tT][eE][rR]"
+                },
+                "named": false,
+                "value": "ALTER"
               },
               {
-                "type": "PATTERN",
-                "value": "[cC][oO][lL][uU][mM][nN]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[cC][oO][lL][uU][mM][nN]"
+                },
+                "named": false,
+                "value": "COLUMN"
               }
             ]
           },
           "named": false,
-          "value": "ALTER_COLUMN"
+          "value": "ALTER COLUMN"
         },
         {
           "type": "SYMBOL",
@@ -303,17 +323,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[sS][eE][tT]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[sS][eE][tT]"
+                },
+                "named": false,
+                "value": "SET"
               },
               {
-                "type": "PATTERN",
-                "value": "[dD][eE][fF][aA][uU][lL][tT]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[dD][eE][fF][aA][uU][lL][tT]"
+                },
+                "named": false,
+                "value": "DEFAULT"
               }
             ]
           },
           "named": false,
-          "value": "SET_DEFAULT"
+          "value": "SET DEFAULT"
         },
         {
           "type": "SYMBOL",
@@ -596,17 +626,27 @@
                       "type": "SEQ",
                       "members": [
                         {
-                          "type": "PATTERN",
-                          "value": "[oO][wW][nN][eE][dD]"
+                          "type": "ALIAS",
+                          "content": {
+                            "type": "PATTERN",
+                            "value": "[oO][wW][nN][eE][dD]"
+                          },
+                          "named": false,
+                          "value": "OWNED"
                         },
                         {
-                          "type": "PATTERN",
-                          "value": "[bB][yY]"
+                          "type": "ALIAS",
+                          "content": {
+                            "type": "PATTERN",
+                            "value": "[bB][yY]"
+                          },
+                          "named": false,
+                          "value": "BY"
                         }
                       ]
                     },
                     "named": false,
-                    "value": "OWNED_BY"
+                    "value": "OWNED BY"
                   },
                   {
                     "type": "CHOICE",
@@ -650,8 +690,13 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[cC][rR][eE][aA][tT][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[cC][rR][eE][aA][tT][eE]"
+                },
+                "named": false,
+                "value": "CREATE"
               },
               {
                 "type": "FIELD",
@@ -660,8 +705,32 @@
                   "type": "CHOICE",
                   "members": [
                     {
-                      "type": "PATTERN",
-                      "value": "[oO][rR][  ][rR][eE][pP][lL][aA][cC][eE]"
+                      "type": "ALIAS",
+                      "content": {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "ALIAS",
+                            "content": {
+                              "type": "PATTERN",
+                              "value": "[oO][rR]"
+                            },
+                            "named": false,
+                            "value": "OR"
+                          },
+                          {
+                            "type": "ALIAS",
+                            "content": {
+                              "type": "PATTERN",
+                              "value": "[rR][eE][pP][lL][aA][cC][eE]"
+                            },
+                            "named": false,
+                            "value": "REPLACE"
+                          }
+                        ]
+                      },
+                      "named": false,
+                      "value": "OR REPLACE"
                     },
                     {
                       "type": "BLANK"
@@ -816,25 +885,45 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[cC][aA][lL][lL][eE][dD]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[cC][aA][lL][lL][eE][dD]"
+                },
+                "named": false,
+                "value": "CALLED"
               },
               {
-                "type": "PATTERN",
-                "value": "[oO][nN]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[oO][nN]"
+                },
+                "named": false,
+                "value": "ON"
               },
               {
-                "type": "PATTERN",
-                "value": "[nN][uU][lL][lL]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[nN][uU][lL][lL]"
+                },
+                "named": false,
+                "value": "NULL"
               },
               {
-                "type": "PATTERN",
-                "value": "[iI][nN][pP][uU][tT]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[iI][nN][pP][uU][tT]"
+                },
+                "named": false,
+                "value": "INPUT"
               }
             ]
           },
           "named": false,
-          "value": "CALLED_ON_NULL_INPUT"
+          "value": "CALLED ON NULL INPUT"
         },
         {
           "type": "ALIAS",
@@ -842,29 +931,54 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[rR][eE][tT][uU][rR][nN][sS]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[rR][eE][tT][uU][rR][nN][sS]"
+                },
+                "named": false,
+                "value": "RETURNS"
               },
               {
-                "type": "PATTERN",
-                "value": "[nN][uU][lL][lL]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[nN][uU][lL][lL]"
+                },
+                "named": false,
+                "value": "NULL"
               },
               {
-                "type": "PATTERN",
-                "value": "[oO][nN]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[oO][nN]"
+                },
+                "named": false,
+                "value": "ON"
               },
               {
-                "type": "PATTERN",
-                "value": "[nN][uU][lL][lL]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[nN][uU][lL][lL]"
+                },
+                "named": false,
+                "value": "NULL"
               },
               {
-                "type": "PATTERN",
-                "value": "[iI][nN][pP][uU][tT]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[iI][nN][pP][uU][tT]"
+                },
+                "named": false,
+                "value": "INPUT"
               }
             ]
           },
           "named": false,
-          "value": "RETURNS_NULL_ON_NULL_INPUT"
+          "value": "RETURNS NULL ON NULL INPUT"
         },
         {
           "type": "ALIAS",
@@ -1195,17 +1309,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[cC][rR][eE][aA][tT][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[cC][rR][eE][aA][tT][eE]"
+                },
+                "named": false,
+                "value": "CREATE"
               },
               {
-                "type": "PATTERN",
-                "value": "[eE][xX][tT][eE][nN][sS][iI][oO][nN]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[eE][xX][tT][eE][nN][sS][iI][oO][nN]"
+                },
+                "named": false,
+                "value": "EXTENSION"
               }
             ]
           },
           "named": false,
-          "value": "CREATE_EXTENSION"
+          "value": "CREATE EXTENSION"
         },
         {
           "type": "CHOICE",
@@ -1216,21 +1340,36 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "PATTERN",
-                    "value": "[iI][fF]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[iI][fF]"
+                    },
+                    "named": false,
+                    "value": "IF"
                   },
                   {
-                    "type": "PATTERN",
-                    "value": "[nN][oO][tT]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[nN][oO][tT]"
+                    },
+                    "named": false,
+                    "value": "NOT"
                   },
                   {
-                    "type": "PATTERN",
-                    "value": "[eE][xX][iI][sS][tT][sS]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[eE][xX][iI][sS][tT][sS]"
+                    },
+                    "named": false,
+                    "value": "EXISTS"
                   }
                 ]
               },
               "named": false,
-              "value": "IF_NOT_EXISTS"
+              "value": "IF NOT EXISTS"
             },
             {
               "type": "BLANK"
@@ -1252,17 +1391,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[cC][rR][eE][aA][tT][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[cC][rR][eE][aA][tT][eE]"
+                },
+                "named": false,
+                "value": "CREATE"
               },
               {
-                "type": "PATTERN",
-                "value": "[rR][oO][lL][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[rR][oO][lL][eE]"
+                },
+                "named": false,
+                "value": "ROLE"
               }
             ]
           },
           "named": false,
-          "value": "CREATE_ROLE"
+          "value": "CREATE ROLE"
         },
         {
           "type": "SYMBOL",
@@ -1308,17 +1457,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[cC][rR][eE][aA][tT][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[cC][rR][eE][aA][tT][eE]"
+                },
+                "named": false,
+                "value": "CREATE"
               },
               {
-                "type": "PATTERN",
-                "value": "[sS][cC][hH][eE][mM][aA]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[sS][cC][hH][eE][mM][aA]"
+                },
+                "named": false,
+                "value": "SCHEMA"
               }
             ]
           },
           "named": false,
-          "value": "CREATE_SCHEMA"
+          "value": "CREATE SCHEMA"
         },
         {
           "type": "CHOICE",
@@ -1329,21 +1488,36 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "PATTERN",
-                    "value": "[iI][fF]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[iI][fF]"
+                    },
+                    "named": false,
+                    "value": "IF"
                   },
                   {
-                    "type": "PATTERN",
-                    "value": "[nN][oO][tT]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[nN][oO][tT]"
+                    },
+                    "named": false,
+                    "value": "NOT"
                   },
                   {
-                    "type": "PATTERN",
-                    "value": "[eE][xX][iI][sS][tT][sS]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[eE][xX][iI][sS][tT][sS]"
+                    },
+                    "named": false,
+                    "value": "EXISTS"
                   }
                 ]
               },
               "named": false,
-              "value": "IF_NOT_EXISTS"
+              "value": "IF NOT EXISTS"
             },
             {
               "type": "BLANK"
@@ -1427,17 +1601,27 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "PATTERN",
-                    "value": "[iI][fF]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[iI][fF]"
+                    },
+                    "named": false,
+                    "value": "IF"
                   },
                   {
-                    "type": "PATTERN",
-                    "value": "[eE][xX][iI][sS][tT][sS]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[eE][xX][iI][sS][tT][sS]"
+                    },
+                    "named": false,
+                    "value": "EXISTS"
                   }
                 ]
               },
               "named": false,
-              "value": "IF_EXISTS"
+              "value": "IF EXISTS"
             },
             {
               "type": "BLANK"
@@ -1791,21 +1975,36 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "PATTERN",
-                    "value": "[wW][iI][tT][hH]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[wW][iI][tT][hH]"
+                    },
+                    "named": false,
+                    "value": "WITH"
                   },
                   {
-                    "type": "PATTERN",
-                    "value": "[gG][rR][aA][nN][tT]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[gG][rR][aA][nN][tT]"
+                    },
+                    "named": false,
+                    "value": "GRANT"
                   },
                   {
-                    "type": "PATTERN",
-                    "value": "[oO][pP][tT][iI][oO][nN]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[oO][pP][tT][iI][oO][nN]"
+                    },
+                    "named": false,
+                    "value": "OPTION"
                   }
                 ]
               },
               "named": false,
-              "value": "WITH_GRANT_OPTION"
+              "value": "WITH GRANT OPTION"
             },
             {
               "type": "BLANK"
@@ -1823,17 +2022,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[cC][rR][eE][aA][tT][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[cC][rR][eE][aA][tT][eE]"
+                },
+                "named": false,
+                "value": "CREATE"
               },
               {
-                "type": "PATTERN",
-                "value": "[dD][oO][mM][aA][iI][nN]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[dD][oO][mM][aA][iI][nN]"
+                },
+                "named": false,
+                "value": "DOMAIN"
               }
             ]
           },
           "named": false,
-          "value": "CREATE_DOMAIN"
+          "value": "CREATE DOMAIN"
         },
         {
           "type": "SYMBOL",
@@ -1892,17 +2101,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[cC][rR][eE][aA][tT][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[cC][rR][eE][aA][tT][eE]"
+                },
+                "named": false,
+                "value": "CREATE"
               },
               {
-                "type": "PATTERN",
-                "value": "[tT][yY][pP][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[tT][yY][pP][eE]"
+                },
+                "named": false,
+                "value": "TYPE"
               }
             ]
           },
           "named": false,
-          "value": "CREATE_TYPE"
+          "value": "CREATE TYPE"
         },
         {
           "type": "SYMBOL",
@@ -2144,17 +2363,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[tT][iI][mM][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[tT][iI][mM][eE]"
+                },
+                "named": false,
+                "value": "TIME"
               },
               {
-                "type": "PATTERN",
-                "value": "[zZ][oO][nN][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[zZ][oO][nN][eE]"
+                },
+                "named": false,
+                "value": "ZONE"
               }
             ]
           },
           "named": false,
-          "value": "TIME_ZONE"
+          "value": "TIME ZONE"
         }
       ]
     },
@@ -2289,17 +2518,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[nN][oO][tT]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[nN][oO][tT]"
+                },
+                "named": false,
+                "value": "NOT"
               },
               {
-                "type": "PATTERN",
-                "value": "[dD][eE][fF][eE][rR][rR][aA][bB][lL][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[dD][eE][fF][eE][rR][rR][aA][bB][lL][eE]"
+                },
+                "named": false,
+                "value": "DEFERRABLE"
               }
             ]
           },
           "named": false,
-          "value": "NOT_DEFERRABLE"
+          "value": "NOT DEFERRABLE"
         },
         {
           "type": "ALIAS",
@@ -2609,17 +2848,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[fF][oO][rR][eE][iI][gG][nN]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[fF][oO][rR][eE][iI][gG][nN]"
+                },
+                "named": false,
+                "value": "FOREIGN"
               },
               {
-                "type": "PATTERN",
-                "value": "[kK][eE][yY]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[kK][eE][yY]"
+                },
+                "named": false,
+                "value": "KEY"
               }
             ]
           },
           "named": false,
-          "value": "FOREIGN_KEY"
+          "value": "FOREIGN KEY"
         },
         {
           "type": "STRING",
@@ -2716,17 +2965,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[pP][rR][iI][mM][aA][rR][yY]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[pP][rR][iI][mM][aA][rR][yY]"
+                },
+                "named": false,
+                "value": "PRIMARY"
               },
               {
-                "type": "PATTERN",
-                "value": "[kK][eE][yY]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[kK][eE][yY]"
+                },
+                "named": false,
+                "value": "KEY"
               }
             ]
           },
           "named": false,
-          "value": "PRIMARY_KEY"
+          "value": "PRIMARY KEY"
         },
         {
           "type": "STRING",
@@ -2769,17 +3028,27 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "PATTERN",
-            "value": "[pP][rR][iI][mM][aA][rR][yY]"
+            "type": "ALIAS",
+            "content": {
+              "type": "PATTERN",
+              "value": "[pP][rR][iI][mM][aA][rR][yY]"
+            },
+            "named": false,
+            "value": "PRIMARY"
           },
           {
-            "type": "PATTERN",
-            "value": "[kK][eE][yY]"
+            "type": "ALIAS",
+            "content": {
+              "type": "PATTERN",
+              "value": "[kK][eE][yY]"
+            },
+            "named": false,
+            "value": "KEY"
           }
         ]
       },
       "named": false,
-      "value": "PRIMARY_KEY"
+      "value": "PRIMARY KEY"
     },
     "create_table_statement": {
       "type": "SEQ",
@@ -2828,21 +3097,36 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "PATTERN",
-                    "value": "[iI][fF]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[iI][fF]"
+                    },
+                    "named": false,
+                    "value": "IF"
                   },
                   {
-                    "type": "PATTERN",
-                    "value": "[nN][oO][tT]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[nN][oO][tT]"
+                    },
+                    "named": false,
+                    "value": "NOT"
                   },
                   {
-                    "type": "PATTERN",
-                    "value": "[eE][xX][iI][sS][tT][sS]"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[eE][xX][iI][sS][tT][sS]"
+                    },
+                    "named": false,
+                    "value": "EXISTS"
                   }
                 ]
               },
               "named": false,
-              "value": "IF_NOT_EXISTS"
+              "value": "IF NOT EXISTS"
             },
             {
               "type": "BLANK"
@@ -3077,17 +3361,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[gG][rR][oO][uU][pP]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[gG][rR][oO][uU][pP]"
+                },
+                "named": false,
+                "value": "GROUP"
               },
               {
-                "type": "PATTERN",
-                "value": "[bB][yY]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[bB][yY]"
+                },
+                "named": false,
+                "value": "BY"
               }
             ]
           },
           "named": false,
-          "value": "GROUP_BY"
+          "value": "GROUP BY"
         },
         {
           "type": "SYMBOL",
@@ -3129,17 +3423,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[oO][rR][dD][eE][rR]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[oO][rR][dD][eE][rR]"
+                },
+                "named": false,
+                "value": "ORDER"
               },
               {
-                "type": "PATTERN",
-                "value": "[bB][yY]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[bB][yY]"
+                },
+                "named": false,
+                "value": "BY"
               }
             ]
           },
           "named": false,
-          "value": "ORDER_BY"
+          "value": "ORDER BY"
         },
         {
           "type": "SYMBOL",
@@ -3795,17 +4099,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[oO][nN]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[oO][nN]"
+                },
+                "named": false,
+                "value": "ON"
               },
               {
-                "type": "PATTERN",
-                "value": "[uU][pP][dD][aA][tT][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[uU][pP][dD][aA][tT][eE]"
+                },
+                "named": false,
+                "value": "UPDATE"
               }
             ]
           },
           "named": false,
-          "value": "ON_UPDATE"
+          "value": "ON UPDATE"
         },
         {
           "type": "FIELD",
@@ -3826,17 +4140,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[oO][nN]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[oO][nN]"
+                },
+                "named": false,
+                "value": "ON"
               },
               {
-                "type": "PATTERN",
-                "value": "[dD][eE][lL][eE][tT][eE]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[dD][eE][lL][eE][tT][eE]"
+                },
+                "named": false,
+                "value": "DELETE"
               }
             ]
           },
           "named": false,
-          "value": "ON_DELETE"
+          "value": "ON DELETE"
         },
         {
           "type": "FIELD",
@@ -3875,17 +4199,27 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "PATTERN",
-                "value": "[sS][eE][tT]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[sS][eE][tT]"
+                },
+                "named": false,
+                "value": "SET"
               },
               {
-                "type": "PATTERN",
-                "value": "[nN][uU][lL][lL]"
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[nN][uU][lL][lL]"
+                },
+                "named": false,
+                "value": "NULL"
               }
             ]
           },
           "named": false,
-          "value": "SET_NULL"
+          "value": "SET NULL"
         }
       ]
     },
@@ -4229,17 +4563,27 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "PATTERN",
-                  "value": "[dD][iI][sS][tT][iI][nN][cC][tT]"
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "[dD][iI][sS][tT][iI][nN][cC][tT]"
+                  },
+                  "named": false,
+                  "value": "DISTINCT"
                 },
                 {
-                  "type": "PATTERN",
-                  "value": "[fF][rR][oO][mM]"
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "[fF][rR][oO][mM]"
+                  },
+                  "named": false,
+                  "value": "FROM"
                 }
               ]
             },
             "named": false,
-            "value": "DISTINCT_FROM"
+            "value": "DISTINCT FROM"
           },
           {
             "type": "SYMBOL",

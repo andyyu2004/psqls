@@ -673,8 +673,13 @@ impl CreateFunctionStatement {
     }
 }
 impl CreateFunctionStatement {
-    pub fn orreplace_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OrreplaceKw)
+    pub fn or_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OrKw)
+    }
+}
+impl CreateFunctionStatement {
+    pub fn replace_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ReplaceKw)
     }
 }
 impl CreateFunctionStatement {
@@ -3515,7 +3520,10 @@ pub trait Visitor {
         if let Some(kw) = r#create_function_statement.function_kw() {
             self.visit_kw(kw);
         }
-        if let Some(kw) = r#create_function_statement.orreplace_kw() {
+        if let Some(kw) = r#create_function_statement.or_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#create_function_statement.replace_kw() {
             self.visit_kw(kw);
         }
         if let Some(kw) = r#create_function_statement.returns_kw() {
@@ -4607,7 +4615,6 @@ pub enum SyntaxKind {
     OrderByClause,
     OrderByClauseBody,
     OrderedExpression,
-    OrreplaceKw,
     OutKw,
     OuterKw,
     OwnedKw,
@@ -4623,6 +4630,7 @@ pub enum SyntaxKind {
     PublicKw,
     ReferencesKw,
     ReferencesConstraint,
+    ReplaceKw,
     RestrictedKw,
     ReturnsKw,
     RightKw,
@@ -4824,7 +4832,6 @@ impl TryFrom<&'static str> for SyntaxKind {
             "order_by_clause" => Ok(Self::OrderByClause),
             "order_by_clause_body" => Ok(Self::OrderByClauseBody),
             "ordered_expression" => Ok(Self::OrderedExpression),
-            "ORREPLACE" => Ok(Self::OrreplaceKw),
             "OUT" => Ok(Self::OutKw),
             "OUTER" => Ok(Self::OuterKw),
             "OWNED" => Ok(Self::OwnedKw),
@@ -4840,6 +4847,7 @@ impl TryFrom<&'static str> for SyntaxKind {
             "PUBLIC" => Ok(Self::PublicKw),
             "REFERENCES" => Ok(Self::ReferencesKw),
             "references_constraint" => Ok(Self::ReferencesConstraint),
+            "REPLACE" => Ok(Self::ReplaceKw),
             "RESTRICTED" => Ok(Self::RestrictedKw),
             "RETURNS" => Ok(Self::ReturnsKw),
             "RIGHT" => Ok(Self::RightKw),

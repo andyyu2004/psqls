@@ -589,11 +589,15 @@
     "named": true,
     "fields": {
       "replace": {
-        "multiple": false,
+        "multiple": true,
         "required": false,
         "types": [
           {
-            "type": "CREATE_OR_REPLACE_FUNCTION",
+            "type": "OR",
+            "named": false
+          },
+          {
+            "type": "REPLACE",
             "named": false
           }
         ]
@@ -1486,11 +1490,15 @@
             "named": false
           },
           {
+            "type": "NULL",
+            "named": false
+          },
+          {
             "type": "RESTRICT",
             "named": false
           },
           {
-            "type": "SET_NULL",
+            "type": "SET",
             "named": false
           }
         ]
@@ -1510,11 +1518,15 @@
             "named": false
           },
           {
+            "type": "NULL",
+            "named": false
+          },
+          {
             "type": "RESTRICT",
             "named": false
           },
           {
-            "type": "SET_NULL",
+            "type": "SET",
             "named": false
           }
         ]
@@ -2438,10 +2450,6 @@
     "named": false
   },
   {
-    "type": "ALTER_COLUMN",
-    "named": false
-  },
-  {
     "type": "AND",
     "named": false
   },
@@ -2466,7 +2474,7 @@
     "named": false
   },
   {
-    "type": "CALLED_ON_NULL_INPUT",
+    "type": "CALLED",
     "named": false
   },
   {
@@ -2490,27 +2498,7 @@
     "named": false
   },
   {
-    "type": "CREATE_DOMAIN",
-    "named": false
-  },
-  {
-    "type": "CREATE_EXTENSION",
-    "named": false
-  },
-  {
     "type": "CREATE_OR_REPLACE_FUNCTION",
-    "named": false
-  },
-  {
-    "type": "CREATE_ROLE",
-    "named": false
-  },
-  {
-    "type": "CREATE_SCHEMA",
-    "named": false
-  },
-  {
-    "type": "CREATE_TYPE",
     "named": false
   },
   {
@@ -2538,7 +2526,11 @@
     "named": false
   },
   {
-    "type": "DISTINCT_FROM",
+    "type": "DISTINCT",
+    "named": false
+  },
+  {
+    "type": "DOMAIN",
     "named": false
   },
   {
@@ -2562,7 +2554,7 @@
     "named": false
   },
   {
-    "type": "FOREIGN_KEY",
+    "type": "FOREIGN",
     "named": false
   },
   {
@@ -2582,19 +2574,7 @@
     "named": false
   },
   {
-    "type": "GROUP_BY",
-    "named": false
-  },
-  {
     "type": "IF",
-    "named": false
-  },
-  {
-    "type": "IF_EXISTS",
-    "named": false
-  },
-  {
-    "type": "IF_NOT_EXISTS",
     "named": false
   },
   {
@@ -2630,6 +2610,10 @@
     "named": false
   },
   {
+    "type": "INPUT",
+    "named": false
+  },
+  {
     "type": "INSERT",
     "named": false
   },
@@ -2643,6 +2627,10 @@
   },
   {
     "type": "JOIN",
+    "named": false
+  },
+  {
+    "type": "KEY",
     "named": false
   },
   {
@@ -2674,10 +2662,6 @@
     "named": false
   },
   {
-    "type": "NOT_DEFERRABLE",
-    "named": false
-  },
-  {
     "type": "NULL",
     "named": false
   },
@@ -2690,11 +2674,7 @@
     "named": false
   },
   {
-    "type": "ON_DELETE",
-    "named": false
-  },
-  {
-    "type": "ON_UPDATE",
+    "type": "OPTION",
     "named": false
   },
   {
@@ -2702,7 +2682,7 @@
     "named": false
   },
   {
-    "type": "ORDER_BY",
+    "type": "ORDER",
     "named": false
   },
   {
@@ -2714,7 +2694,7 @@
     "named": false
   },
   {
-    "type": "OWNED_BY",
+    "type": "OWNED",
     "named": false
   },
   {
@@ -2722,7 +2702,7 @@
     "named": false
   },
   {
-    "type": "PRIMARY_KEY",
+    "type": "PRIMARY",
     "named": false
   },
   {
@@ -2738,6 +2718,10 @@
     "named": false
   },
   {
+    "type": "REPLACE",
+    "named": false
+  },
+  {
     "type": "RESTRICT",
     "named": false
   },
@@ -2750,11 +2734,11 @@
     "named": false
   },
   {
-    "type": "RETURNS_NULL_ON_NULL_INPUT",
+    "type": "RIGHT",
     "named": false
   },
   {
-    "type": "RIGHT",
+    "type": "ROLE",
     "named": false
   },
   {
@@ -2786,14 +2770,6 @@
     "named": false
   },
   {
-    "type": "SET_DEFAULT",
-    "named": false
-  },
-  {
-    "type": "SET_NULL",
-    "named": false
-  },
-  {
     "type": "STABLE",
     "named": false
   },
@@ -2822,7 +2798,7 @@
     "named": false
   },
   {
-    "type": "TIME_ZONE",
+    "type": "TIME",
     "named": false
   },
   {
@@ -2839,6 +2815,10 @@
   },
   {
     "type": "TRUNCATE",
+    "named": false
+  },
+  {
+    "type": "TYPE",
     "named": false
   },
   {
@@ -2890,7 +2870,7 @@
     "named": false
   },
   {
-    "type": "WITH_GRANT_OPTION",
+    "type": "ZONE",
     "named": false
   },
   {
