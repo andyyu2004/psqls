@@ -31,6 +31,7 @@ struct Highlighter {
 impl Highlighter {
     pub fn highlight(mut self, source: SourceFile) -> Vec<HighlightRange> {
         self.visit_source_file(source);
+        self.highlights.sort_by_key(|hl| hl.range.start());
         self.highlights
     }
 }

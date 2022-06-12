@@ -33,11 +33,8 @@ impl LanguageServer for Lsp {
                     }),
                     file_operations: None,
                 }),
-                text_document_sync: Some(TextDocumentSyncCapability::Options(
-                    TextDocumentSyncOptions {
-                        change: Some(TextDocumentSyncKind::FULL),
-                        ..Default::default()
-                    },
+                text_document_sync: Some(TextDocumentSyncCapability::Kind(
+                    TextDocumentSyncKind::FULL,
                 )),
                 semantic_tokens_provider: Some(
                     SemanticTokensServerCapabilities::SemanticTokensOptions(

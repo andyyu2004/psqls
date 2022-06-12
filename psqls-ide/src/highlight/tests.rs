@@ -10,11 +10,11 @@ fn test_highlight_keywords() {
     expect![[r#"
         [
             HighlightRange {
-                range: 7..11,
+                range: 0..6,
                 hl: Keyword,
             },
             HighlightRange {
-                range: 0..6,
+                range: 7..11,
                 hl: Keyword,
             },
         ]
