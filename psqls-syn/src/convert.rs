@@ -48,7 +48,7 @@ impl Builder {
                 let kind = SyntaxKind::try_from(child.kind()).unwrap_or(SyntaxKind::Token);
                 self.builder.token(
                     Sql::kind_to_raw(kind),
-                    dbg!(child.utf8_text(self.text.as_bytes()).unwrap()),
+                    child.utf8_text(self.text.as_bytes()).unwrap(),
                 );
             }
         }

@@ -363,21 +363,19 @@ impl Gen {
             }
             Rule::String(_) | Rule::Symbol(_) => {}
             Rule::NamedSymbol(sym) => {
-                if !sym.starts_with("_") {
-                    let f = format_ident!("r#{}", sym.to_case(Case::Snake));
-                    let ty = format_ident!("{}", sym.to_case(Case::Pascal));
-                    let methods = self.method_sets.entry(name.clone()).or_default();
-                    if !methods.contains_key(&sym) {
-                        let stream = quote! {
-                            impl #name {
-                                pub fn #f(&self) -> Option<#ty> {
-                                    self.child()
-                                }
+                let f = format_ident!("r#{}", sym.to_case(Case::Snake));
+                let ty = format_ident!("{}", sym.to_case(Case::Pascal));
+                let methods = self.method_sets.entry(name.clone()).or_default();
+                if !methods.contains_key(&sym) {
+                    let stream = quote! {
+                        impl #name {
+                            pub fn #f(&self) -> Option<#ty> {
+                                self.child()
                             }
-                        };
-                        methods.insert(sym, Cardinality::One);
-                        self.push(stream);
-                    }
+                        }
+                    };
+                    methods.insert(sym, Cardinality::One);
+                    self.push(stream);
                 }
             }
             Rule::Repeat(rule) => match *rule {
@@ -476,7 +474,6 @@ impl Gen {
             .variables
             .into_iter()
             .filter(|v| v.kind == VariableType::Named)
-            .filter(|v| !v.name.starts_with('_'))
             .for_each(|v| {
                 self.syntax_kinds
                     .insert((v.name.clone(), SyntaxKindSort::Sym));

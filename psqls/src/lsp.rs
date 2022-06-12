@@ -84,7 +84,6 @@ impl LanguageServer for Lsp {
         let snapshot = ide.snapshot();
         let rope = snapshot.rope(Arc::clone(&url));
         let highlights = snapshot.highlight(url.clone());
-        dbg!(&highlights);
         let tokens = tokens::convert(&rope, highlights);
         Ok(Some(SemanticTokensResult::Tokens(tokens)))
     }

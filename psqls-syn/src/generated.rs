@@ -65,10 +65,10 @@ impl True {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AlterStatement(pub(crate) SyntaxNode);
-impl Node for AlterStatement {
+pub struct AliasableExpression(pub(crate) SyntaxNode);
+impl Node for AliasableExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AlterStatement
+        kind == SyntaxKind::AliasableExpression
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -77,26 +77,21 @@ impl Node for AlterStatement {
         &self.0
     }
 }
-impl AlterStatement {
-    pub fn alter_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::AlterKw)
-    }
-}
-impl AlterStatement {
-    pub fn r#sequence(&self) -> Option<Sequence> {
+impl AliasableExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
         self.child()
     }
 }
-impl AlterStatement {
-    pub fn r#alter_table(&self) -> Option<AlterTable> {
+impl AliasableExpression {
+    pub fn r#aliased_expression(&self) -> Option<AliasedExpression> {
         self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AlterTable(pub(crate) SyntaxNode);
-impl Node for AlterTable {
+pub struct AliasedExpression(pub(crate) SyntaxNode);
+impl Node for AliasedExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AlterTable
+        kind == SyntaxKind::AliasedExpression
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -105,103 +100,107 @@ impl Node for AlterTable {
         &self.0
     }
 }
-impl AlterTable {
-    pub fn table_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TableKw)
-    }
-}
-impl AlterTable {
-    pub fn if_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IfKw)
-    }
-}
-impl AlterTable {
-    pub fn exists_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ExistsKw)
-    }
-}
-impl AlterTable {
-    pub fn only_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OnlyKw)
-    }
-}
-impl AlterTable {
-    pub fn r#alter_table_action(&self) -> Option<AlterTableAction> {
+impl AliasedExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
         self.child()
     }
 }
-pub enum AlterTableAction {
-    AlterTableActionAdd(AlterTableActionAdd),
-    AlterTableActionAlterColumn(AlterTableActionAlterColumn),
+impl AliasedExpression {
+    pub fn as_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AsKw)
+    }
 }
-impl Node for AlterTableAction {
+impl AliasedExpression {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Anytype(pub(crate) SyntaxNode);
+impl Node for Anytype {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Anytype
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl Anytype {
+    pub fn r#type(&self) -> Option<Type> {
+        self.child()
+    }
+}
+impl Anytype {
+    pub fn r#anytype(&self) -> Option<Anytype> {
+        self.child()
+    }
+}
+pub enum ColumnDefaultExpression {
+    ParenthesizedExpression(ParenthesizedExpression),
+    String(String),
+    Name(Name),
+    FunctionCall(FunctionCall),
+}
+impl Node for ColumnDefaultExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
-            SyntaxKind::AlterTableActionAdd | SyntaxKind::AlterTableActionAlterColumn
+            SyntaxKind::ParenthesizedExpression
+                | SyntaxKind::String
+                | SyntaxKind::Name
+                | SyntaxKind::FunctionCall
         )
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         match syntax.kind() {
-            SyntaxKind::AlterTableActionAdd => Some(AlterTableAction::AlterTableActionAdd(
-                AlterTableActionAdd(syntax),
-            )),
-            SyntaxKind::AlterTableActionAlterColumn => Some(
-                AlterTableAction::AlterTableActionAlterColumn(AlterTableActionAlterColumn(syntax)),
+            SyntaxKind::ParenthesizedExpression => Some(
+                ColumnDefaultExpression::ParenthesizedExpression(ParenthesizedExpression(syntax)),
             ),
+            SyntaxKind::String => Some(ColumnDefaultExpression::String(String(syntax))),
+            SyntaxKind::Name => Some(ColumnDefaultExpression::Name(Name(syntax))),
+            SyntaxKind::FunctionCall => {
+                Some(ColumnDefaultExpression::FunctionCall(FunctionCall(syntax)))
+            }
             _ => None,
         }
     }
     fn syntax(&self) -> &SyntaxNode {
         match self {
-            Self::AlterTableActionAdd(node) => node.syntax(),
-            Self::AlterTableActionAlterColumn(node) => node.syntax(),
+            Self::ParenthesizedExpression(node) => node.syntax(),
+            Self::String(node) => node.syntax(),
+            Self::Name(node) => node.syntax(),
+            Self::FunctionCall(node) => node.syntax(),
         }
     }
 }
-impl AlterTableAction {
-    pub fn r#alter_table_action_add(&self) -> Option<AlterTableActionAdd> {
+impl ColumnDefaultExpression {
+    pub fn r#parenthesized_expression(&self) -> Option<ParenthesizedExpression> {
         self.child()
     }
 }
-impl AlterTableAction {
-    pub fn r#alter_table_action_alter_column(&self) -> Option<AlterTableActionAlterColumn> {
+impl ColumnDefaultExpression {
+    pub fn r#string(&self) -> Option<String> {
         self.child()
     }
 }
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AlterTableActionAdd(pub(crate) SyntaxNode);
-impl Node for AlterTableActionAdd {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AlterTableActionAdd
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
+impl ColumnDefaultExpression {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
     }
 }
-impl AlterTableActionAdd {
-    pub fn add_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::AddKw)
-    }
-}
-impl AlterTableActionAdd {
-    pub fn column_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ColumnKw)
-    }
-}
-impl AlterTableActionAdd {
-    pub fn r#table_column(&self) -> Option<TableColumn> {
+impl ColumnDefaultExpression {
+    pub fn r#function_call(&self) -> Option<FunctionCall> {
         self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AlterTableActionAlterColumn(pub(crate) SyntaxNode);
-impl Node for AlterTableActionAlterColumn {
+pub struct Constraint(pub(crate) SyntaxNode);
+impl Node for Constraint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AlterTableActionAlterColumn
+        kind == SyntaxKind::Constraint
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -210,346 +209,21 @@ impl Node for AlterTableActionAlterColumn {
         &self.0
     }
 }
-impl AlterTableActionAlterColumn {
-    pub fn alter_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::AlterKw)
-    }
-}
-impl AlterTableActionAlterColumn {
-    pub fn column_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ColumnKw)
-    }
-}
-impl AlterTableActionAlterColumn {
-    pub fn set_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::SetKw)
-    }
-}
-impl AlterTableActionAlterColumn {
-    pub fn default_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DefaultKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ArgumentReference(pub(crate) SyntaxNode);
-impl Node for ArgumentReference {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ArgumentReference
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ArrayElementAccess(pub(crate) SyntaxNode);
-impl Node for ArrayElementAccess {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ArrayElementAccess
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl ArrayElementAccess {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl ArrayElementAccess {
-    pub fn r#argument_reference(&self) -> Option<ArgumentReference> {
-        self.child()
-    }
-}
-impl ArrayElementAccess {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ArrayType(pub(crate) SyntaxNode);
-impl Node for ArrayType {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ArrayType
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AssigmentExpression(pub(crate) SyntaxNode);
-impl Node for AssigmentExpression {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AssigmentExpression
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl AssigmentExpression {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl AssigmentExpression {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AsteriskExpression(pub(crate) SyntaxNode);
-impl Node for AsteriskExpression {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AsteriskExpression
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl AsteriskExpression {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct AutoIncrementConstraint(pub(crate) SyntaxNode);
-impl Node for AutoIncrementConstraint {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AutoIncrementConstraint
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl AutoIncrementConstraint {
-    pub fn autoincrement_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::AutoincrementKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct BinaryExpression(pub(crate) SyntaxNode);
-impl Node for BinaryExpression {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::BinaryExpression
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl BinaryExpression {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct BinaryOperator(pub(crate) SyntaxNode);
-impl Node for BinaryOperator {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::BinaryOperator
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct BooleanExpression(pub(crate) SyntaxNode);
-impl Node for BooleanExpression {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::BooleanExpression
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl BooleanExpression {
-    pub fn not_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::NotKw)
-    }
-}
-impl BooleanExpression {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-impl BooleanExpression {
-    pub fn and_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::AndKw)
-    }
-}
-impl BooleanExpression {
-    pub fn or_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OrKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CheckConstraint(pub(crate) SyntaxNode);
-impl Node for CheckConstraint {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CheckConstraint
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl CheckConstraint {
-    pub fn check_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::CheckKw)
-    }
-}
-impl CheckConstraint {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ColumnDefault(pub(crate) SyntaxNode);
-impl Node for ColumnDefault {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ColumnDefault
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl ColumnDefault {
-    pub fn default_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DefaultKw)
-    }
-}
-impl ColumnDefault {
-    pub fn r#type_cast(&self) -> Option<TypeCast> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Comment(pub(crate) SyntaxNode);
-impl Node for Comment {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Comment
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ComparisonOperator(pub(crate) SyntaxNode);
-impl Node for ComparisonOperator {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ComparisonOperator
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl ComparisonOperator {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ConstrainedType(pub(crate) SyntaxNode);
-impl Node for ConstrainedType {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ConstrainedType
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl ConstrainedType {
+impl Constraint {
     pub fn r#null_constraint(&self) -> Option<NullConstraint> {
         self.child()
     }
 }
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateDomainStatement(pub(crate) SyntaxNode);
-impl Node for CreateDomainStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateDomainStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl CreateDomainStatement {
-    pub fn create_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::CreateKw)
-    }
-}
-impl CreateDomainStatement {
-    pub fn domain_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DomainKw)
-    }
-}
-impl CreateDomainStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl CreateDomainStatement {
-    pub fn as_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::AsKw)
-    }
-}
-impl CreateDomainStatement {
-    pub fn r#null_constraint(&self) -> Option<NullConstraint> {
-        self.child()
-    }
-}
-impl CreateDomainStatement {
+impl Constraint {
     pub fn r#check_constraint(&self) -> Option<CheckConstraint> {
         self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateExtensionStatement(pub(crate) SyntaxNode);
-impl Node for CreateExtensionStatement {
+pub struct ConstraintAction(pub(crate) SyntaxNode);
+impl Node for ConstraintAction {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateExtensionStatement
+        kind == SyntaxKind::ConstraintAction
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -558,1654 +232,76 @@ impl Node for CreateExtensionStatement {
         &self.0
     }
 }
-impl CreateExtensionStatement {
-    pub fn create_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::CreateKw)
+impl ConstraintAction {
+    pub fn restrict_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::RestrictKw)
     }
 }
-impl CreateExtensionStatement {
-    pub fn extension_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ExtensionKw)
+impl ConstraintAction {
+    pub fn cascade_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CascadeKw)
     }
 }
-impl CreateExtensionStatement {
-    pub fn if_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IfKw)
+impl ConstraintAction {
+    pub fn set_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SetKw)
     }
 }
-impl CreateExtensionStatement {
-    pub fn not_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::NotKw)
+impl ConstraintAction {
+    pub fn null_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NullKw)
     }
 }
-impl CreateExtensionStatement {
-    pub fn exists_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ExistsKw)
-    }
-}
-impl CreateExtensionStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateFunctionParameter(pub(crate) SyntaxNode);
-impl Node for CreateFunctionParameter {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateFunctionParameter
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl CreateFunctionParameter {
-    pub fn in_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::InKw)
-    }
-}
-impl CreateFunctionParameter {
-    pub fn out_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OutKw)
-    }
-}
-impl CreateFunctionParameter {
-    pub fn inout_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::InoutKw)
-    }
-}
-impl CreateFunctionParameter {
-    pub fn variadic_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::VariadicKw)
-    }
-}
-impl CreateFunctionParameter {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl CreateFunctionParameter {
-    pub fn r#constrained_type(&self) -> Option<ConstrainedType> {
-        self.child()
-    }
-}
-impl CreateFunctionParameter {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateFunctionParameters(pub(crate) SyntaxNode);
-impl Node for CreateFunctionParameters {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateFunctionParameters
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl CreateFunctionParameters {
-    pub fn create_function_parameters(&self) -> impl Iterator<Item = CreateFunctionParameter> {
-        self.children()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateFunctionStatement(pub(crate) SyntaxNode);
-impl Node for CreateFunctionStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateFunctionStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl CreateFunctionStatement {
-    pub fn create_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::CreateKw)
-    }
-}
-impl CreateFunctionStatement {
-    pub fn or_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OrKw)
-    }
-}
-impl CreateFunctionStatement {
-    pub fn replace_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ReplaceKw)
-    }
-}
-impl CreateFunctionStatement {
-    pub fn function_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::FunctionKw)
-    }
-}
-impl CreateFunctionStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl CreateFunctionStatement {
-    pub fn r#create_function_parameters(&self) -> Option<CreateFunctionParameters> {
-        self.child()
-    }
-}
-impl CreateFunctionStatement {
-    pub fn returns_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ReturnsKw)
-    }
-}
-impl CreateFunctionStatement {
-    pub fn r#function_body(&self) -> Option<FunctionBody> {
-        self.child()
-    }
-}
-impl CreateFunctionStatement {
-    pub fn r#optimizer_hint(&self) -> Option<OptimizerHint> {
-        self.child()
-    }
-}
-impl CreateFunctionStatement {
-    pub fn r#parallel_hint(&self) -> Option<ParallelHint> {
-        self.child()
-    }
-}
-impl CreateFunctionStatement {
-    pub fn r#null_hint(&self) -> Option<NullHint> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateIndexStatement(pub(crate) SyntaxNode);
-impl Node for CreateIndexStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateIndexStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl CreateIndexStatement {
-    pub fn create_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::CreateKw)
-    }
-}
-impl CreateIndexStatement {
-    pub fn r#unique_constraint(&self) -> Option<UniqueConstraint> {
-        self.child()
-    }
-}
-impl CreateIndexStatement {
-    pub fn index_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IndexKw)
-    }
-}
-impl CreateIndexStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl CreateIndexStatement {
-    pub fn on_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OnKw)
-    }
-}
-impl CreateIndexStatement {
-    pub fn r#using_clause(&self) -> Option<UsingClause> {
-        self.child()
-    }
-}
-impl CreateIndexStatement {
-    pub fn r#index_table_parameters(&self) -> Option<IndexTableParameters> {
-        self.child()
-    }
-}
-impl CreateIndexStatement {
-    pub fn r#where_clause(&self) -> Option<WhereClause> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateRoleStatement(pub(crate) SyntaxNode);
-impl Node for CreateRoleStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateRoleStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl CreateRoleStatement {
-    pub fn create_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::CreateKw)
-    }
-}
-impl CreateRoleStatement {
-    pub fn role_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::RoleKw)
-    }
-}
-impl CreateRoleStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl CreateRoleStatement {
-    pub fn with_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::WithKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateSchemaStatement(pub(crate) SyntaxNode);
-impl Node for CreateSchemaStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateSchemaStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl CreateSchemaStatement {
-    pub fn create_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::CreateKw)
-    }
-}
-impl CreateSchemaStatement {
-    pub fn schema_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::SchemaKw)
-    }
-}
-impl CreateSchemaStatement {
-    pub fn if_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IfKw)
-    }
-}
-impl CreateSchemaStatement {
-    pub fn not_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::NotKw)
-    }
-}
-impl CreateSchemaStatement {
-    pub fn exists_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ExistsKw)
-    }
-}
-impl CreateSchemaStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateStatement(pub(crate) SyntaxNode);
-impl Node for CreateStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl CreateStatement {
-    pub fn create_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::CreateKw)
-    }
-}
-impl CreateStatement {
-    pub fn temp_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TempKw)
-    }
-}
-impl CreateStatement {
-    pub fn temporary_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TemporaryKw)
-    }
-}
-impl CreateStatement {
-    pub fn r#sequence(&self) -> Option<Sequence> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateTableStatement(pub(crate) SyntaxNode);
-impl Node for CreateTableStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateTableStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl CreateTableStatement {
-    pub fn create_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::CreateKw)
-    }
-}
-impl CreateTableStatement {
-    pub fn temporary_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TemporaryKw)
-    }
-}
-impl CreateTableStatement {
-    pub fn table_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TableKw)
-    }
-}
-impl CreateTableStatement {
-    pub fn if_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IfKw)
-    }
-}
-impl CreateTableStatement {
-    pub fn not_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::NotKw)
-    }
-}
-impl CreateTableStatement {
-    pub fn exists_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ExistsKw)
-    }
-}
-impl CreateTableStatement {
-    pub fn r#table_parameters(&self) -> Option<TableParameters> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateTypeStatement(pub(crate) SyntaxNode);
-impl Node for CreateTypeStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateTypeStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl CreateTypeStatement {
-    pub fn create_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::CreateKw)
-    }
-}
-impl CreateTypeStatement {
-    pub fn type_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TypeKw)
-    }
-}
-impl CreateTypeStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl CreateTypeStatement {
-    pub fn as_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::AsKw)
-    }
-}
-impl CreateTypeStatement {
-    pub fn r#parameters(&self) -> Option<Parameters> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct DirectionConstraint(pub(crate) SyntaxNode);
-impl Node for DirectionConstraint {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::DirectionConstraint
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl DirectionConstraint {
-    pub fn asc_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::AscKw)
-    }
-}
-impl DirectionConstraint {
-    pub fn desc_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DescKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct DistinctFrom(pub(crate) SyntaxNode);
-impl Node for DistinctFrom {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::DistinctFrom
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl DistinctFrom {
-    pub fn distinct_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DistinctKw)
-    }
-}
-impl DistinctFrom {
-    pub fn from_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::FromKw)
-    }
-}
-impl DistinctFrom {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct DottedName(pub(crate) SyntaxNode);
-impl Node for DottedName {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::DottedName
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl DottedName {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct DropStatement(pub(crate) SyntaxNode);
-impl Node for DropStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::DropStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl DropStatement {
-    pub fn drop_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DropKw)
-    }
-}
-impl DropStatement {
-    pub fn table_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TableKw)
-    }
-}
-impl DropStatement {
-    pub fn view_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ViewKw)
-    }
-}
-impl DropStatement {
-    pub fn tablespace_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TablespaceKw)
-    }
-}
-impl DropStatement {
-    pub fn extension_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ExtensionKw)
-    }
-}
-impl DropStatement {
-    pub fn index_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IndexKw)
-    }
-}
-impl DropStatement {
-    pub fn if_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IfKw)
-    }
-}
-impl DropStatement {
-    pub fn exists_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ExistsKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ExcludeEntry(pub(crate) SyntaxNode);
-impl Node for ExcludeEntry {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ExcludeEntry
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl ExcludeEntry {
-    pub fn r#op_class(&self) -> Option<OpClass> {
-        self.child()
-    }
-}
-impl ExcludeEntry {
-    pub fn with_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::WithKw)
-    }
-}
-impl ExcludeEntry {
-    pub fn r#binary_operator(&self) -> Option<BinaryOperator> {
-        self.child()
-    }
-}
-pub enum Expression {
-    IntervalExpression(IntervalExpression),
-    FunctionCall(FunctionCall),
-    String(String),
-    FieldAccess(FieldAccess),
-    True(True),
-    False(False),
-    Null(Null),
-    AsteriskExpression(AsteriskExpression),
-    Identifier(Identifier),
-    Number(Number),
-    ComparisonOperator(ComparisonOperator),
-    InExpression(InExpression),
-    IsExpression(IsExpression),
-    BooleanExpression(BooleanExpression),
-    ParenthesizedExpression(ParenthesizedExpression),
-    TypeCast(TypeCast),
-    BinaryExpression(BinaryExpression),
-    ArrayElementAccess(ArrayElementAccess),
-    ArgumentReference(ArgumentReference),
-    SelectSubexpression(SelectSubexpression),
+pub enum CreateFunctionReturnType {
+    Anytype(Anytype),
+    Setof(Setof),
+    ConstrainedType(ConstrainedType),
 }
-impl Node for Expression {
+impl Node for CreateFunctionReturnType {
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
-            SyntaxKind::IntervalExpression
-                | SyntaxKind::FunctionCall
-                | SyntaxKind::String
-                | SyntaxKind::FieldAccess
-                | SyntaxKind::True
-                | SyntaxKind::False
-                | SyntaxKind::Null
-                | SyntaxKind::AsteriskExpression
-                | SyntaxKind::Identifier
-                | SyntaxKind::Number
-                | SyntaxKind::ComparisonOperator
-                | SyntaxKind::InExpression
-                | SyntaxKind::IsExpression
-                | SyntaxKind::BooleanExpression
-                | SyntaxKind::ParenthesizedExpression
-                | SyntaxKind::TypeCast
-                | SyntaxKind::BinaryExpression
-                | SyntaxKind::ArrayElementAccess
-                | SyntaxKind::ArgumentReference
-                | SyntaxKind::SelectSubexpression
+            SyntaxKind::Anytype | SyntaxKind::Setof | SyntaxKind::ConstrainedType
         )
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         match syntax.kind() {
-            SyntaxKind::IntervalExpression => {
-                Some(Expression::IntervalExpression(IntervalExpression(syntax)))
-            }
-            SyntaxKind::FunctionCall => Some(Expression::FunctionCall(FunctionCall(syntax))),
-            SyntaxKind::String => Some(Expression::String(String(syntax))),
-            SyntaxKind::FieldAccess => Some(Expression::FieldAccess(FieldAccess(syntax))),
-            SyntaxKind::True => Some(Expression::True(True(syntax))),
-            SyntaxKind::False => Some(Expression::False(False(syntax))),
-            SyntaxKind::Null => Some(Expression::Null(Null(syntax))),
-            SyntaxKind::AsteriskExpression => {
-                Some(Expression::AsteriskExpression(AsteriskExpression(syntax)))
-            }
-            SyntaxKind::Identifier => Some(Expression::Identifier(Identifier(syntax))),
-            SyntaxKind::Number => Some(Expression::Number(Number(syntax))),
-            SyntaxKind::ComparisonOperator => {
-                Some(Expression::ComparisonOperator(ComparisonOperator(syntax)))
-            }
-            SyntaxKind::InExpression => Some(Expression::InExpression(InExpression(syntax))),
-            SyntaxKind::IsExpression => Some(Expression::IsExpression(IsExpression(syntax))),
-            SyntaxKind::BooleanExpression => {
-                Some(Expression::BooleanExpression(BooleanExpression(syntax)))
-            }
-            SyntaxKind::ParenthesizedExpression => Some(Expression::ParenthesizedExpression(
-                ParenthesizedExpression(syntax),
+            SyntaxKind::Anytype => Some(CreateFunctionReturnType::Anytype(Anytype(syntax))),
+            SyntaxKind::Setof => Some(CreateFunctionReturnType::Setof(Setof(syntax))),
+            SyntaxKind::ConstrainedType => Some(CreateFunctionReturnType::ConstrainedType(
+                ConstrainedType(syntax),
             )),
-            SyntaxKind::TypeCast => Some(Expression::TypeCast(TypeCast(syntax))),
-            SyntaxKind::BinaryExpression => {
-                Some(Expression::BinaryExpression(BinaryExpression(syntax)))
-            }
-            SyntaxKind::ArrayElementAccess => {
-                Some(Expression::ArrayElementAccess(ArrayElementAccess(syntax)))
-            }
-            SyntaxKind::ArgumentReference => {
-                Some(Expression::ArgumentReference(ArgumentReference(syntax)))
-            }
-            SyntaxKind::SelectSubexpression => {
-                Some(Expression::SelectSubexpression(SelectSubexpression(syntax)))
-            }
             _ => None,
         }
     }
     fn syntax(&self) -> &SyntaxNode {
         match self {
-            Self::IntervalExpression(node) => node.syntax(),
-            Self::FunctionCall(node) => node.syntax(),
-            Self::String(node) => node.syntax(),
-            Self::FieldAccess(node) => node.syntax(),
-            Self::True(node) => node.syntax(),
-            Self::False(node) => node.syntax(),
-            Self::Null(node) => node.syntax(),
-            Self::AsteriskExpression(node) => node.syntax(),
-            Self::Identifier(node) => node.syntax(),
-            Self::Number(node) => node.syntax(),
-            Self::ComparisonOperator(node) => node.syntax(),
-            Self::InExpression(node) => node.syntax(),
-            Self::IsExpression(node) => node.syntax(),
-            Self::BooleanExpression(node) => node.syntax(),
-            Self::ParenthesizedExpression(node) => node.syntax(),
-            Self::TypeCast(node) => node.syntax(),
-            Self::BinaryExpression(node) => node.syntax(),
-            Self::ArrayElementAccess(node) => node.syntax(),
-            Self::ArgumentReference(node) => node.syntax(),
-            Self::SelectSubexpression(node) => node.syntax(),
+            Self::Anytype(node) => node.syntax(),
+            Self::Setof(node) => node.syntax(),
+            Self::ConstrainedType(node) => node.syntax(),
         }
     }
 }
-impl Expression {
-    pub fn r#interval_expression(&self) -> Option<IntervalExpression> {
+impl CreateFunctionReturnType {
+    pub fn r#anytype(&self) -> Option<Anytype> {
         self.child()
     }
 }
-impl Expression {
-    pub fn r#function_call(&self) -> Option<FunctionCall> {
+impl CreateFunctionReturnType {
+    pub fn r#setof(&self) -> Option<Setof> {
         self.child()
     }
 }
-impl Expression {
-    pub fn r#string(&self) -> Option<String> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#field_access(&self) -> Option<FieldAccess> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#true(&self) -> Option<True> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#false(&self) -> Option<False> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#null(&self) -> Option<Null> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#asterisk_expression(&self) -> Option<AsteriskExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#number(&self) -> Option<Number> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#comparison_operator(&self) -> Option<ComparisonOperator> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#in_expression(&self) -> Option<InExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#is_expression(&self) -> Option<IsExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#boolean_expression(&self) -> Option<BooleanExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#parenthesized_expression(&self) -> Option<ParenthesizedExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#type_cast(&self) -> Option<TypeCast> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#binary_expression(&self) -> Option<BinaryExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#array_element_access(&self) -> Option<ArrayElementAccess> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#argument_reference(&self) -> Option<ArgumentReference> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#select_subexpression(&self) -> Option<SelectSubexpression> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FieldAccess(pub(crate) SyntaxNode);
-impl Node for FieldAccess {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FieldAccess
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl FieldAccess {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl FieldAccess {
-    pub fn r#string(&self) -> Option<String> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FromClause(pub(crate) SyntaxNode);
-impl Node for FromClause {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FromClause
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl FromClause {
-    pub fn from_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::FromKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FunctionBody(pub(crate) SyntaxNode);
-impl Node for FunctionBody {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FunctionBody
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl FunctionBody {
-    pub fn as_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::AsKw)
-    }
-}
-impl FunctionBody {
-    pub fn r#select_statement(&self) -> Option<SelectStatement> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct FunctionCall(pub(crate) SyntaxNode);
-impl Node for FunctionCall {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FunctionCall
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl FunctionCall {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl FunctionCall {
-    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
-        self.children()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct GrantStatement(pub(crate) SyntaxNode);
-impl Node for GrantStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::GrantStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl GrantStatement {
-    pub fn grant_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::GrantKw)
-    }
-}
-impl GrantStatement {
-    pub fn all_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::AllKw)
-    }
-}
-impl GrantStatement {
-    pub fn privileges_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::PrivilegesKw)
-    }
-}
-impl GrantStatement {
-    pub fn select_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::SelectKw)
-    }
-}
-impl GrantStatement {
-    pub fn insert_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::InsertKw)
-    }
-}
-impl GrantStatement {
-    pub fn update_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::UpdateKw)
-    }
-}
-impl GrantStatement {
-    pub fn delete_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DeleteKw)
-    }
-}
-impl GrantStatement {
-    pub fn truncate_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TruncateKw)
-    }
-}
-impl GrantStatement {
-    pub fn references_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ReferencesKw)
-    }
-}
-impl GrantStatement {
-    pub fn trigger_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TriggerKw)
-    }
-}
-impl GrantStatement {
-    pub fn usage_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::UsageKw)
-    }
-}
-impl GrantStatement {
-    pub fn on_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OnKw)
-    }
-}
-impl GrantStatement {
-    pub fn schema_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::SchemaKw)
-    }
-}
-impl GrantStatement {
-    pub fn database_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DatabaseKw)
-    }
-}
-impl GrantStatement {
-    pub fn sequence_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::SequenceKw)
-    }
-}
-impl GrantStatement {
-    pub fn table_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TableKw)
-    }
-}
-impl GrantStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl GrantStatement {
-    pub fn to_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ToKw)
-    }
-}
-impl GrantStatement {
-    pub fn group_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::GroupKw)
-    }
-}
-impl GrantStatement {
-    pub fn public_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::PublicKw)
-    }
-}
-impl GrantStatement {
-    pub fn with_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::WithKw)
-    }
-}
-impl GrantStatement {
-    pub fn option_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OptionKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct GroupByClause(pub(crate) SyntaxNode);
-impl Node for GroupByClause {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::GroupByClause
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl GroupByClause {
-    pub fn group_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::GroupKw)
-    }
-}
-impl GroupByClause {
-    pub fn by_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ByKw)
-    }
-}
-impl GroupByClause {
-    pub fn r#group_by_clause_body(&self) -> Option<GroupByClauseBody> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct GroupByClauseBody(pub(crate) SyntaxNode);
-impl Node for GroupByClauseBody {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::GroupByClauseBody
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl GroupByClauseBody {
-    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
-        self.children()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Identifier(pub(crate) SyntaxNode);
-impl Node for Identifier {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Identifier
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct InExpression(pub(crate) SyntaxNode);
-impl Node for InExpression {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::InExpression
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl InExpression {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-impl InExpression {
-    pub fn not_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::NotKw)
-    }
-}
-impl InExpression {
-    pub fn in_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::InKw)
-    }
-}
-impl InExpression {
-    pub fn r#tuple(&self) -> Option<Tuple> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct IndexTableParameters(pub(crate) SyntaxNode);
-impl Node for IndexTableParameters {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::IndexTableParameters
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl IndexTableParameters {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-impl IndexTableParameters {
-    pub fn r#ordered_expression(&self) -> Option<OrderedExpression> {
-        self.child()
-    }
-}
-impl IndexTableParameters {
-    pub fn r#op_class(&self) -> Option<OpClass> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct InitialMode(pub(crate) SyntaxNode);
-impl Node for InitialMode {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::InitialMode
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl InitialMode {
-    pub fn initially_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::InitiallyKw)
-    }
-}
-impl InitialMode {
-    pub fn deferred_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DeferredKw)
-    }
-}
-impl InitialMode {
-    pub fn immediate_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ImmediateKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct InsertStatement(pub(crate) SyntaxNode);
-impl Node for InsertStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::InsertStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl InsertStatement {
-    pub fn insert_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::InsertKw)
-    }
-}
-impl InsertStatement {
-    pub fn into_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IntoKw)
-    }
-}
-impl InsertStatement {
-    pub fn r#values_clause(&self) -> Option<ValuesClause> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct IntervalExpression(pub(crate) SyntaxNode);
-impl Node for IntervalExpression {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::IntervalExpression
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl IntervalExpression {
-    pub fn interval_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IntervalKw)
-    }
-}
-impl IntervalExpression {
-    pub fn r#string(&self) -> Option<String> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct IsExpression(pub(crate) SyntaxNode);
-impl Node for IsExpression {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::IsExpression
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl IsExpression {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-impl IsExpression {
-    pub fn is_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IsKw)
-    }
-}
-impl IsExpression {
-    pub fn not_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::NotKw)
-    }
-}
-impl IsExpression {
-    pub fn r#null(&self) -> Option<Null> {
-        self.child()
-    }
-}
-impl IsExpression {
-    pub fn r#true(&self) -> Option<True> {
-        self.child()
-    }
-}
-impl IsExpression {
-    pub fn r#false(&self) -> Option<False> {
-        self.child()
-    }
-}
-impl IsExpression {
-    pub fn r#distinct_from(&self) -> Option<DistinctFrom> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct JoinClause(pub(crate) SyntaxNode);
-impl Node for JoinClause {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::JoinClause
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl JoinClause {
-    pub fn r#join_type(&self) -> Option<JoinType> {
-        self.child()
-    }
-}
-impl JoinClause {
-    pub fn join_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::JoinKw)
-    }
-}
-impl JoinClause {
-    pub fn on_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OnKw)
-    }
-}
-impl JoinClause {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct JoinType(pub(crate) SyntaxNode);
-impl Node for JoinType {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::JoinType
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl JoinType {
-    pub fn inner_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::InnerKw)
-    }
-}
-impl JoinType {
-    pub fn left_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::LeftKw)
-    }
-}
-impl JoinType {
-    pub fn right_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::RightKw)
-    }
-}
-impl JoinType {
-    pub fn full_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::FullKw)
-    }
-}
-impl JoinType {
-    pub fn outer_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OuterKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Mode(pub(crate) SyntaxNode);
-impl Node for Mode {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Mode
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl Mode {
-    pub fn not_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::NotKw)
-    }
-}
-impl Mode {
-    pub fn deferrable_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DeferrableKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct NamedConstraint(pub(crate) SyntaxNode);
-impl Node for NamedConstraint {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::NamedConstraint
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl NamedConstraint {
-    pub fn constraint_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ConstraintKw)
-    }
-}
-impl NamedConstraint {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct NullConstraint(pub(crate) SyntaxNode);
-impl Node for NullConstraint {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::NullConstraint
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl NullConstraint {
-    pub fn not_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::NotKw)
-    }
-}
-impl NullConstraint {
-    pub fn r#null(&self) -> Option<Null> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct NullHint(pub(crate) SyntaxNode);
-impl Node for NullHint {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::NullHint
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl NullHint {
-    pub fn called_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::CalledKw)
-    }
-}
-impl NullHint {
-    pub fn on_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OnKw)
-    }
-}
-impl NullHint {
-    pub fn null_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::NullKw)
-    }
-}
-impl NullHint {
-    pub fn input_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::InputKw)
-    }
-}
-impl NullHint {
-    pub fn returns_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ReturnsKw)
-    }
-}
-impl NullHint {
-    pub fn strict_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::StrictKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Number(pub(crate) SyntaxNode);
-impl Node for Number {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Number
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OnDeleteAction(pub(crate) SyntaxNode);
-impl Node for OnDeleteAction {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OnDeleteAction
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl OnDeleteAction {
-    pub fn on_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OnKw)
-    }
-}
-impl OnDeleteAction {
-    pub fn delete_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DeleteKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OnUpdateAction(pub(crate) SyntaxNode);
-impl Node for OnUpdateAction {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OnUpdateAction
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl OnUpdateAction {
-    pub fn on_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OnKw)
-    }
-}
-impl OnUpdateAction {
-    pub fn update_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::UpdateKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OpClass(pub(crate) SyntaxNode);
-impl Node for OpClass {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OpClass
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OptimizerHint(pub(crate) SyntaxNode);
-impl Node for OptimizerHint {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OptimizerHint
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl OptimizerHint {
-    pub fn volatile_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::VolatileKw)
-    }
-}
-impl OptimizerHint {
-    pub fn immutable_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ImmutableKw)
-    }
-}
-impl OptimizerHint {
-    pub fn stable_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::StableKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OrderByClause(pub(crate) SyntaxNode);
-impl Node for OrderByClause {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OrderByClause
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl OrderByClause {
-    pub fn order_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OrderKw)
-    }
-}
-impl OrderByClause {
-    pub fn by_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ByKw)
-    }
-}
-impl OrderByClause {
-    pub fn r#order_by_clause_body(&self) -> Option<OrderByClauseBody> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OrderByClauseBody(pub(crate) SyntaxNode);
-impl Node for OrderByClauseBody {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OrderByClauseBody
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl OrderByClauseBody {
-    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
-        self.children()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct OrderedExpression(pub(crate) SyntaxNode);
-impl Node for OrderedExpression {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OrderedExpression
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl OrderedExpression {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-impl OrderedExpression {
-    pub fn asc_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::AscKw)
-    }
-}
-impl OrderedExpression {
-    pub fn desc_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DescKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ParallelHint(pub(crate) SyntaxNode);
-impl Node for ParallelHint {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ParallelHint
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl ParallelHint {
-    pub fn parallel_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ParallelKw)
-    }
-}
-impl ParallelHint {
-    pub fn safe_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::SafeKw)
-    }
-}
-impl ParallelHint {
-    pub fn unsafe_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::UnsafeKw)
-    }
-}
-impl ParallelHint {
-    pub fn restricted_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::RestrictedKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Parameter(pub(crate) SyntaxNode);
-impl Node for Parameter {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Parameter
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl Parameter {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl Parameter {
+impl CreateFunctionReturnType {
     pub fn r#constrained_type(&self) -> Option<ConstrainedType> {
         self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Parameters(pub(crate) SyntaxNode);
-impl Node for Parameters {
+pub struct FunctionLanguage(pub(crate) SyntaxNode);
+impl Node for FunctionLanguage {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Parameters
+        kind == SyntaxKind::FunctionLanguage
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2214,421 +310,14 @@ impl Node for Parameters {
         &self.0
     }
 }
-impl Parameters {
-    pub fn parameters(&self) -> impl Iterator<Item = Parameter> {
-        self.children()
+impl FunctionLanguage {
+    pub fn language_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::LanguageKw)
     }
 }
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ParenthesizedExpression(pub(crate) SyntaxNode);
-impl Node for ParenthesizedExpression {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ParenthesizedExpression
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl ParenthesizedExpression {
-    pub fn r#expression(&self) -> Option<Expression> {
+impl FunctionLanguage {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct PgCommand(pub(crate) SyntaxNode);
-impl Node for PgCommand {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::PgCommand
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct PrimaryKeyConstraint(pub(crate) SyntaxNode);
-impl Node for PrimaryKeyConstraint {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::PrimaryKeyConstraint
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl PrimaryKeyConstraint {
-    pub fn primary_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::PrimaryKw)
-    }
-}
-impl PrimaryKeyConstraint {
-    pub fn key_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::KeyKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ReferencesConstraint(pub(crate) SyntaxNode);
-impl Node for ReferencesConstraint {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ReferencesConstraint
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl ReferencesConstraint {
-    pub fn references_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ReferencesKw)
-    }
-}
-impl ReferencesConstraint {
-    pub fn identifiers(&self) -> impl Iterator<Item = Identifier> {
-        self.children()
-    }
-}
-impl ReferencesConstraint {
-    pub fn r#on_update_action(&self) -> Option<OnUpdateAction> {
-        self.child()
-    }
-}
-impl ReferencesConstraint {
-    pub fn r#on_delete_action(&self) -> Option<OnDeleteAction> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SelectClause(pub(crate) SyntaxNode);
-impl Node for SelectClause {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SelectClause
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl SelectClause {
-    pub fn select_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::SelectKw)
-    }
-}
-impl SelectClause {
-    pub fn r#select_clause_body(&self) -> Option<SelectClauseBody> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SelectClauseBody(pub(crate) SyntaxNode);
-impl Node for SelectClauseBody {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SelectClauseBody
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SelectStatement(pub(crate) SyntaxNode);
-impl Node for SelectStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SelectStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl SelectStatement {
-    pub fn r#select_clause(&self) -> Option<SelectClause> {
-        self.child()
-    }
-}
-impl SelectStatement {
-    pub fn r#from_clause(&self) -> Option<FromClause> {
-        self.child()
-    }
-}
-impl SelectStatement {
-    pub fn join_clauses(&self) -> impl Iterator<Item = JoinClause> {
-        self.children()
-    }
-}
-impl SelectStatement {
-    pub fn r#where_clause(&self) -> Option<WhereClause> {
-        self.child()
-    }
-}
-impl SelectStatement {
-    pub fn r#group_by_clause(&self) -> Option<GroupByClause> {
-        self.child()
-    }
-}
-impl SelectStatement {
-    pub fn r#order_by_clause(&self) -> Option<OrderByClause> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SelectSubexpression(pub(crate) SyntaxNode);
-impl Node for SelectSubexpression {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SelectSubexpression
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl SelectSubexpression {
-    pub fn r#select_statement(&self) -> Option<SelectStatement> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Sequence(pub(crate) SyntaxNode);
-impl Node for Sequence {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Sequence
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl Sequence {
-    pub fn sequence_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::SequenceKw)
-    }
-}
-impl Sequence {
-    pub fn if_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IfKw)
-    }
-}
-impl Sequence {
-    pub fn not_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::NotKw)
-    }
-}
-impl Sequence {
-    pub fn exists_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ExistsKw)
-    }
-}
-impl Sequence {
-    pub fn as_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::AsKw)
-    }
-}
-impl Sequence {
-    pub fn r#type(&self) -> Option<Type> {
-        self.child()
-    }
-}
-impl Sequence {
-    pub fn start_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::StartKw)
-    }
-}
-impl Sequence {
-    pub fn with_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::WithKw)
-    }
-}
-impl Sequence {
-    pub fn r#number(&self) -> Option<Number> {
-        self.child()
-    }
-}
-impl Sequence {
-    pub fn increment_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IncrementKw)
-    }
-}
-impl Sequence {
-    pub fn by_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ByKw)
-    }
-}
-impl Sequence {
-    pub fn no_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::NoKw)
-    }
-}
-impl Sequence {
-    pub fn minvalue_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::MinvalueKw)
-    }
-}
-impl Sequence {
-    pub fn maxvalue_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::MaxvalueKw)
-    }
-}
-impl Sequence {
-    pub fn cache_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::CacheKw)
-    }
-}
-impl Sequence {
-    pub fn owned_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OwnedKw)
-    }
-}
-impl Sequence {
-    pub fn r#dotted_name(&self) -> Option<DottedName> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SetClause(pub(crate) SyntaxNode);
-impl Node for SetClause {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SetClause
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl SetClause {
-    pub fn set_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::SetKw)
-    }
-}
-impl SetClause {
-    pub fn r#set_clause_body(&self) -> Option<SetClauseBody> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SetClauseBody(pub(crate) SyntaxNode);
-impl Node for SetClauseBody {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SetClauseBody
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl SetClauseBody {
-    pub fn assigment_expressions(&self) -> impl Iterator<Item = AssigmentExpression> {
-        self.children()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SetStatement(pub(crate) SyntaxNode);
-impl Node for SetStatement {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SetStatement
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl SetStatement {
-    pub fn set_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::SetKw)
-    }
-}
-impl SetStatement {
-    pub fn session_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::SessionKw)
-    }
-}
-impl SetStatement {
-    pub fn local_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::LocalKw)
-    }
-}
-impl SetStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl SetStatement {
-    pub fn to_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ToKw)
-    }
-}
-impl SetStatement {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
-    }
-}
-impl SetStatement {
-    pub fn default_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::DefaultKw)
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Setof(pub(crate) SyntaxNode);
-impl Node for Setof {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Setof
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl Setof {
-    pub fn setof_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::SetofKw)
-    }
-}
-impl Setof {
-    pub fn r#constrained_type(&self) -> Option<ConstrainedType> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct SourceFile(pub(crate) SyntaxNode);
-impl Node for SourceFile {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SourceFile
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl SourceFile {
-    pub fn statements(&self) -> impl Iterator<Item = Statement> {
-        self.children()
     }
 }
 pub enum Statement {
@@ -2827,6 +516,2789 @@ impl Statement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct TableConstraint(pub(crate) SyntaxNode);
+impl Node for TableConstraint {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::TableConstraint
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl TableConstraint {
+    pub fn constraint_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ConstraintKw)
+    }
+}
+impl TableConstraint {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl TableConstraint {
+    pub fn r#table_constraint_foreign_key(&self) -> Option<TableConstraintForeignKey> {
+        self.child()
+    }
+}
+impl TableConstraint {
+    pub fn r#table_constraint_unique(&self) -> Option<TableConstraintUnique> {
+        self.child()
+    }
+}
+impl TableConstraint {
+    pub fn r#table_constraint_primary_key(&self) -> Option<TableConstraintPrimaryKey> {
+        self.child()
+    }
+}
+impl TableConstraint {
+    pub fn r#table_constraint_check(&self) -> Option<TableConstraintCheck> {
+        self.child()
+    }
+}
+impl TableConstraint {
+    pub fn r#table_constraint_exclude(&self) -> Option<TableConstraintExclude> {
+        self.child()
+    }
+}
+impl TableConstraint {
+    pub fn r#mode(&self) -> Option<Mode> {
+        self.child()
+    }
+}
+impl TableConstraint {
+    pub fn r#initial_mode(&self) -> Option<InitialMode> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct UnquotedIdentifier(pub(crate) SyntaxNode);
+impl Node for UnquotedIdentifier {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::UnquotedIdentifier
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl UnquotedIdentifier {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl UnquotedIdentifier {
+    pub fn r#dotted_name(&self) -> Option<DottedName> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct AlterStatement(pub(crate) SyntaxNode);
+impl Node for AlterStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::AlterStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl AlterStatement {
+    pub fn alter_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AlterKw)
+    }
+}
+impl AlterStatement {
+    pub fn r#sequence(&self) -> Option<Sequence> {
+        self.child()
+    }
+}
+impl AlterStatement {
+    pub fn r#alter_table(&self) -> Option<AlterTable> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct AlterTable(pub(crate) SyntaxNode);
+impl Node for AlterTable {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::AlterTable
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl AlterTable {
+    pub fn table_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TableKw)
+    }
+}
+impl AlterTable {
+    pub fn if_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IfKw)
+    }
+}
+impl AlterTable {
+    pub fn exists_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExistsKw)
+    }
+}
+impl AlterTable {
+    pub fn only_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnlyKw)
+    }
+}
+impl AlterTable {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl AlterTable {
+    pub fn r#alter_table_action(&self) -> Option<AlterTableAction> {
+        self.child()
+    }
+}
+pub enum AlterTableAction {
+    AlterTableActionAdd(AlterTableActionAdd),
+    AlterTableActionAlterColumn(AlterTableActionAlterColumn),
+}
+impl Node for AlterTableAction {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        matches!(
+            kind,
+            SyntaxKind::AlterTableActionAdd | SyntaxKind::AlterTableActionAlterColumn
+        )
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        match syntax.kind() {
+            SyntaxKind::AlterTableActionAdd => Some(AlterTableAction::AlterTableActionAdd(
+                AlterTableActionAdd(syntax),
+            )),
+            SyntaxKind::AlterTableActionAlterColumn => Some(
+                AlterTableAction::AlterTableActionAlterColumn(AlterTableActionAlterColumn(syntax)),
+            ),
+            _ => None,
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        match self {
+            Self::AlterTableActionAdd(node) => node.syntax(),
+            Self::AlterTableActionAlterColumn(node) => node.syntax(),
+        }
+    }
+}
+impl AlterTableAction {
+    pub fn r#alter_table_action_add(&self) -> Option<AlterTableActionAdd> {
+        self.child()
+    }
+}
+impl AlterTableAction {
+    pub fn r#alter_table_action_alter_column(&self) -> Option<AlterTableActionAlterColumn> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct AlterTableActionAdd(pub(crate) SyntaxNode);
+impl Node for AlterTableActionAdd {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::AlterTableActionAdd
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl AlterTableActionAdd {
+    pub fn add_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AddKw)
+    }
+}
+impl AlterTableActionAdd {
+    pub fn column_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ColumnKw)
+    }
+}
+impl AlterTableActionAdd {
+    pub fn r#table_column(&self) -> Option<TableColumn> {
+        self.child()
+    }
+}
+impl AlterTableActionAdd {
+    pub fn r#table_constraint(&self) -> Option<TableConstraint> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct AlterTableActionAlterColumn(pub(crate) SyntaxNode);
+impl Node for AlterTableActionAlterColumn {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::AlterTableActionAlterColumn
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl AlterTableActionAlterColumn {
+    pub fn alter_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AlterKw)
+    }
+}
+impl AlterTableActionAlterColumn {
+    pub fn column_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ColumnKw)
+    }
+}
+impl AlterTableActionAlterColumn {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl AlterTableActionAlterColumn {
+    pub fn set_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SetKw)
+    }
+}
+impl AlterTableActionAlterColumn {
+    pub fn default_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DefaultKw)
+    }
+}
+impl AlterTableActionAlterColumn {
+    pub fn r#column_default_expression(&self) -> Option<ColumnDefaultExpression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ArgumentReference(pub(crate) SyntaxNode);
+impl Node for ArgumentReference {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ArgumentReference
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ArrayElementAccess(pub(crate) SyntaxNode);
+impl Node for ArrayElementAccess {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ArrayElementAccess
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl ArrayElementAccess {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl ArrayElementAccess {
+    pub fn r#argument_reference(&self) -> Option<ArgumentReference> {
+        self.child()
+    }
+}
+impl ArrayElementAccess {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct AssigmentExpression(pub(crate) SyntaxNode);
+impl Node for AssigmentExpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::AssigmentExpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl AssigmentExpression {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl AssigmentExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct AsteriskExpression(pub(crate) SyntaxNode);
+impl Node for AsteriskExpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::AsteriskExpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl AsteriskExpression {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct AutoIncrementConstraint(pub(crate) SyntaxNode);
+impl Node for AutoIncrementConstraint {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::AutoIncrementConstraint
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl AutoIncrementConstraint {
+    pub fn autoincrement_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AutoincrementKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct BinaryExpression(pub(crate) SyntaxNode);
+impl Node for BinaryExpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::BinaryExpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl BinaryExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct BinaryOperator(pub(crate) SyntaxNode);
+impl Node for BinaryOperator {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::BinaryOperator
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct BooleanExpression(pub(crate) SyntaxNode);
+impl Node for BooleanExpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::BooleanExpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl BooleanExpression {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl BooleanExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+impl BooleanExpression {
+    pub fn and_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AndKw)
+    }
+}
+impl BooleanExpression {
+    pub fn or_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OrKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CheckConstraint(pub(crate) SyntaxNode);
+impl Node for CheckConstraint {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CheckConstraint
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CheckConstraint {
+    pub fn check_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CheckKw)
+    }
+}
+impl CheckConstraint {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ColumnDefault(pub(crate) SyntaxNode);
+impl Node for ColumnDefault {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ColumnDefault
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl ColumnDefault {
+    pub fn default_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DefaultKw)
+    }
+}
+impl ColumnDefault {
+    pub fn r#column_default_expression(&self) -> Option<ColumnDefaultExpression> {
+        self.child()
+    }
+}
+impl ColumnDefault {
+    pub fn r#type_cast(&self) -> Option<TypeCast> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Comment(pub(crate) SyntaxNode);
+impl Node for Comment {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Comment
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ComparisonOperator(pub(crate) SyntaxNode);
+impl Node for ComparisonOperator {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ComparisonOperator
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl ComparisonOperator {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ConstrainedType(pub(crate) SyntaxNode);
+impl Node for ConstrainedType {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ConstrainedType
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl ConstrainedType {
+    pub fn r#anytype(&self) -> Option<Anytype> {
+        self.child()
+    }
+}
+impl ConstrainedType {
+    pub fn r#null_constraint(&self) -> Option<NullConstraint> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateDomainStatement(pub(crate) SyntaxNode);
+impl Node for CreateDomainStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateDomainStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateDomainStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateDomainStatement {
+    pub fn domain_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DomainKw)
+    }
+}
+impl CreateDomainStatement {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl CreateDomainStatement {
+    pub fn as_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AsKw)
+    }
+}
+impl CreateDomainStatement {
+    pub fn r#anytype(&self) -> Option<Anytype> {
+        self.child()
+    }
+}
+impl CreateDomainStatement {
+    pub fn r#null_constraint(&self) -> Option<NullConstraint> {
+        self.child()
+    }
+}
+impl CreateDomainStatement {
+    pub fn r#check_constraint(&self) -> Option<CheckConstraint> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateExtensionStatement(pub(crate) SyntaxNode);
+impl Node for CreateExtensionStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateExtensionStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateExtensionStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateExtensionStatement {
+    pub fn extension_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExtensionKw)
+    }
+}
+impl CreateExtensionStatement {
+    pub fn if_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IfKw)
+    }
+}
+impl CreateExtensionStatement {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl CreateExtensionStatement {
+    pub fn exists_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExistsKw)
+    }
+}
+impl CreateExtensionStatement {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateFunctionParameter(pub(crate) SyntaxNode);
+impl Node for CreateFunctionParameter {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateFunctionParameter
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateFunctionParameter {
+    pub fn in_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InKw)
+    }
+}
+impl CreateFunctionParameter {
+    pub fn out_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OutKw)
+    }
+}
+impl CreateFunctionParameter {
+    pub fn inout_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InoutKw)
+    }
+}
+impl CreateFunctionParameter {
+    pub fn variadic_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::VariadicKw)
+    }
+}
+impl CreateFunctionParameter {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl CreateFunctionParameter {
+    pub fn r#anytype(&self) -> Option<Anytype> {
+        self.child()
+    }
+}
+impl CreateFunctionParameter {
+    pub fn r#constrained_type(&self) -> Option<ConstrainedType> {
+        self.child()
+    }
+}
+impl CreateFunctionParameter {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateFunctionParameters(pub(crate) SyntaxNode);
+impl Node for CreateFunctionParameters {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateFunctionParameters
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateFunctionParameters {
+    pub fn create_function_parameters(&self) -> impl Iterator<Item = CreateFunctionParameter> {
+        self.children()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateFunctionStatement(pub(crate) SyntaxNode);
+impl Node for CreateFunctionStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateFunctionStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateFunctionStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateFunctionStatement {
+    pub fn or_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OrKw)
+    }
+}
+impl CreateFunctionStatement {
+    pub fn replace_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ReplaceKw)
+    }
+}
+impl CreateFunctionStatement {
+    pub fn function_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::FunctionKw)
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#create_function_parameters(&self) -> Option<CreateFunctionParameters> {
+        self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn returns_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ReturnsKw)
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#create_function_return_type(&self) -> Option<CreateFunctionReturnType> {
+        self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#function_language(&self) -> Option<FunctionLanguage> {
+        self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#function_body(&self) -> Option<FunctionBody> {
+        self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#optimizer_hint(&self) -> Option<OptimizerHint> {
+        self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#parallel_hint(&self) -> Option<ParallelHint> {
+        self.child()
+    }
+}
+impl CreateFunctionStatement {
+    pub fn r#null_hint(&self) -> Option<NullHint> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateIndexStatement(pub(crate) SyntaxNode);
+impl Node for CreateIndexStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateIndexStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateIndexStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateIndexStatement {
+    pub fn r#unique_constraint(&self) -> Option<UniqueConstraint> {
+        self.child()
+    }
+}
+impl CreateIndexStatement {
+    pub fn index_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IndexKw)
+    }
+}
+impl CreateIndexStatement {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl CreateIndexStatement {
+    pub fn on_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnKw)
+    }
+}
+impl CreateIndexStatement {
+    pub fn r#using_clause(&self) -> Option<UsingClause> {
+        self.child()
+    }
+}
+impl CreateIndexStatement {
+    pub fn r#index_table_parameters(&self) -> Option<IndexTableParameters> {
+        self.child()
+    }
+}
+impl CreateIndexStatement {
+    pub fn r#where_clause(&self) -> Option<WhereClause> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateRoleStatement(pub(crate) SyntaxNode);
+impl Node for CreateRoleStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateRoleStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateRoleStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateRoleStatement {
+    pub fn role_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::RoleKw)
+    }
+}
+impl CreateRoleStatement {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl CreateRoleStatement {
+    pub fn with_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WithKw)
+    }
+}
+impl CreateRoleStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateSchemaStatement(pub(crate) SyntaxNode);
+impl Node for CreateSchemaStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateSchemaStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateSchemaStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateSchemaStatement {
+    pub fn schema_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SchemaKw)
+    }
+}
+impl CreateSchemaStatement {
+    pub fn if_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IfKw)
+    }
+}
+impl CreateSchemaStatement {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl CreateSchemaStatement {
+    pub fn exists_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExistsKw)
+    }
+}
+impl CreateSchemaStatement {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateStatement(pub(crate) SyntaxNode);
+impl Node for CreateStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateStatement {
+    pub fn temp_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TempKw)
+    }
+}
+impl CreateStatement {
+    pub fn temporary_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TemporaryKw)
+    }
+}
+impl CreateStatement {
+    pub fn r#sequence(&self) -> Option<Sequence> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateTableStatement(pub(crate) SyntaxNode);
+impl Node for CreateTableStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateTableStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateTableStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateTableStatement {
+    pub fn temporary_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TemporaryKw)
+    }
+}
+impl CreateTableStatement {
+    pub fn table_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TableKw)
+    }
+}
+impl CreateTableStatement {
+    pub fn if_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IfKw)
+    }
+}
+impl CreateTableStatement {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl CreateTableStatement {
+    pub fn exists_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExistsKw)
+    }
+}
+impl CreateTableStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl CreateTableStatement {
+    pub fn r#table_parameters(&self) -> Option<TableParameters> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateTypeStatement(pub(crate) SyntaxNode);
+impl Node for CreateTypeStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateTypeStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateTypeStatement {
+    pub fn create_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CreateKw)
+    }
+}
+impl CreateTypeStatement {
+    pub fn type_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TypeKw)
+    }
+}
+impl CreateTypeStatement {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl CreateTypeStatement {
+    pub fn as_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AsKw)
+    }
+}
+impl CreateTypeStatement {
+    pub fn r#parameters(&self) -> Option<Parameters> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct DirectionConstraint(pub(crate) SyntaxNode);
+impl Node for DirectionConstraint {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::DirectionConstraint
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl DirectionConstraint {
+    pub fn asc_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AscKw)
+    }
+}
+impl DirectionConstraint {
+    pub fn desc_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DescKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct DistinctFrom(pub(crate) SyntaxNode);
+impl Node for DistinctFrom {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::DistinctFrom
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl DistinctFrom {
+    pub fn distinct_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DistinctKw)
+    }
+}
+impl DistinctFrom {
+    pub fn from_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::FromKw)
+    }
+}
+impl DistinctFrom {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct DottedName(pub(crate) SyntaxNode);
+impl Node for DottedName {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::DottedName
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl DottedName {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct DropStatement(pub(crate) SyntaxNode);
+impl Node for DropStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::DropStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl DropStatement {
+    pub fn drop_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DropKw)
+    }
+}
+impl DropStatement {
+    pub fn table_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TableKw)
+    }
+}
+impl DropStatement {
+    pub fn view_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ViewKw)
+    }
+}
+impl DropStatement {
+    pub fn tablespace_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TablespaceKw)
+    }
+}
+impl DropStatement {
+    pub fn extension_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExtensionKw)
+    }
+}
+impl DropStatement {
+    pub fn index_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IndexKw)
+    }
+}
+impl DropStatement {
+    pub fn if_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IfKw)
+    }
+}
+impl DropStatement {
+    pub fn exists_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExistsKw)
+    }
+}
+impl DropStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ExcludeEntry(pub(crate) SyntaxNode);
+impl Node for ExcludeEntry {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ExcludeEntry
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl ExcludeEntry {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl ExcludeEntry {
+    pub fn r#op_class(&self) -> Option<OpClass> {
+        self.child()
+    }
+}
+impl ExcludeEntry {
+    pub fn with_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WithKw)
+    }
+}
+impl ExcludeEntry {
+    pub fn r#binary_operator(&self) -> Option<BinaryOperator> {
+        self.child()
+    }
+}
+pub enum Expression {
+    IntervalExpression(IntervalExpression),
+    FunctionCall(FunctionCall),
+    String(String),
+    FieldAccess(FieldAccess),
+    True(True),
+    False(False),
+    Null(Null),
+    AsteriskExpression(AsteriskExpression),
+    Identifier(Identifier),
+    Number(Number),
+    ComparisonOperator(ComparisonOperator),
+    InExpression(InExpression),
+    IsExpression(IsExpression),
+    BooleanExpression(BooleanExpression),
+    ParenthesizedExpression(ParenthesizedExpression),
+    TypeCast(TypeCast),
+    BinaryExpression(BinaryExpression),
+    ArrayElementAccess(ArrayElementAccess),
+    ArgumentReference(ArgumentReference),
+    SelectSubexpression(SelectSubexpression),
+}
+impl Node for Expression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        matches!(
+            kind,
+            SyntaxKind::IntervalExpression
+                | SyntaxKind::FunctionCall
+                | SyntaxKind::String
+                | SyntaxKind::FieldAccess
+                | SyntaxKind::True
+                | SyntaxKind::False
+                | SyntaxKind::Null
+                | SyntaxKind::AsteriskExpression
+                | SyntaxKind::Identifier
+                | SyntaxKind::Number
+                | SyntaxKind::ComparisonOperator
+                | SyntaxKind::InExpression
+                | SyntaxKind::IsExpression
+                | SyntaxKind::BooleanExpression
+                | SyntaxKind::ParenthesizedExpression
+                | SyntaxKind::TypeCast
+                | SyntaxKind::BinaryExpression
+                | SyntaxKind::ArrayElementAccess
+                | SyntaxKind::ArgumentReference
+                | SyntaxKind::SelectSubexpression
+        )
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        match syntax.kind() {
+            SyntaxKind::IntervalExpression => {
+                Some(Expression::IntervalExpression(IntervalExpression(syntax)))
+            }
+            SyntaxKind::FunctionCall => Some(Expression::FunctionCall(FunctionCall(syntax))),
+            SyntaxKind::String => Some(Expression::String(String(syntax))),
+            SyntaxKind::FieldAccess => Some(Expression::FieldAccess(FieldAccess(syntax))),
+            SyntaxKind::True => Some(Expression::True(True(syntax))),
+            SyntaxKind::False => Some(Expression::False(False(syntax))),
+            SyntaxKind::Null => Some(Expression::Null(Null(syntax))),
+            SyntaxKind::AsteriskExpression => {
+                Some(Expression::AsteriskExpression(AsteriskExpression(syntax)))
+            }
+            SyntaxKind::Identifier => Some(Expression::Identifier(Identifier(syntax))),
+            SyntaxKind::Number => Some(Expression::Number(Number(syntax))),
+            SyntaxKind::ComparisonOperator => {
+                Some(Expression::ComparisonOperator(ComparisonOperator(syntax)))
+            }
+            SyntaxKind::InExpression => Some(Expression::InExpression(InExpression(syntax))),
+            SyntaxKind::IsExpression => Some(Expression::IsExpression(IsExpression(syntax))),
+            SyntaxKind::BooleanExpression => {
+                Some(Expression::BooleanExpression(BooleanExpression(syntax)))
+            }
+            SyntaxKind::ParenthesizedExpression => Some(Expression::ParenthesizedExpression(
+                ParenthesizedExpression(syntax),
+            )),
+            SyntaxKind::TypeCast => Some(Expression::TypeCast(TypeCast(syntax))),
+            SyntaxKind::BinaryExpression => {
+                Some(Expression::BinaryExpression(BinaryExpression(syntax)))
+            }
+            SyntaxKind::ArrayElementAccess => {
+                Some(Expression::ArrayElementAccess(ArrayElementAccess(syntax)))
+            }
+            SyntaxKind::ArgumentReference => {
+                Some(Expression::ArgumentReference(ArgumentReference(syntax)))
+            }
+            SyntaxKind::SelectSubexpression => {
+                Some(Expression::SelectSubexpression(SelectSubexpression(syntax)))
+            }
+            _ => None,
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        match self {
+            Self::IntervalExpression(node) => node.syntax(),
+            Self::FunctionCall(node) => node.syntax(),
+            Self::String(node) => node.syntax(),
+            Self::FieldAccess(node) => node.syntax(),
+            Self::True(node) => node.syntax(),
+            Self::False(node) => node.syntax(),
+            Self::Null(node) => node.syntax(),
+            Self::AsteriskExpression(node) => node.syntax(),
+            Self::Identifier(node) => node.syntax(),
+            Self::Number(node) => node.syntax(),
+            Self::ComparisonOperator(node) => node.syntax(),
+            Self::InExpression(node) => node.syntax(),
+            Self::IsExpression(node) => node.syntax(),
+            Self::BooleanExpression(node) => node.syntax(),
+            Self::ParenthesizedExpression(node) => node.syntax(),
+            Self::TypeCast(node) => node.syntax(),
+            Self::BinaryExpression(node) => node.syntax(),
+            Self::ArrayElementAccess(node) => node.syntax(),
+            Self::ArgumentReference(node) => node.syntax(),
+            Self::SelectSubexpression(node) => node.syntax(),
+        }
+    }
+}
+impl Expression {
+    pub fn r#interval_expression(&self) -> Option<IntervalExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#function_call(&self) -> Option<FunctionCall> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#string(&self) -> Option<String> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#field_access(&self) -> Option<FieldAccess> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#true(&self) -> Option<True> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#false(&self) -> Option<False> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#null(&self) -> Option<Null> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#asterisk_expression(&self) -> Option<AsteriskExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#number(&self) -> Option<Number> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#comparison_operator(&self) -> Option<ComparisonOperator> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#in_expression(&self) -> Option<InExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#is_expression(&self) -> Option<IsExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#boolean_expression(&self) -> Option<BooleanExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#parenthesized_expression(&self) -> Option<ParenthesizedExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#type_cast(&self) -> Option<TypeCast> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#binary_expression(&self) -> Option<BinaryExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#array_element_access(&self) -> Option<ArrayElementAccess> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#argument_reference(&self) -> Option<ArgumentReference> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#select_subexpression(&self) -> Option<SelectSubexpression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FieldAccess(pub(crate) SyntaxNode);
+impl Node for FieldAccess {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::FieldAccess
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl FieldAccess {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl FieldAccess {
+    pub fn r#string(&self) -> Option<String> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FromClause(pub(crate) SyntaxNode);
+impl Node for FromClause {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::FromClause
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl FromClause {
+    pub fn from_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::FromKw)
+    }
+}
+impl FromClause {
+    pub fn r#aliasable_expression(&self) -> Option<AliasableExpression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FunctionBody(pub(crate) SyntaxNode);
+impl Node for FunctionBody {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::FunctionBody
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl FunctionBody {
+    pub fn as_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AsKw)
+    }
+}
+impl FunctionBody {
+    pub fn r#select_statement(&self) -> Option<SelectStatement> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FunctionCall(pub(crate) SyntaxNode);
+impl Node for FunctionCall {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::FunctionCall
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl FunctionCall {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl FunctionCall {
+    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
+        self.children()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct GrantStatement(pub(crate) SyntaxNode);
+impl Node for GrantStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::GrantStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl GrantStatement {
+    pub fn grant_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::GrantKw)
+    }
+}
+impl GrantStatement {
+    pub fn all_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AllKw)
+    }
+}
+impl GrantStatement {
+    pub fn privileges_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::PrivilegesKw)
+    }
+}
+impl GrantStatement {
+    pub fn select_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SelectKw)
+    }
+}
+impl GrantStatement {
+    pub fn insert_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InsertKw)
+    }
+}
+impl GrantStatement {
+    pub fn update_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UpdateKw)
+    }
+}
+impl GrantStatement {
+    pub fn delete_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DeleteKw)
+    }
+}
+impl GrantStatement {
+    pub fn truncate_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TruncateKw)
+    }
+}
+impl GrantStatement {
+    pub fn references_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ReferencesKw)
+    }
+}
+impl GrantStatement {
+    pub fn trigger_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TriggerKw)
+    }
+}
+impl GrantStatement {
+    pub fn usage_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UsageKw)
+    }
+}
+impl GrantStatement {
+    pub fn on_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnKw)
+    }
+}
+impl GrantStatement {
+    pub fn schema_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SchemaKw)
+    }
+}
+impl GrantStatement {
+    pub fn database_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DatabaseKw)
+    }
+}
+impl GrantStatement {
+    pub fn sequence_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SequenceKw)
+    }
+}
+impl GrantStatement {
+    pub fn table_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TableKw)
+    }
+}
+impl GrantStatement {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl GrantStatement {
+    pub fn to_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ToKw)
+    }
+}
+impl GrantStatement {
+    pub fn group_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::GroupKw)
+    }
+}
+impl GrantStatement {
+    pub fn public_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::PublicKw)
+    }
+}
+impl GrantStatement {
+    pub fn with_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WithKw)
+    }
+}
+impl GrantStatement {
+    pub fn option_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OptionKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct GroupByClause(pub(crate) SyntaxNode);
+impl Node for GroupByClause {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::GroupByClause
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl GroupByClause {
+    pub fn group_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::GroupKw)
+    }
+}
+impl GroupByClause {
+    pub fn by_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ByKw)
+    }
+}
+impl GroupByClause {
+    pub fn r#group_by_clause_body(&self) -> Option<GroupByClauseBody> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct GroupByClauseBody(pub(crate) SyntaxNode);
+impl Node for GroupByClauseBody {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::GroupByClauseBody
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl GroupByClauseBody {
+    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
+        self.children()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Identifier(pub(crate) SyntaxNode);
+impl Node for Identifier {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Identifier
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl Identifier {
+    pub fn r#unquoted_identifier(&self) -> Option<UnquotedIdentifier> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct InExpression(pub(crate) SyntaxNode);
+impl Node for InExpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::InExpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl InExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+impl InExpression {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl InExpression {
+    pub fn in_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InKw)
+    }
+}
+impl InExpression {
+    pub fn r#tuple(&self) -> Option<Tuple> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct IndexTableParameters(pub(crate) SyntaxNode);
+impl Node for IndexTableParameters {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::IndexTableParameters
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl IndexTableParameters {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+impl IndexTableParameters {
+    pub fn r#ordered_expression(&self) -> Option<OrderedExpression> {
+        self.child()
+    }
+}
+impl IndexTableParameters {
+    pub fn r#op_class(&self) -> Option<OpClass> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct InitialMode(pub(crate) SyntaxNode);
+impl Node for InitialMode {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::InitialMode
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl InitialMode {
+    pub fn initially_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InitiallyKw)
+    }
+}
+impl InitialMode {
+    pub fn deferred_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DeferredKw)
+    }
+}
+impl InitialMode {
+    pub fn immediate_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ImmediateKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct InsertStatement(pub(crate) SyntaxNode);
+impl Node for InsertStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::InsertStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl InsertStatement {
+    pub fn insert_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InsertKw)
+    }
+}
+impl InsertStatement {
+    pub fn into_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IntoKw)
+    }
+}
+impl InsertStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl InsertStatement {
+    pub fn r#values_clause(&self) -> Option<ValuesClause> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct IntervalExpression(pub(crate) SyntaxNode);
+impl Node for IntervalExpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::IntervalExpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl IntervalExpression {
+    pub fn interval_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IntervalKw)
+    }
+}
+impl IntervalExpression {
+    pub fn r#string(&self) -> Option<String> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct IsExpression(pub(crate) SyntaxNode);
+impl Node for IsExpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::IsExpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl IsExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+impl IsExpression {
+    pub fn is_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IsKw)
+    }
+}
+impl IsExpression {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl IsExpression {
+    pub fn r#null(&self) -> Option<Null> {
+        self.child()
+    }
+}
+impl IsExpression {
+    pub fn r#true(&self) -> Option<True> {
+        self.child()
+    }
+}
+impl IsExpression {
+    pub fn r#false(&self) -> Option<False> {
+        self.child()
+    }
+}
+impl IsExpression {
+    pub fn r#distinct_from(&self) -> Option<DistinctFrom> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct JoinClause(pub(crate) SyntaxNode);
+impl Node for JoinClause {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::JoinClause
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl JoinClause {
+    pub fn r#join_type(&self) -> Option<JoinType> {
+        self.child()
+    }
+}
+impl JoinClause {
+    pub fn join_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::JoinKw)
+    }
+}
+impl JoinClause {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl JoinClause {
+    pub fn on_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnKw)
+    }
+}
+impl JoinClause {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct JoinType(pub(crate) SyntaxNode);
+impl Node for JoinType {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::JoinType
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl JoinType {
+    pub fn inner_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InnerKw)
+    }
+}
+impl JoinType {
+    pub fn left_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::LeftKw)
+    }
+}
+impl JoinType {
+    pub fn right_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::RightKw)
+    }
+}
+impl JoinType {
+    pub fn full_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::FullKw)
+    }
+}
+impl JoinType {
+    pub fn outer_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OuterKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Mode(pub(crate) SyntaxNode);
+impl Node for Mode {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Mode
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl Mode {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl Mode {
+    pub fn deferrable_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DeferrableKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Name(pub(crate) SyntaxNode);
+impl Node for Name {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Name
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct NamedConstraint(pub(crate) SyntaxNode);
+impl Node for NamedConstraint {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::NamedConstraint
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl NamedConstraint {
+    pub fn constraint_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ConstraintKw)
+    }
+}
+impl NamedConstraint {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct NullConstraint(pub(crate) SyntaxNode);
+impl Node for NullConstraint {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::NullConstraint
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl NullConstraint {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl NullConstraint {
+    pub fn r#null(&self) -> Option<Null> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct NullHint(pub(crate) SyntaxNode);
+impl Node for NullHint {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::NullHint
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl NullHint {
+    pub fn called_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CalledKw)
+    }
+}
+impl NullHint {
+    pub fn on_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnKw)
+    }
+}
+impl NullHint {
+    pub fn null_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NullKw)
+    }
+}
+impl NullHint {
+    pub fn input_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::InputKw)
+    }
+}
+impl NullHint {
+    pub fn returns_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ReturnsKw)
+    }
+}
+impl NullHint {
+    pub fn strict_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::StrictKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Number(pub(crate) SyntaxNode);
+impl Node for Number {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Number
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct OnDeleteAction(pub(crate) SyntaxNode);
+impl Node for OnDeleteAction {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::OnDeleteAction
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl OnDeleteAction {
+    pub fn on_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnKw)
+    }
+}
+impl OnDeleteAction {
+    pub fn delete_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DeleteKw)
+    }
+}
+impl OnDeleteAction {
+    pub fn r#constraint_action(&self) -> Option<ConstraintAction> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct OnUpdateAction(pub(crate) SyntaxNode);
+impl Node for OnUpdateAction {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::OnUpdateAction
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl OnUpdateAction {
+    pub fn on_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OnKw)
+    }
+}
+impl OnUpdateAction {
+    pub fn update_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UpdateKw)
+    }
+}
+impl OnUpdateAction {
+    pub fn r#constraint_action(&self) -> Option<ConstraintAction> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct OpClass(pub(crate) SyntaxNode);
+impl Node for OpClass {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::OpClass
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl OpClass {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct OptimizerHint(pub(crate) SyntaxNode);
+impl Node for OptimizerHint {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::OptimizerHint
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl OptimizerHint {
+    pub fn volatile_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::VolatileKw)
+    }
+}
+impl OptimizerHint {
+    pub fn immutable_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ImmutableKw)
+    }
+}
+impl OptimizerHint {
+    pub fn stable_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::StableKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct OrderByClause(pub(crate) SyntaxNode);
+impl Node for OrderByClause {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::OrderByClause
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl OrderByClause {
+    pub fn order_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OrderKw)
+    }
+}
+impl OrderByClause {
+    pub fn by_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ByKw)
+    }
+}
+impl OrderByClause {
+    pub fn r#order_by_clause_body(&self) -> Option<OrderByClauseBody> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct OrderByClauseBody(pub(crate) SyntaxNode);
+impl Node for OrderByClauseBody {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::OrderByClauseBody
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl OrderByClauseBody {
+    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
+        self.children()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct OrderedExpression(pub(crate) SyntaxNode);
+impl Node for OrderedExpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::OrderedExpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl OrderedExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+impl OrderedExpression {
+    pub fn asc_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AscKw)
+    }
+}
+impl OrderedExpression {
+    pub fn desc_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DescKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ParallelHint(pub(crate) SyntaxNode);
+impl Node for ParallelHint {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ParallelHint
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl ParallelHint {
+    pub fn parallel_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ParallelKw)
+    }
+}
+impl ParallelHint {
+    pub fn safe_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SafeKw)
+    }
+}
+impl ParallelHint {
+    pub fn unsafe_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::UnsafeKw)
+    }
+}
+impl ParallelHint {
+    pub fn restricted_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::RestrictedKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Parameter(pub(crate) SyntaxNode);
+impl Node for Parameter {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Parameter
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl Parameter {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl Parameter {
+    pub fn r#anytype(&self) -> Option<Anytype> {
+        self.child()
+    }
+}
+impl Parameter {
+    pub fn r#constrained_type(&self) -> Option<ConstrainedType> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Parameters(pub(crate) SyntaxNode);
+impl Node for Parameters {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Parameters
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl Parameters {
+    pub fn parameters(&self) -> impl Iterator<Item = Parameter> {
+        self.children()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ParenthesizedExpression(pub(crate) SyntaxNode);
+impl Node for ParenthesizedExpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ParenthesizedExpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl ParenthesizedExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct PgCommand(pub(crate) SyntaxNode);
+impl Node for PgCommand {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::PgCommand
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct PrimaryKeyConstraint(pub(crate) SyntaxNode);
+impl Node for PrimaryKeyConstraint {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::PrimaryKeyConstraint
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl PrimaryKeyConstraint {
+    pub fn primary_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::PrimaryKw)
+    }
+}
+impl PrimaryKeyConstraint {
+    pub fn key_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::KeyKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ReferencesConstraint(pub(crate) SyntaxNode);
+impl Node for ReferencesConstraint {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ReferencesConstraint
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl ReferencesConstraint {
+    pub fn references_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ReferencesKw)
+    }
+}
+impl ReferencesConstraint {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl ReferencesConstraint {
+    pub fn names(&self) -> impl Iterator<Item = Name> {
+        self.children()
+    }
+}
+impl ReferencesConstraint {
+    pub fn r#on_update_action(&self) -> Option<OnUpdateAction> {
+        self.child()
+    }
+}
+impl ReferencesConstraint {
+    pub fn r#on_delete_action(&self) -> Option<OnDeleteAction> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct SelectClause(pub(crate) SyntaxNode);
+impl Node for SelectClause {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::SelectClause
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl SelectClause {
+    pub fn select_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SelectKw)
+    }
+}
+impl SelectClause {
+    pub fn r#select_clause_body(&self) -> Option<SelectClauseBody> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct SelectClauseBody(pub(crate) SyntaxNode);
+impl Node for SelectClauseBody {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::SelectClauseBody
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl SelectClauseBody {
+    pub fn r#aliasable_expression(&self) -> Option<AliasableExpression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct SelectStatement(pub(crate) SyntaxNode);
+impl Node for SelectStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::SelectStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl SelectStatement {
+    pub fn r#select_clause(&self) -> Option<SelectClause> {
+        self.child()
+    }
+}
+impl SelectStatement {
+    pub fn r#from_clause(&self) -> Option<FromClause> {
+        self.child()
+    }
+}
+impl SelectStatement {
+    pub fn join_clauses(&self) -> impl Iterator<Item = JoinClause> {
+        self.children()
+    }
+}
+impl SelectStatement {
+    pub fn r#where_clause(&self) -> Option<WhereClause> {
+        self.child()
+    }
+}
+impl SelectStatement {
+    pub fn r#group_by_clause(&self) -> Option<GroupByClause> {
+        self.child()
+    }
+}
+impl SelectStatement {
+    pub fn r#order_by_clause(&self) -> Option<OrderByClause> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct SelectSubexpression(pub(crate) SyntaxNode);
+impl Node for SelectSubexpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::SelectSubexpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl SelectSubexpression {
+    pub fn r#select_statement(&self) -> Option<SelectStatement> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Sequence(pub(crate) SyntaxNode);
+impl Node for Sequence {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Sequence
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl Sequence {
+    pub fn sequence_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SequenceKw)
+    }
+}
+impl Sequence {
+    pub fn if_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IfKw)
+    }
+}
+impl Sequence {
+    pub fn not_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NotKw)
+    }
+}
+impl Sequence {
+    pub fn exists_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ExistsKw)
+    }
+}
+impl Sequence {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl Sequence {
+    pub fn as_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::AsKw)
+    }
+}
+impl Sequence {
+    pub fn r#type(&self) -> Option<Type> {
+        self.child()
+    }
+}
+impl Sequence {
+    pub fn start_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::StartKw)
+    }
+}
+impl Sequence {
+    pub fn with_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WithKw)
+    }
+}
+impl Sequence {
+    pub fn r#number(&self) -> Option<Number> {
+        self.child()
+    }
+}
+impl Sequence {
+    pub fn increment_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IncrementKw)
+    }
+}
+impl Sequence {
+    pub fn by_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ByKw)
+    }
+}
+impl Sequence {
+    pub fn no_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::NoKw)
+    }
+}
+impl Sequence {
+    pub fn minvalue_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::MinvalueKw)
+    }
+}
+impl Sequence {
+    pub fn maxvalue_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::MaxvalueKw)
+    }
+}
+impl Sequence {
+    pub fn cache_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CacheKw)
+    }
+}
+impl Sequence {
+    pub fn owned_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OwnedKw)
+    }
+}
+impl Sequence {
+    pub fn r#dotted_name(&self) -> Option<DottedName> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct SetClause(pub(crate) SyntaxNode);
+impl Node for SetClause {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::SetClause
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl SetClause {
+    pub fn set_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SetKw)
+    }
+}
+impl SetClause {
+    pub fn r#set_clause_body(&self) -> Option<SetClauseBody> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct SetClauseBody(pub(crate) SyntaxNode);
+impl Node for SetClauseBody {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::SetClauseBody
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl SetClauseBody {
+    pub fn assigment_expressions(&self) -> impl Iterator<Item = AssigmentExpression> {
+        self.children()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct SetStatement(pub(crate) SyntaxNode);
+impl Node for SetStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::SetStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl SetStatement {
+    pub fn set_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SetKw)
+    }
+}
+impl SetStatement {
+    pub fn session_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SessionKw)
+    }
+}
+impl SetStatement {
+    pub fn local_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::LocalKw)
+    }
+}
+impl SetStatement {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl SetStatement {
+    pub fn to_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::ToKw)
+    }
+}
+impl SetStatement {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+impl SetStatement {
+    pub fn default_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::DefaultKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Setof(pub(crate) SyntaxNode);
+impl Node for Setof {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Setof
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl Setof {
+    pub fn setof_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SetofKw)
+    }
+}
+impl Setof {
+    pub fn r#anytype(&self) -> Option<Anytype> {
+        self.child()
+    }
+}
+impl Setof {
+    pub fn r#constrained_type(&self) -> Option<ConstrainedType> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct SourceFile(pub(crate) SyntaxNode);
+impl Node for SourceFile {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::SourceFile
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl SourceFile {
+    pub fn r#statement(&self) -> Option<Statement> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct String(pub(crate) SyntaxNode);
 impl Node for String {
     fn can_cast(kind: SyntaxKind) -> bool {
@@ -2850,6 +3322,16 @@ impl Node for TableColumn {
     }
     fn syntax(&self) -> &SyntaxNode {
         &self.0
+    }
+}
+impl TableColumn {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl TableColumn {
+    pub fn r#anytype(&self) -> Option<Anytype> {
+        self.child()
     }
 }
 impl TableColumn {
@@ -2949,6 +3431,11 @@ impl TableConstraintExclude {
     }
 }
 impl TableConstraintExclude {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl TableConstraintExclude {
     pub fn exclude_entrys(&self) -> impl Iterator<Item = ExcludeEntry> {
         self.children()
     }
@@ -2977,7 +3464,7 @@ impl TableConstraintForeignKey {
     }
 }
 impl TableConstraintForeignKey {
-    pub fn identifiers(&self) -> impl Iterator<Item = Identifier> {
+    pub fn names(&self) -> impl Iterator<Item = Name> {
         self.children()
     }
 }
@@ -3009,6 +3496,11 @@ impl TableConstraintPrimaryKey {
         self.token(SyntaxKind::KeyKw)
     }
 }
+impl TableConstraintPrimaryKey {
+    pub fn identifiers(&self) -> impl Iterator<Item = Identifier> {
+        self.children()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TableConstraintUnique(pub(crate) SyntaxNode);
 impl Node for TableConstraintUnique {
@@ -3027,6 +3519,11 @@ impl TableConstraintUnique {
         self.token(SyntaxKind::UniqueKw)
     }
 }
+impl TableConstraintUnique {
+    pub fn identifiers(&self) -> impl Iterator<Item = Identifier> {
+        self.children()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TableParameters(pub(crate) SyntaxNode);
 impl Node for TableParameters {
@@ -3042,6 +3539,11 @@ impl Node for TableParameters {
 }
 impl TableParameters {
     pub fn r#table_column(&self) -> Option<TableColumn> {
+        self.child()
+    }
+}
+impl TableParameters {
+    pub fn r#table_constraint(&self) -> Option<TableConstraint> {
         self.child()
     }
 }
@@ -3110,6 +3612,11 @@ impl Node for Type {
     }
 }
 impl Type {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl Type {
     pub fn r#number(&self) -> Option<Number> {
         self.child()
     }
@@ -3138,12 +3645,17 @@ impl TypeCast {
     }
 }
 impl TypeCast {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
 impl TypeCast {
     pub fn r#function_call(&self) -> Option<FunctionCall> {
+        self.child()
+    }
+}
+impl TypeCast {
+    pub fn r#anytype(&self) -> Option<Anytype> {
         self.child()
     }
 }
@@ -3184,7 +3696,7 @@ impl UpdateStatement {
     }
 }
 impl UpdateStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -3217,7 +3729,7 @@ impl UsingClause {
     }
 }
 impl UsingClause {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -3287,6 +3799,25 @@ impl WhereClause {
 }
 pub trait Visitor {
     fn visit_kw(&mut self, kw: SyntaxToken) {}
+    fn visit_aliasable_expression(&mut self, r#aliasable_expression: AliasableExpression) {
+        for r#aliased_expression in r#aliasable_expression.r#aliased_expression() {
+            self.visit_aliased_expression(r#aliased_expression);
+        }
+        for r#expression in r#aliasable_expression.r#expression() {
+            self.visit_expression(r#expression);
+        }
+    }
+    fn visit_aliased_expression(&mut self, r#aliased_expression: AliasedExpression) {
+        if let Some(kw) = r#aliased_expression.as_kw() {
+            self.visit_kw(kw);
+        }
+        for r#expression in r#aliased_expression.r#expression() {
+            self.visit_expression(r#expression);
+        }
+        for r#name in r#aliased_expression.r#name() {
+            self.visit_name(r#name);
+        }
+    }
     fn visit_alter_statement(&mut self, r#alter_statement: AlterStatement) {
         if let Some(kw) = r#alter_statement.alter_kw() {
             self.visit_kw(kw);
@@ -3314,6 +3845,9 @@ pub trait Visitor {
         for r#alter_table_action in r#alter_table.r#alter_table_action() {
             self.visit_alter_table_action(r#alter_table_action);
         }
+        for r#identifier in r#alter_table.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
     }
     fn visit_alter_table_action(&mut self, r#alter_table_action: AlterTableAction) {
         match r#alter_table_action {
@@ -3329,6 +3863,9 @@ pub trait Visitor {
         }
         if let Some(kw) = r#alter_table_action_add.column_kw() {
             self.visit_kw(kw);
+        }
+        for r#table_constraint in r#alter_table_action_add.r#table_constraint() {
+            self.visit_table_constraint(r#table_constraint);
         }
         for r#table_column in r#alter_table_action_add.r#table_column() {
             self.visit_table_column(r#table_column);
@@ -3350,6 +3887,22 @@ pub trait Visitor {
         if let Some(kw) = r#alter_table_action_alter_column.set_kw() {
             self.visit_kw(kw);
         }
+        for r#column_default_expression in
+            r#alter_table_action_alter_column.r#column_default_expression()
+        {
+            self.visit_column_default_expression(r#column_default_expression);
+        }
+        for r#identifier in r#alter_table_action_alter_column.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
+    }
+    fn visit_anytype(&mut self, r#anytype: Anytype) {
+        for r#anytype in r#anytype.r#anytype() {
+            self.visit_anytype(r#anytype);
+        }
+        for r#type in r#anytype.r#type() {
+            self.visit_type(r#type);
+        }
     }
     fn visit_argument_reference(&mut self, r#argument_reference: ArgumentReference) {}
     fn visit_array_element_access(&mut self, r#array_element_access: ArrayElementAccess) {
@@ -3359,22 +3912,21 @@ pub trait Visitor {
         for r#expression in r#array_element_access.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#identifier in r#array_element_access.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#array_element_access.r#name() {
+            self.visit_name(r#name);
         }
     }
-    fn visit_array_type(&mut self, r#array_type: ArrayType) {}
     fn visit_assigment_expression(&mut self, r#assigment_expression: AssigmentExpression) {
         for r#expression in r#assigment_expression.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#identifier in r#assigment_expression.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#assigment_expression.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_asterisk_expression(&mut self, r#asterisk_expression: AsteriskExpression) {
-        for r#identifier in r#asterisk_expression.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#asterisk_expression.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_auto_increment_constraint(
@@ -3417,8 +3969,24 @@ pub trait Visitor {
         if let Some(kw) = r#column_default.default_kw() {
             self.visit_kw(kw);
         }
+        for r#column_default_expression in r#column_default.r#column_default_expression() {
+            self.visit_column_default_expression(r#column_default_expression);
+        }
         for r#type_cast in r#column_default.r#type_cast() {
             self.visit_type_cast(r#type_cast);
+        }
+    }
+    fn visit_column_default_expression(
+        &mut self,
+        r#column_default_expression: ColumnDefaultExpression,
+    ) {
+        match r#column_default_expression {
+            ColumnDefaultExpression::ParenthesizedExpression(node) => {
+                self.visit_parenthesized_expression(node)
+            }
+            ColumnDefaultExpression::String(node) => self.visit_string(node),
+            ColumnDefaultExpression::Name(node) => self.visit_name(node),
+            ColumnDefaultExpression::FunctionCall(node) => self.visit_function_call(node),
         }
     }
     fn visit_comment(&mut self, r#comment: Comment) {}
@@ -3428,8 +3996,33 @@ pub trait Visitor {
         }
     }
     fn visit_constrained_type(&mut self, r#constrained_type: ConstrainedType) {
+        for r#anytype in r#constrained_type.r#anytype() {
+            self.visit_anytype(r#anytype);
+        }
         for r#null_constraint in r#constrained_type.r#null_constraint() {
             self.visit_null_constraint(r#null_constraint);
+        }
+    }
+    fn visit_constraint(&mut self, r#constraint: Constraint) {
+        for r#check_constraint in r#constraint.r#check_constraint() {
+            self.visit_check_constraint(r#check_constraint);
+        }
+        for r#null_constraint in r#constraint.r#null_constraint() {
+            self.visit_null_constraint(r#null_constraint);
+        }
+    }
+    fn visit_constraint_action(&mut self, r#constraint_action: ConstraintAction) {
+        if let Some(kw) = r#constraint_action.cascade_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#constraint_action.null_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#constraint_action.restrict_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#constraint_action.set_kw() {
+            self.visit_kw(kw);
         }
     }
     fn visit_create_domain_statement(&mut self, r#create_domain_statement: CreateDomainStatement) {
@@ -3442,11 +4035,14 @@ pub trait Visitor {
         if let Some(kw) = r#create_domain_statement.domain_kw() {
             self.visit_kw(kw);
         }
+        for r#anytype in r#create_domain_statement.r#anytype() {
+            self.visit_anytype(r#anytype);
+        }
         for r#check_constraint in r#create_domain_statement.r#check_constraint() {
             self.visit_check_constraint(r#check_constraint);
         }
-        for r#identifier in r#create_domain_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#create_domain_statement.r#name() {
+            self.visit_name(r#name);
         }
         for r#null_constraint in r#create_domain_statement.r#null_constraint() {
             self.visit_null_constraint(r#null_constraint);
@@ -3471,8 +4067,8 @@ pub trait Visitor {
         if let Some(kw) = r#create_extension_statement.not_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#create_extension_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#create_extension_statement.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_create_function_parameter(
@@ -3491,14 +4087,17 @@ pub trait Visitor {
         if let Some(kw) = r#create_function_parameter.variadic_kw() {
             self.visit_kw(kw);
         }
+        for r#anytype in r#create_function_parameter.r#anytype() {
+            self.visit_anytype(r#anytype);
+        }
         for r#constrained_type in r#create_function_parameter.r#constrained_type() {
             self.visit_constrained_type(r#constrained_type);
         }
         for r#expression in r#create_function_parameter.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#identifier in r#create_function_parameter.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#create_function_parameter.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_create_function_parameters(
@@ -3508,6 +4107,16 @@ pub trait Visitor {
         for r#create_function_parameter in r#create_function_parameters.create_function_parameters()
         {
             self.visit_create_function_parameter(r#create_function_parameter);
+        }
+    }
+    fn visit_create_function_return_type(
+        &mut self,
+        r#create_function_return_type: CreateFunctionReturnType,
+    ) {
+        match r#create_function_return_type {
+            CreateFunctionReturnType::Anytype(node) => self.visit_anytype(node),
+            CreateFunctionReturnType::Setof(node) => self.visit_setof(node),
+            CreateFunctionReturnType::ConstrainedType(node) => self.visit_constrained_type(node),
         }
     }
     fn visit_create_function_statement(
@@ -3529,6 +4138,14 @@ pub trait Visitor {
         if let Some(kw) = r#create_function_statement.returns_kw() {
             self.visit_kw(kw);
         }
+        for r#create_function_return_type in
+            r#create_function_statement.r#create_function_return_type()
+        {
+            self.visit_create_function_return_type(r#create_function_return_type);
+        }
+        for r#function_language in r#create_function_statement.r#function_language() {
+            self.visit_function_language(r#function_language);
+        }
         for r#create_function_parameters in
             r#create_function_statement.r#create_function_parameters()
         {
@@ -3537,8 +4154,8 @@ pub trait Visitor {
         for r#function_body in r#create_function_statement.r#function_body() {
             self.visit_function_body(r#function_body);
         }
-        for r#identifier in r#create_function_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#create_function_statement.r#name() {
+            self.visit_name(r#name);
         }
         for r#null_hint in r#create_function_statement.r#null_hint() {
             self.visit_null_hint(r#null_hint);
@@ -3560,11 +4177,11 @@ pub trait Visitor {
         if let Some(kw) = r#create_index_statement.on_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#create_index_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
-        }
         for r#index_table_parameters in r#create_index_statement.r#index_table_parameters() {
             self.visit_index_table_parameters(r#index_table_parameters);
+        }
+        for r#name in r#create_index_statement.r#name() {
+            self.visit_name(r#name);
         }
         for r#unique_constraint in r#create_index_statement.r#unique_constraint() {
             self.visit_unique_constraint(r#unique_constraint);
@@ -3589,6 +4206,9 @@ pub trait Visitor {
         for r#identifier in r#create_role_statement.r#identifier() {
             self.visit_identifier(r#identifier);
         }
+        for r#name in r#create_role_statement.r#name() {
+            self.visit_name(r#name);
+        }
     }
     fn visit_create_schema_statement(&mut self, r#create_schema_statement: CreateSchemaStatement) {
         if let Some(kw) = r#create_schema_statement.create_kw() {
@@ -3606,8 +4226,8 @@ pub trait Visitor {
         if let Some(kw) = r#create_schema_statement.schema_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#create_schema_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#create_schema_statement.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_create_statement(&mut self, r#create_statement: CreateStatement) {
@@ -3643,6 +4263,9 @@ pub trait Visitor {
         if let Some(kw) = r#create_table_statement.temporary_kw() {
             self.visit_kw(kw);
         }
+        for r#identifier in r#create_table_statement.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
         for r#table_parameters in r#create_table_statement.r#table_parameters() {
             self.visit_table_parameters(r#table_parameters);
         }
@@ -3657,8 +4280,8 @@ pub trait Visitor {
         if let Some(kw) = r#create_type_statement.type_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#create_type_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#create_type_statement.r#name() {
+            self.visit_name(r#name);
         }
         for r#parameters in r#create_type_statement.r#parameters() {
             self.visit_parameters(r#parameters);
@@ -3684,8 +4307,8 @@ pub trait Visitor {
         }
     }
     fn visit_dotted_name(&mut self, r#dotted_name: DottedName) {
-        for r#identifier in r#dotted_name.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#dotted_name.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_drop_statement(&mut self, r#drop_statement: DropStatement) {
@@ -3713,6 +4336,9 @@ pub trait Visitor {
         if let Some(kw) = r#drop_statement.view_kw() {
             self.visit_kw(kw);
         }
+        for r#identifier in r#drop_statement.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
     }
     fn visit_exclude_entry(&mut self, r#exclude_entry: ExcludeEntry) {
         if let Some(kw) = r#exclude_entry.with_kw() {
@@ -3720,6 +4346,9 @@ pub trait Visitor {
         }
         for r#binary_operator in r#exclude_entry.r#binary_operator() {
             self.visit_binary_operator(r#binary_operator);
+        }
+        for r#identifier in r#exclude_entry.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
         for r#op_class in r#exclude_entry.r#op_class() {
             self.visit_op_class(r#op_class);
@@ -3755,8 +4384,8 @@ pub trait Visitor {
         }
     }
     fn visit_field_access(&mut self, r#field_access: FieldAccess) {
-        for r#identifier in r#field_access.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#field_access.r#name() {
+            self.visit_name(r#name);
         }
         for r#string in r#field_access.r#string() {
             self.visit_string(r#string);
@@ -3765,6 +4394,9 @@ pub trait Visitor {
     fn visit_from_clause(&mut self, r#from_clause: FromClause) {
         if let Some(kw) = r#from_clause.from_kw() {
             self.visit_kw(kw);
+        }
+        for r#aliasable_expression in r#from_clause.r#aliasable_expression() {
+            self.visit_aliasable_expression(r#aliasable_expression);
         }
     }
     fn visit_function_body(&mut self, r#function_body: FunctionBody) {
@@ -3779,8 +4411,16 @@ pub trait Visitor {
         for r#expression in r#function_call.expressions() {
             self.visit_expression(r#expression);
         }
-        for r#identifier in r#function_call.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#function_call.r#name() {
+            self.visit_name(r#name);
+        }
+    }
+    fn visit_function_language(&mut self, r#function_language: FunctionLanguage) {
+        if let Some(kw) = r#function_language.language_kw() {
+            self.visit_kw(kw);
+        }
+        for r#name in r#function_language.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_grant_statement(&mut self, r#grant_statement: GrantStatement) {
@@ -3847,8 +4487,8 @@ pub trait Visitor {
         if let Some(kw) = r#grant_statement.with_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#grant_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#grant_statement.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_group_by_clause(&mut self, r#group_by_clause: GroupByClause) {
@@ -3867,7 +4507,11 @@ pub trait Visitor {
             self.visit_expression(r#expression);
         }
     }
-    fn visit_identifier(&mut self, r#identifier: Identifier) {}
+    fn visit_identifier(&mut self, r#identifier: Identifier) {
+        for r#unquoted_identifier in r#identifier.r#unquoted_identifier() {
+            self.visit_unquoted_identifier(r#unquoted_identifier);
+        }
+    }
     fn visit_in_expression(&mut self, r#in_expression: InExpression) {
         if let Some(kw) = r#in_expression.in_kw() {
             self.visit_kw(kw);
@@ -3910,6 +4554,9 @@ pub trait Visitor {
         }
         if let Some(kw) = r#insert_statement.into_kw() {
             self.visit_kw(kw);
+        }
+        for r#identifier in r#insert_statement.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
         for r#values_clause in r#insert_statement.r#values_clause() {
             self.visit_values_clause(r#values_clause);
@@ -3956,6 +4603,9 @@ pub trait Visitor {
         for r#expression in r#join_clause.r#expression() {
             self.visit_expression(r#expression);
         }
+        for r#identifier in r#join_clause.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
         for r#join_type in r#join_clause.r#join_type() {
             self.visit_join_type(r#join_type);
         }
@@ -3985,12 +4635,13 @@ pub trait Visitor {
             self.visit_kw(kw);
         }
     }
+    fn visit_name(&mut self, r#name: Name) {}
     fn visit_named_constraint(&mut self, r#named_constraint: NamedConstraint) {
         if let Some(kw) = r#named_constraint.constraint_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#named_constraint.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#named_constraint.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_null(&mut self, r#null: Null) {
@@ -4034,6 +4685,9 @@ pub trait Visitor {
         if let Some(kw) = r#on_delete_action.on_kw() {
             self.visit_kw(kw);
         }
+        for r#constraint_action in r#on_delete_action.r#constraint_action() {
+            self.visit_constraint_action(r#constraint_action);
+        }
     }
     fn visit_on_update_action(&mut self, r#on_update_action: OnUpdateAction) {
         if let Some(kw) = r#on_update_action.on_kw() {
@@ -4042,8 +4696,15 @@ pub trait Visitor {
         if let Some(kw) = r#on_update_action.update_kw() {
             self.visit_kw(kw);
         }
+        for r#constraint_action in r#on_update_action.r#constraint_action() {
+            self.visit_constraint_action(r#constraint_action);
+        }
     }
-    fn visit_op_class(&mut self, r#op_class: OpClass) {}
+    fn visit_op_class(&mut self, r#op_class: OpClass) {
+        for r#identifier in r#op_class.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
+    }
     fn visit_optimizer_hint(&mut self, r#optimizer_hint: OptimizerHint) {
         if let Some(kw) = r#optimizer_hint.immutable_kw() {
             self.visit_kw(kw);
@@ -4097,11 +4758,14 @@ pub trait Visitor {
         }
     }
     fn visit_parameter(&mut self, r#parameter: Parameter) {
+        for r#anytype in r#parameter.r#anytype() {
+            self.visit_anytype(r#anytype);
+        }
         for r#constrained_type in r#parameter.r#constrained_type() {
             self.visit_constrained_type(r#constrained_type);
         }
-        for r#identifier in r#parameter.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#parameter.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_parameters(&mut self, r#parameters: Parameters) {
@@ -4130,8 +4794,11 @@ pub trait Visitor {
         if let Some(kw) = r#references_constraint.references_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#references_constraint.identifiers() {
+        for r#identifier in r#references_constraint.r#identifier() {
             self.visit_identifier(r#identifier);
+        }
+        for r#name in r#references_constraint.names() {
+            self.visit_name(r#name);
         }
         for r#on_delete_action in r#references_constraint.r#on_delete_action() {
             self.visit_on_delete_action(r#on_delete_action);
@@ -4148,7 +4815,11 @@ pub trait Visitor {
             self.visit_select_clause_body(r#select_clause_body);
         }
     }
-    fn visit_select_clause_body(&mut self, r#select_clause_body: SelectClauseBody) {}
+    fn visit_select_clause_body(&mut self, r#select_clause_body: SelectClauseBody) {
+        for r#aliasable_expression in r#select_clause_body.r#aliasable_expression() {
+            self.visit_aliasable_expression(r#aliasable_expression);
+        }
+    }
     fn visit_select_statement(&mut self, r#select_statement: SelectStatement) {
         for r#from_clause in r#select_statement.r#from_clause() {
             self.visit_from_clause(r#from_clause);
@@ -4220,6 +4891,9 @@ pub trait Visitor {
         for r#dotted_name in r#sequence.r#dotted_name() {
             self.visit_dotted_name(r#dotted_name);
         }
+        for r#identifier in r#sequence.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
         for r#number in r#sequence.r#number() {
             self.visit_number(r#number);
         }
@@ -4259,20 +4933,23 @@ pub trait Visitor {
         for r#expression in r#set_statement.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#identifier in r#set_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#set_statement.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_setof(&mut self, r#setof: Setof) {
         if let Some(kw) = r#setof.setof_kw() {
             self.visit_kw(kw);
         }
+        for r#anytype in r#setof.r#anytype() {
+            self.visit_anytype(r#anytype);
+        }
         for r#constrained_type in r#setof.r#constrained_type() {
             self.visit_constrained_type(r#constrained_type);
         }
     }
     fn visit_source_file(&mut self, r#source_file: SourceFile) {
-        for r#statement in r#source_file.statements() {
+        for r#statement in r#source_file.r#statement() {
             self.visit_statement(r#statement);
         }
     }
@@ -4301,6 +4978,9 @@ pub trait Visitor {
     }
     fn visit_string(&mut self, r#string: String) {}
     fn visit_table_column(&mut self, r#table_column: TableColumn) {
+        for r#anytype in r#table_column.r#anytype() {
+            self.visit_anytype(r#anytype);
+        }
         for r#auto_increment_constraint in r#table_column.r#auto_increment_constraint() {
             self.visit_auto_increment_constraint(r#auto_increment_constraint);
         }
@@ -4312,6 +4992,9 @@ pub trait Visitor {
         }
         for r#direction_constraint in r#table_column.r#direction_constraint() {
             self.visit_direction_constraint(r#direction_constraint);
+        }
+        for r#identifier in r#table_column.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
         for r#named_constraint in r#table_column.r#named_constraint() {
             self.visit_named_constraint(r#named_constraint);
@@ -4330,6 +5013,35 @@ pub trait Visitor {
         }
         for r#unique_constraint in r#table_column.r#unique_constraint() {
             self.visit_unique_constraint(r#unique_constraint);
+        }
+    }
+    fn visit_table_constraint(&mut self, r#table_constraint: TableConstraint) {
+        if let Some(kw) = r#table_constraint.constraint_kw() {
+            self.visit_kw(kw);
+        }
+        for r#identifier in r#table_constraint.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
+        for r#initial_mode in r#table_constraint.r#initial_mode() {
+            self.visit_initial_mode(r#initial_mode);
+        }
+        for r#mode in r#table_constraint.r#mode() {
+            self.visit_mode(r#mode);
+        }
+        for r#table_constraint_check in r#table_constraint.r#table_constraint_check() {
+            self.visit_table_constraint_check(r#table_constraint_check);
+        }
+        for r#table_constraint_exclude in r#table_constraint.r#table_constraint_exclude() {
+            self.visit_table_constraint_exclude(r#table_constraint_exclude);
+        }
+        for r#table_constraint_foreign_key in r#table_constraint.r#table_constraint_foreign_key() {
+            self.visit_table_constraint_foreign_key(r#table_constraint_foreign_key);
+        }
+        for r#table_constraint_primary_key in r#table_constraint.r#table_constraint_primary_key() {
+            self.visit_table_constraint_primary_key(r#table_constraint_primary_key);
+        }
+        for r#table_constraint_unique in r#table_constraint.r#table_constraint_unique() {
+            self.visit_table_constraint_unique(r#table_constraint_unique);
         }
     }
     fn visit_table_constraint_check(&mut self, r#table_constraint_check: TableConstraintCheck) {
@@ -4353,6 +5065,9 @@ pub trait Visitor {
         for r#exclude_entry in r#table_constraint_exclude.exclude_entrys() {
             self.visit_exclude_entry(r#exclude_entry);
         }
+        for r#identifier in r#table_constraint_exclude.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
     }
     fn visit_table_constraint_foreign_key(
         &mut self,
@@ -4364,8 +5079,8 @@ pub trait Visitor {
         if let Some(kw) = r#table_constraint_foreign_key.key_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#table_constraint_foreign_key.identifiers() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#table_constraint_foreign_key.names() {
+            self.visit_name(r#name);
         }
         for r#references_constraint in r#table_constraint_foreign_key.r#references_constraint() {
             self.visit_references_constraint(r#references_constraint);
@@ -4381,13 +5096,22 @@ pub trait Visitor {
         if let Some(kw) = r#table_constraint_primary_key.primary_kw() {
             self.visit_kw(kw);
         }
+        for r#identifier in r#table_constraint_primary_key.identifiers() {
+            self.visit_identifier(r#identifier);
+        }
     }
     fn visit_table_constraint_unique(&mut self, r#table_constraint_unique: TableConstraintUnique) {
         if let Some(kw) = r#table_constraint_unique.unique_kw() {
             self.visit_kw(kw);
         }
+        for r#identifier in r#table_constraint_unique.identifiers() {
+            self.visit_identifier(r#identifier);
+        }
     }
     fn visit_table_parameters(&mut self, r#table_parameters: TableParameters) {
+        for r#table_constraint in r#table_parameters.r#table_constraint() {
+            self.visit_table_constraint(r#table_constraint);
+        }
         for r#table_column in r#table_parameters.r#table_column() {
             self.visit_table_column(r#table_column);
         }
@@ -4417,16 +5141,22 @@ pub trait Visitor {
         }
     }
     fn visit_type(&mut self, r#type: Type) {
+        for r#identifier in r#type.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
         for r#number in r#type.r#number() {
             self.visit_number(r#number);
         }
     }
     fn visit_type_cast(&mut self, r#type_cast: TypeCast) {
+        for r#anytype in r#type_cast.r#anytype() {
+            self.visit_anytype(r#anytype);
+        }
         for r#function_call in r#type_cast.r#function_call() {
             self.visit_function_call(r#function_call);
         }
-        for r#identifier in r#type_cast.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#type_cast.r#name() {
+            self.visit_name(r#name);
         }
         for r#parenthesized_expression in r#type_cast.r#parenthesized_expression() {
             self.visit_parenthesized_expression(r#parenthesized_expression);
@@ -4440,12 +5170,20 @@ pub trait Visitor {
             self.visit_kw(kw);
         }
     }
+    fn visit_unquoted_identifier(&mut self, r#unquoted_identifier: UnquotedIdentifier) {
+        for r#dotted_name in r#unquoted_identifier.r#dotted_name() {
+            self.visit_dotted_name(r#dotted_name);
+        }
+        for r#name in r#unquoted_identifier.r#name() {
+            self.visit_name(r#name);
+        }
+    }
     fn visit_update_statement(&mut self, r#update_statement: UpdateStatement) {
         if let Some(kw) = r#update_statement.update_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#update_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#update_statement.r#name() {
+            self.visit_name(r#name);
         }
         for r#set_clause in r#update_statement.r#set_clause() {
             self.visit_set_clause(r#set_clause);
@@ -4458,8 +5196,8 @@ pub trait Visitor {
         if let Some(kw) = r#using_clause.using_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#using_clause.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#using_clause.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_values_clause(&mut self, r#values_clause: ValuesClause) {
@@ -4490,6 +5228,17 @@ pub enum SyntaxKind {
     False,
     Null,
     True,
+    AliasableExpression,
+    AliasedExpression,
+    Anytype,
+    ColumnDefaultExpression,
+    Constraint,
+    ConstraintAction,
+    CreateFunctionReturnType,
+    FunctionLanguage,
+    Statement,
+    TableConstraint,
+    UnquotedIdentifier,
     AddKw,
     AllKw,
     AlterKw,
@@ -4501,7 +5250,6 @@ pub enum SyntaxKind {
     AndKw,
     ArgumentReference,
     ArrayElementAccess,
-    ArrayType,
     AsKw,
     AscKw,
     AssigmentExpression,
@@ -4514,6 +5262,7 @@ pub enum SyntaxKind {
     ByKw,
     CacheKw,
     CalledKw,
+    CascadeKw,
     CheckKw,
     CheckConstraint,
     ColumnKw,
@@ -4591,11 +5340,13 @@ pub enum SyntaxKind {
     JoinClause,
     JoinType,
     KeyKw,
+    LanguageKw,
     LeftKw,
     LocalKw,
     MaxvalueKw,
     MinvalueKw,
     Mode,
+    Name,
     NamedConstraint,
     NoKw,
     NotKw,
@@ -4631,6 +5382,7 @@ pub enum SyntaxKind {
     ReferencesKw,
     ReferencesConstraint,
     ReplaceKw,
+    RestrictKw,
     RestrictedKw,
     ReturnsKw,
     RightKw,
@@ -4654,7 +5406,6 @@ pub enum SyntaxKind {
     SourceFile,
     StableKw,
     StartKw,
-    Statement,
     StrictKw,
     String,
     TableKw,
@@ -4707,6 +5458,17 @@ impl TryFrom<&'static str> for SyntaxKind {
             "false" => Ok(Self::False),
             "null" => Ok(Self::Null),
             "true" => Ok(Self::True),
+            "aliasable_expression" => Ok(Self::AliasableExpression),
+            "aliased_expression" => Ok(Self::AliasedExpression),
+            "anytype" => Ok(Self::Anytype),
+            "column_default_expression" => Ok(Self::ColumnDefaultExpression),
+            "constraint" => Ok(Self::Constraint),
+            "constraint_action" => Ok(Self::ConstraintAction),
+            "create_function_return_type" => Ok(Self::CreateFunctionReturnType),
+            "function_language" => Ok(Self::FunctionLanguage),
+            "statement" => Ok(Self::Statement),
+            "table_constraint" => Ok(Self::TableConstraint),
+            "unquoted_identifier" => Ok(Self::UnquotedIdentifier),
             "ADD" => Ok(Self::AddKw),
             "ALL" => Ok(Self::AllKw),
             "ALTER" => Ok(Self::AlterKw),
@@ -4718,7 +5480,6 @@ impl TryFrom<&'static str> for SyntaxKind {
             "AND" => Ok(Self::AndKw),
             "argument_reference" => Ok(Self::ArgumentReference),
             "array_element_access" => Ok(Self::ArrayElementAccess),
-            "array_type" => Ok(Self::ArrayType),
             "AS" => Ok(Self::AsKw),
             "ASC" => Ok(Self::AscKw),
             "assigment_expression" => Ok(Self::AssigmentExpression),
@@ -4731,6 +5492,7 @@ impl TryFrom<&'static str> for SyntaxKind {
             "BY" => Ok(Self::ByKw),
             "CACHE" => Ok(Self::CacheKw),
             "CALLED" => Ok(Self::CalledKw),
+            "CASCADE" => Ok(Self::CascadeKw),
             "CHECK" => Ok(Self::CheckKw),
             "check_constraint" => Ok(Self::CheckConstraint),
             "COLUMN" => Ok(Self::ColumnKw),
@@ -4808,11 +5570,13 @@ impl TryFrom<&'static str> for SyntaxKind {
             "join_clause" => Ok(Self::JoinClause),
             "join_type" => Ok(Self::JoinType),
             "KEY" => Ok(Self::KeyKw),
+            "LANGUAGE" => Ok(Self::LanguageKw),
             "LEFT" => Ok(Self::LeftKw),
             "LOCAL" => Ok(Self::LocalKw),
             "MAXVALUE" => Ok(Self::MaxvalueKw),
             "MINVALUE" => Ok(Self::MinvalueKw),
             "mode" => Ok(Self::Mode),
+            "name" => Ok(Self::Name),
             "named_constraint" => Ok(Self::NamedConstraint),
             "NO" => Ok(Self::NoKw),
             "NOT" => Ok(Self::NotKw),
@@ -4848,6 +5612,7 @@ impl TryFrom<&'static str> for SyntaxKind {
             "REFERENCES" => Ok(Self::ReferencesKw),
             "references_constraint" => Ok(Self::ReferencesConstraint),
             "REPLACE" => Ok(Self::ReplaceKw),
+            "RESTRICT" => Ok(Self::RestrictKw),
             "RESTRICTED" => Ok(Self::RestrictedKw),
             "RETURNS" => Ok(Self::ReturnsKw),
             "RIGHT" => Ok(Self::RightKw),
@@ -4871,7 +5636,6 @@ impl TryFrom<&'static str> for SyntaxKind {
             "source_file" => Ok(Self::SourceFile),
             "STABLE" => Ok(Self::StableKw),
             "START" => Ok(Self::StartKw),
-            "statement" => Ok(Self::Statement),
             "STRICT" => Ok(Self::StrictKw),
             "string" => Ok(Self::String),
             "TABLE" => Ok(Self::TableKw),
