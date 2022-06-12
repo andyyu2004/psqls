@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use psqls_syn::{Node, SyntaxDatabase, TextRange, Visitor};
+use psqls_syn::{Node, SourceFile, SyntaxDatabase, SyntaxToken, TextRange, Visitor};
 
 use crate::Snapshot;
 
@@ -17,14 +17,27 @@ impl Snapshot {
     pub fn highlight(&self, url: Arc<str>) -> Vec<HighlightRange> {
         let parsed = self.parse(url);
         let source = parsed.root();
-        vec![]
+        Highlighter::default().highlight(source)
     }
 }
 
-struct HighlightVisitor {}
+#[derive(Default)]
+struct Highlighter {
+    highlights: Vec<HighlightRange>,
+}
 
-impl Visitor for HighlightVisitor {
-    fn visit_false(&mut self, r#false: psqls_syn::False) {
-        r#false.syntax().text_range();
+impl Highlighter {
+    pub fn highlight(mut self, source: SourceFile) -> Vec<HighlightRange> {
+        self.visit_source_file(source);
+        self.highlights
+    }
+}
+
+impl Visitor for Highlighter {
+    fn visit_kw(&mut self, kw: SyntaxToken) {
+        self.highlights.push(HighlightRange {
+            range: kw.text_range(),
+            hl: Highlight::Keyword,
+        })
     }
 }

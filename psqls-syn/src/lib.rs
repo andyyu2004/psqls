@@ -2,7 +2,7 @@
 
 pub use self::db::{SyntaxDatabase, SyntaxDatabaseStorage};
 pub use self::generated::*;
-pub use self::node::Node;
+pub use self::node::{Node, SyntaxNode, SyntaxToken};
 pub use ropey::Rope;
 pub use rowan::{TextRange, TextSize};
 
