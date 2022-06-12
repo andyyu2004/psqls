@@ -5,8 +5,7 @@ use tokio::sync::Mutex;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{jsonrpc, Client, LanguageServer};
 
-use crate::convert::{Convert, ConvertWith};
-use crate::tokens::{self, SemanticTokensBuilder};
+use crate::tokens;
 
 pub struct Lsp {
     ide: Mutex<Ide>,
@@ -27,6 +26,13 @@ impl LanguageServer for Lsp {
     async fn initialize(&self, _: InitializeParams) -> jsonrpc::Result<InitializeResult> {
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
+                workspace: Some(WorkspaceServerCapabilities {
+                    workspace_folders: Some(WorkspaceFoldersServerCapabilities {
+                        supported: Some(true),
+                        change_notifications: None,
+                    }),
+                    file_operations: None,
+                }),
                 text_document_sync: Some(TextDocumentSyncCapability::Options(
                     TextDocumentSyncOptions {
                         change: Some(TextDocumentSyncKind::FULL),
@@ -57,10 +63,17 @@ impl LanguageServer for Lsp {
 
     async fn initialized(&self, _: InitializedParams) {}
 
+    async fn did_open(&self, params: DidOpenTextDocumentParams) {
+        self.ide.lock().await.apply(Change {
+            url: params.text_document.uri.to_string().into(),
+            text: params.text_document.text,
+        });
+    }
+
     async fn did_change(&self, mut params: DidChangeTextDocumentParams) {
         assert_eq!(params.content_changes.len(), 1);
         self.ide.lock().await.apply(Change {
-            uri: params.text_document.uri.to_string().into(),
+            url: params.text_document.uri.to_string().into(),
             text: params.content_changes.swap_remove(0).text,
         });
     }
@@ -74,6 +87,7 @@ impl LanguageServer for Lsp {
         let snapshot = ide.snapshot();
         let rope = snapshot.rope(Arc::clone(&url));
         let highlights = snapshot.highlight(url.clone());
+        dbg!(&highlights);
         let tokens = tokens::convert(&rope, highlights);
         Ok(Some(SemanticTokensResult::Tokens(tokens)))
     }

@@ -1,14 +1,16 @@
 use std::sync::Arc;
 
-use psqls_syn::{Node, SourceFile, SyntaxDatabase, SyntaxToken, TextRange, Visitor};
+use psqls_syn::{SourceFile, SyntaxDatabase, SyntaxToken, TextRange, Visitor};
 
 use crate::Snapshot;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HighlightRange {
     pub range: TextRange,
     pub hl: Highlight,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Highlight {
     Keyword,
 }
@@ -41,3 +43,6 @@ impl Visitor for Highlighter {
         })
     }
 }
+
+#[cfg(test)]
+mod tests;

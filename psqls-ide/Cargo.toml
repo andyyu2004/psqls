@@ -6,5 +6,8 @@ edition = "2021"
 [dependencies]
 salsa = "0.17.0-pre.2"
 
+[dev-dependencies]
+expect-test = "1"
+
 [dependencies.psqls-syn]
 path = "../psqls-syn"

@@ -27,7 +27,7 @@ impl Deref for Snapshot {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Change {
-    pub uri: Arc<str>,
+    pub url: Arc<str>,
     pub text: String,
 }
 
@@ -39,7 +39,7 @@ impl Ide {
     }
 
     pub fn apply(&mut self, change: Change) {
-        self.db.set_text(change.uri, change.text.into());
+        self.db.set_text(change.url, change.text.into());
     }
 }
 
@@ -58,3 +58,6 @@ impl salsa::ParallelDatabase for IdeDatabase {
         })
     }
 }
+
+#[cfg(test)]
+mod tests;
