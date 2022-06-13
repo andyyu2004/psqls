@@ -34,17 +34,14 @@ fn test_parse_preserves_whitespace() {
                   Whitespace@0..1 " "
                   SelectKw@1..7 "select"
                   SelectClauseBody@7..10
-                    Expression@7..10
-                      AsteriskExpression@7..10
-                        Whitespace@7..9 "  "
-                        Token@9..10 "*"
+                    AsteriskExpression@7..10
+                      Whitespace@7..9 "  "
+                      Token@9..10 "*"
                 FromClause@10..22
                   Whitespace@10..13 "   "
                   FromKw@13..17 "from"
-                  Expression@17..22
-                    Identifier@17..22
-                      Whitespace@17..19 "  "
-                      Name@19..22 "bar"
+                  Whitespace@17..19 "  "
+                  Identifier@19..22 "bar"
               Token@22..23 ";"
             ,
         )
@@ -63,19 +60,16 @@ fn test_parse_create_table() {
                 CreateKw@0..6 "create"
                 Whitespace@6..7 " "
                 TableKw@7..12 "table"
-                Identifier@12..16
-                  Whitespace@12..13 " "
-                  Name@13..16 "bar"
+                Whitespace@12..13 " "
+                Identifier@13..16 "bar"
                 TableParameters@16..38
                   Whitespace@16..17 " "
                   Token@17..18 "("
                   TableColumn@18..37
-                    Identifier@18..20
-                      Name@18..20 "id"
+                    Identifier@18..20 "id"
                     Type@20..25
-                      Identifier@20..25
-                        Whitespace@20..21 " "
-                        Name@21..25 "uuid"
+                      Whitespace@20..21 " "
+                      Identifier@21..25 "uuid"
                     PrimaryKeyConstraint@25..37
                       Whitespace@25..26 " "
                       PrimaryKw@26..33 "PRIMARY"
@@ -99,10 +93,9 @@ fn test_parse_error() {
                 SelectClause@0..8
                   SelectKw@0..6 "select"
                   SelectClauseBody@6..8
-                    Expression@6..8
-                      AsteriskExpression@6..8
-                        Whitespace@6..7 " "
-                        Token@7..8 "*"
+                    AsteriskExpression@6..8
+                      Whitespace@6..7 " "
+                      Token@7..8 "*"
               Err@8..13
                 Whitespace@8..9 " "
                 FromKw@9..13 "from"
@@ -124,17 +117,14 @@ fn test_parse() {
                   Whitespace@0..2 "  "
                   SelectKw@2..8 "select"
                   SelectClauseBody@8..11
-                    Expression@8..11
-                      AsteriskExpression@8..11
-                        Whitespace@8..10 "  "
-                        Token@10..11 "*"
+                    AsteriskExpression@8..11
+                      Whitespace@8..10 "  "
+                      Token@10..11 "*"
                 FromClause@11..22
                   Whitespace@11..12 " "
                   FromKw@12..16 "from"
-                  Expression@16..22
-                    Identifier@16..22
-                      Whitespace@16..17 " "
-                      Name@17..22 "table"
+                  Whitespace@16..17 " "
+                  Identifier@17..22 "table"
             ,
         )
     "#]]
@@ -144,13 +134,13 @@ fn test_parse() {
 #[test]
 fn test_ts_parse() {
     let tree = parse("select * from table");
-    expect!["(source_file (select_statement (select_clause (select_clause_body (expression (asterisk_expression)))) (from_clause (expression (identifier (name))))))"]
+    expect!["(source_file (select_statement (select_clause (select_clause_body (asterisk_expression))) (from_clause (identifier))))"]
         .assert_eq(&tree.root_node().to_sexp());
 }
 
 #[test]
 fn test_ts_parse_create_table() {
     let tree = parse("create table bar (id uuid PRIMARY KEY)");
-    expect!["(source_file (create_table_statement (identifier (name)) (table_parameters (table_column name: (identifier (name)) type: (type (identifier (name))) (primary_key_constraint)))))"]
+    expect!["(source_file (create_table_statement (identifier) (table_parameters (table_column name: (identifier) type: (type (identifier)) (primary_key_constraint)))))"]
         .assert_eq(&tree.root_node().to_sexp());
 }

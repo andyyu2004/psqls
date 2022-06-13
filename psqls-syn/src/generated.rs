@@ -111,7 +111,7 @@ impl AliasedExpression {
     }
 }
 impl AliasedExpression {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -141,7 +141,7 @@ impl Anytype {
 pub enum ColumnDefaultExpression {
     ParenthesizedExpression(ParenthesizedExpression),
     String(String),
-    Name(Name),
+    Identifier(Identifier),
     FunctionCall(FunctionCall),
 }
 impl Node for ColumnDefaultExpression {
@@ -150,7 +150,7 @@ impl Node for ColumnDefaultExpression {
             kind,
             SyntaxKind::ParenthesizedExpression
                 | SyntaxKind::String
-                | SyntaxKind::Name
+                | SyntaxKind::Identifier
                 | SyntaxKind::FunctionCall
         )
     }
@@ -160,7 +160,7 @@ impl Node for ColumnDefaultExpression {
                 ColumnDefaultExpression::ParenthesizedExpression(ParenthesizedExpression(syntax)),
             ),
             SyntaxKind::String => Some(ColumnDefaultExpression::String(String(syntax))),
-            SyntaxKind::Name => Some(ColumnDefaultExpression::Name(Name(syntax))),
+            SyntaxKind::Identifier => Some(ColumnDefaultExpression::Identifier(Identifier(syntax))),
             SyntaxKind::FunctionCall => {
                 Some(ColumnDefaultExpression::FunctionCall(FunctionCall(syntax)))
             }
@@ -171,7 +171,7 @@ impl Node for ColumnDefaultExpression {
         match self {
             Self::ParenthesizedExpression(node) => node.syntax(),
             Self::String(node) => node.syntax(),
-            Self::Name(node) => node.syntax(),
+            Self::Identifier(node) => node.syntax(),
             Self::FunctionCall(node) => node.syntax(),
         }
     }
@@ -187,7 +187,7 @@ impl ColumnDefaultExpression {
     }
 }
 impl ColumnDefaultExpression {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -297,6 +297,222 @@ impl CreateFunctionReturnType {
         self.child()
     }
 }
+pub enum Expression {
+    IntervalExpression(IntervalExpression),
+    FunctionCall(FunctionCall),
+    String(String),
+    FieldAccess(FieldAccess),
+    True(True),
+    False(False),
+    Null(Null),
+    AsteriskExpression(AsteriskExpression),
+    Name(Name),
+    Number(Number),
+    InExpression(InExpression),
+    IsExpression(IsExpression),
+    BooleanExpression(BooleanExpression),
+    ParenthesizedExpression(ParenthesizedExpression),
+    TypeCast(TypeCast),
+    UnaryExpression(UnaryExpression),
+    BinaryExpression(BinaryExpression),
+    ArrayElementAccess(ArrayElementAccess),
+    ArgumentReference(ArgumentReference),
+    SelectSubexpression(SelectSubexpression),
+}
+impl Node for Expression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        matches!(
+            kind,
+            SyntaxKind::IntervalExpression
+                | SyntaxKind::FunctionCall
+                | SyntaxKind::String
+                | SyntaxKind::FieldAccess
+                | SyntaxKind::True
+                | SyntaxKind::False
+                | SyntaxKind::Null
+                | SyntaxKind::AsteriskExpression
+                | SyntaxKind::Name
+                | SyntaxKind::Number
+                | SyntaxKind::InExpression
+                | SyntaxKind::IsExpression
+                | SyntaxKind::BooleanExpression
+                | SyntaxKind::ParenthesizedExpression
+                | SyntaxKind::TypeCast
+                | SyntaxKind::UnaryExpression
+                | SyntaxKind::BinaryExpression
+                | SyntaxKind::ArrayElementAccess
+                | SyntaxKind::ArgumentReference
+                | SyntaxKind::SelectSubexpression
+        )
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        match syntax.kind() {
+            SyntaxKind::IntervalExpression => {
+                Some(Expression::IntervalExpression(IntervalExpression(syntax)))
+            }
+            SyntaxKind::FunctionCall => Some(Expression::FunctionCall(FunctionCall(syntax))),
+            SyntaxKind::String => Some(Expression::String(String(syntax))),
+            SyntaxKind::FieldAccess => Some(Expression::FieldAccess(FieldAccess(syntax))),
+            SyntaxKind::True => Some(Expression::True(True(syntax))),
+            SyntaxKind::False => Some(Expression::False(False(syntax))),
+            SyntaxKind::Null => Some(Expression::Null(Null(syntax))),
+            SyntaxKind::AsteriskExpression => {
+                Some(Expression::AsteriskExpression(AsteriskExpression(syntax)))
+            }
+            SyntaxKind::Name => Some(Expression::Name(Name(syntax))),
+            SyntaxKind::Number => Some(Expression::Number(Number(syntax))),
+            SyntaxKind::InExpression => Some(Expression::InExpression(InExpression(syntax))),
+            SyntaxKind::IsExpression => Some(Expression::IsExpression(IsExpression(syntax))),
+            SyntaxKind::BooleanExpression => {
+                Some(Expression::BooleanExpression(BooleanExpression(syntax)))
+            }
+            SyntaxKind::ParenthesizedExpression => Some(Expression::ParenthesizedExpression(
+                ParenthesizedExpression(syntax),
+            )),
+            SyntaxKind::TypeCast => Some(Expression::TypeCast(TypeCast(syntax))),
+            SyntaxKind::UnaryExpression => {
+                Some(Expression::UnaryExpression(UnaryExpression(syntax)))
+            }
+            SyntaxKind::BinaryExpression => {
+                Some(Expression::BinaryExpression(BinaryExpression(syntax)))
+            }
+            SyntaxKind::ArrayElementAccess => {
+                Some(Expression::ArrayElementAccess(ArrayElementAccess(syntax)))
+            }
+            SyntaxKind::ArgumentReference => {
+                Some(Expression::ArgumentReference(ArgumentReference(syntax)))
+            }
+            SyntaxKind::SelectSubexpression => {
+                Some(Expression::SelectSubexpression(SelectSubexpression(syntax)))
+            }
+            _ => None,
+        }
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        match self {
+            Self::IntervalExpression(node) => node.syntax(),
+            Self::FunctionCall(node) => node.syntax(),
+            Self::String(node) => node.syntax(),
+            Self::FieldAccess(node) => node.syntax(),
+            Self::True(node) => node.syntax(),
+            Self::False(node) => node.syntax(),
+            Self::Null(node) => node.syntax(),
+            Self::AsteriskExpression(node) => node.syntax(),
+            Self::Name(node) => node.syntax(),
+            Self::Number(node) => node.syntax(),
+            Self::InExpression(node) => node.syntax(),
+            Self::IsExpression(node) => node.syntax(),
+            Self::BooleanExpression(node) => node.syntax(),
+            Self::ParenthesizedExpression(node) => node.syntax(),
+            Self::TypeCast(node) => node.syntax(),
+            Self::UnaryExpression(node) => node.syntax(),
+            Self::BinaryExpression(node) => node.syntax(),
+            Self::ArrayElementAccess(node) => node.syntax(),
+            Self::ArgumentReference(node) => node.syntax(),
+            Self::SelectSubexpression(node) => node.syntax(),
+        }
+    }
+}
+impl Expression {
+    pub fn r#interval_expression(&self) -> Option<IntervalExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#function_call(&self) -> Option<FunctionCall> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#string(&self) -> Option<String> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#field_access(&self) -> Option<FieldAccess> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#true(&self) -> Option<True> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#false(&self) -> Option<False> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#null(&self) -> Option<Null> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#asterisk_expression(&self) -> Option<AsteriskExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#number(&self) -> Option<Number> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#in_expression(&self) -> Option<InExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#is_expression(&self) -> Option<IsExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#boolean_expression(&self) -> Option<BooleanExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#parenthesized_expression(&self) -> Option<ParenthesizedExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#type_cast(&self) -> Option<TypeCast> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#unary_expression(&self) -> Option<UnaryExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#binary_expression(&self) -> Option<BinaryExpression> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#array_element_access(&self) -> Option<ArrayElementAccess> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#argument_reference(&self) -> Option<ArgumentReference> {
+        self.child()
+    }
+}
+impl Expression {
+    pub fn r#select_subexpression(&self) -> Option<SelectSubexpression> {
+        self.child()
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct FunctionLanguage(pub(crate) SyntaxNode);
 impl Node for FunctionLanguage {
@@ -316,12 +532,69 @@ impl FunctionLanguage {
     }
 }
 impl FunctionLanguage {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Name(pub(crate) SyntaxNode);
+impl Node for Name {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::Name
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl Name {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl Name {
+    pub fn r#dotted_name(&self) -> Option<DottedName> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ParenthesizedExpression(pub(crate) SyntaxNode);
+impl Node for ParenthesizedExpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::ParenthesizedExpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl ParenthesizedExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct QuotedIdentifier(pub(crate) SyntaxNode);
+impl Node for QuotedIdentifier {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::QuotedIdentifier
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
     }
 }
 pub enum Statement {
     PgCommand(PgCommand),
+    BeginStatement(BeginStatement),
+    CommitStatement(CommitStatement),
+    RollbackStatement(RollbackStatement),
     SelectStatement(SelectStatement),
     UpdateStatement(UpdateStatement),
     SetStatement(SetStatement),
@@ -344,6 +617,9 @@ impl Node for Statement {
         matches!(
             kind,
             SyntaxKind::PgCommand
+                | SyntaxKind::BeginStatement
+                | SyntaxKind::CommitStatement
+                | SyntaxKind::RollbackStatement
                 | SyntaxKind::SelectStatement
                 | SyntaxKind::UpdateStatement
                 | SyntaxKind::SetStatement
@@ -365,6 +641,13 @@ impl Node for Statement {
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         match syntax.kind() {
             SyntaxKind::PgCommand => Some(Statement::PgCommand(PgCommand(syntax))),
+            SyntaxKind::BeginStatement => Some(Statement::BeginStatement(BeginStatement(syntax))),
+            SyntaxKind::CommitStatement => {
+                Some(Statement::CommitStatement(CommitStatement(syntax)))
+            }
+            SyntaxKind::RollbackStatement => {
+                Some(Statement::RollbackStatement(RollbackStatement(syntax)))
+            }
             SyntaxKind::SelectStatement => {
                 Some(Statement::SelectStatement(SelectStatement(syntax)))
             }
@@ -411,6 +694,9 @@ impl Node for Statement {
     fn syntax(&self) -> &SyntaxNode {
         match self {
             Self::PgCommand(node) => node.syntax(),
+            Self::BeginStatement(node) => node.syntax(),
+            Self::CommitStatement(node) => node.syntax(),
+            Self::RollbackStatement(node) => node.syntax(),
             Self::SelectStatement(node) => node.syntax(),
             Self::UpdateStatement(node) => node.syntax(),
             Self::SetStatement(node) => node.syntax(),
@@ -432,6 +718,21 @@ impl Node for Statement {
 }
 impl Statement {
     pub fn r#pg_command(&self) -> Option<PgCommand> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#begin_statement(&self) -> Option<BeginStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#commit_statement(&self) -> Option<CommitStatement> {
+        self.child()
+    }
+}
+impl Statement {
+    pub fn r#rollback_statement(&self) -> Option<RollbackStatement> {
         self.child()
     }
 }
@@ -534,7 +835,7 @@ impl TableConstraint {
     }
 }
 impl TableConstraint {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -570,29 +871,6 @@ impl TableConstraint {
 }
 impl TableConstraint {
     pub fn r#initial_mode(&self) -> Option<InitialMode> {
-        self.child()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct UnquotedIdentifier(pub(crate) SyntaxNode);
-impl Node for UnquotedIdentifier {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::UnquotedIdentifier
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl UnquotedIdentifier {
-    pub fn r#name(&self) -> Option<Name> {
-        self.child()
-    }
-}
-impl UnquotedIdentifier {
-    pub fn r#dotted_name(&self) -> Option<DottedName> {
         self.child()
     }
 }
@@ -658,7 +936,7 @@ impl AlterTable {
     }
 }
 impl AlterTable {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -670,12 +948,15 @@ impl AlterTable {
 pub enum AlterTableAction {
     AlterTableActionAdd(AlterTableActionAdd),
     AlterTableActionAlterColumn(AlterTableActionAlterColumn),
+    AlterTableActionSet(AlterTableActionSet),
 }
 impl Node for AlterTableAction {
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
-            SyntaxKind::AlterTableActionAdd | SyntaxKind::AlterTableActionAlterColumn
+            SyntaxKind::AlterTableActionAdd
+                | SyntaxKind::AlterTableActionAlterColumn
+                | SyntaxKind::AlterTableActionSet
         )
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
@@ -686,6 +967,9 @@ impl Node for AlterTableAction {
             SyntaxKind::AlterTableActionAlterColumn => Some(
                 AlterTableAction::AlterTableActionAlterColumn(AlterTableActionAlterColumn(syntax)),
             ),
+            SyntaxKind::AlterTableActionSet => Some(AlterTableAction::AlterTableActionSet(
+                AlterTableActionSet(syntax),
+            )),
             _ => None,
         }
     }
@@ -693,6 +977,7 @@ impl Node for AlterTableAction {
         match self {
             Self::AlterTableActionAdd(node) => node.syntax(),
             Self::AlterTableActionAlterColumn(node) => node.syntax(),
+            Self::AlterTableActionSet(node) => node.syntax(),
         }
     }
 }
@@ -703,6 +988,11 @@ impl AlterTableAction {
 }
 impl AlterTableAction {
     pub fn r#alter_table_action_alter_column(&self) -> Option<AlterTableActionAlterColumn> {
+        self.child()
+    }
+}
+impl AlterTableAction {
+    pub fn r#alter_table_action_set(&self) -> Option<AlterTableActionSet> {
         self.child()
     }
 }
@@ -763,7 +1053,7 @@ impl AlterTableActionAlterColumn {
     }
 }
 impl AlterTableActionAlterColumn {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -779,6 +1069,29 @@ impl AlterTableActionAlterColumn {
 }
 impl AlterTableActionAlterColumn {
     pub fn r#column_default_expression(&self) -> Option<ColumnDefaultExpression> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct AlterTableActionSet(pub(crate) SyntaxNode);
+impl Node for AlterTableActionSet {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::AlterTableActionSet
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl AlterTableActionSet {
+    pub fn set_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::SetKw)
+    }
+}
+impl AlterTableActionSet {
+    pub fn r#expression(&self) -> Option<Expression> {
         self.child()
     }
 }
@@ -809,7 +1122,7 @@ impl Node for ArrayElementAccess {
     }
 }
 impl ArrayElementAccess {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -837,7 +1150,7 @@ impl Node for AssigmentExpression {
     }
 }
 impl AssigmentExpression {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -880,6 +1193,34 @@ impl Node for AutoIncrementConstraint {
 impl AutoIncrementConstraint {
     pub fn autoincrement_kw(&self) -> Option<SyntaxToken> {
         self.token(SyntaxKind::AutoincrementKw)
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct BeginStatement(pub(crate) SyntaxNode);
+impl Node for BeginStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::BeginStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl BeginStatement {
+    pub fn begin_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::BeginKw)
+    }
+}
+impl BeginStatement {
+    pub fn work_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WorkKw)
+    }
+}
+impl BeginStatement {
+    pub fn transaction_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TransactionKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1011,10 +1352,10 @@ impl Node for Comment {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ComparisonOperator(pub(crate) SyntaxNode);
-impl Node for ComparisonOperator {
+pub struct CommitStatement(pub(crate) SyntaxNode);
+impl Node for CommitStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ComparisonOperator
+        kind == SyntaxKind::CommitStatement
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1023,9 +1364,19 @@ impl Node for ComparisonOperator {
         &self.0
     }
 }
-impl ComparisonOperator {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
+impl CommitStatement {
+    pub fn commit_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::CommitKw)
+    }
+}
+impl CommitStatement {
+    pub fn work_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WorkKw)
+    }
+}
+impl CommitStatement {
+    pub fn transaction_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TransactionKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1176,7 +1527,7 @@ impl CreateFunctionParameter {
     }
 }
 impl CreateFunctionParameter {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -1232,13 +1583,8 @@ impl CreateFunctionStatement {
     }
 }
 impl CreateFunctionStatement {
-    pub fn or_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::OrKw)
-    }
-}
-impl CreateFunctionStatement {
-    pub fn replace_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ReplaceKw)
+    pub fn orreplace_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::OrreplaceKw)
     }
 }
 impl CreateFunctionStatement {
@@ -1292,6 +1638,29 @@ impl CreateFunctionStatement {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateIndexIncludeClause(pub(crate) SyntaxNode);
+impl Node for CreateIndexIncludeClause {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateIndexIncludeClause
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateIndexIncludeClause {
+    pub fn include_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::IncludeKw)
+    }
+}
+impl CreateIndexIncludeClause {
+    pub fn identifiers(&self) -> impl Iterator<Item = Identifier> {
+        self.children()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CreateIndexStatement(pub(crate) SyntaxNode);
 impl Node for CreateIndexStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
@@ -1340,7 +1709,45 @@ impl CreateIndexStatement {
     }
 }
 impl CreateIndexStatement {
+    pub fn r#create_index_include_clause(&self) -> Option<CreateIndexIncludeClause> {
+        self.child()
+    }
+}
+impl CreateIndexStatement {
+    pub fn r#create_index_with_clause(&self) -> Option<CreateIndexWithClause> {
+        self.child()
+    }
+}
+impl CreateIndexStatement {
     pub fn r#where_clause(&self) -> Option<WhereClause> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateIndexWithClause(pub(crate) SyntaxNode);
+impl Node for CreateIndexWithClause {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::CreateIndexWithClause
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl CreateIndexWithClause {
+    pub fn with_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WithKw)
+    }
+}
+impl CreateIndexWithClause {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl CreateIndexWithClause {
+    pub fn r#expression(&self) -> Option<Expression> {
         self.child()
     }
 }
@@ -1375,11 +1782,6 @@ impl CreateRoleStatement {
 impl CreateRoleStatement {
     pub fn with_kw(&self) -> Option<SyntaxToken> {
         self.token(SyntaxKind::WithKw)
-    }
-}
-impl CreateRoleStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -1502,7 +1904,7 @@ impl CreateTableStatement {
     }
 }
 impl CreateTableStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -1614,7 +2016,7 @@ impl Node for DottedName {
     }
 }
 impl DottedName {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -1637,31 +2039,6 @@ impl DropStatement {
     }
 }
 impl DropStatement {
-    pub fn table_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TableKw)
-    }
-}
-impl DropStatement {
-    pub fn view_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ViewKw)
-    }
-}
-impl DropStatement {
-    pub fn tablespace_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::TablespaceKw)
-    }
-}
-impl DropStatement {
-    pub fn extension_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ExtensionKw)
-    }
-}
-impl DropStatement {
-    pub fn index_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::IndexKw)
-    }
-}
-impl DropStatement {
     pub fn if_kw(&self) -> Option<SyntaxToken> {
         self.token(SyntaxKind::IfKw)
     }
@@ -1672,7 +2049,7 @@ impl DropStatement {
     }
 }
 impl DropStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -1690,7 +2067,7 @@ impl Node for ExcludeEntry {
     }
 }
 impl ExcludeEntry {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -1709,222 +2086,6 @@ impl ExcludeEntry {
         self.child()
     }
 }
-pub enum Expression {
-    IntervalExpression(IntervalExpression),
-    FunctionCall(FunctionCall),
-    String(String),
-    FieldAccess(FieldAccess),
-    True(True),
-    False(False),
-    Null(Null),
-    AsteriskExpression(AsteriskExpression),
-    Identifier(Identifier),
-    Number(Number),
-    ComparisonOperator(ComparisonOperator),
-    InExpression(InExpression),
-    IsExpression(IsExpression),
-    BooleanExpression(BooleanExpression),
-    ParenthesizedExpression(ParenthesizedExpression),
-    TypeCast(TypeCast),
-    BinaryExpression(BinaryExpression),
-    ArrayElementAccess(ArrayElementAccess),
-    ArgumentReference(ArgumentReference),
-    SelectSubexpression(SelectSubexpression),
-}
-impl Node for Expression {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        matches!(
-            kind,
-            SyntaxKind::IntervalExpression
-                | SyntaxKind::FunctionCall
-                | SyntaxKind::String
-                | SyntaxKind::FieldAccess
-                | SyntaxKind::True
-                | SyntaxKind::False
-                | SyntaxKind::Null
-                | SyntaxKind::AsteriskExpression
-                | SyntaxKind::Identifier
-                | SyntaxKind::Number
-                | SyntaxKind::ComparisonOperator
-                | SyntaxKind::InExpression
-                | SyntaxKind::IsExpression
-                | SyntaxKind::BooleanExpression
-                | SyntaxKind::ParenthesizedExpression
-                | SyntaxKind::TypeCast
-                | SyntaxKind::BinaryExpression
-                | SyntaxKind::ArrayElementAccess
-                | SyntaxKind::ArgumentReference
-                | SyntaxKind::SelectSubexpression
-        )
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        match syntax.kind() {
-            SyntaxKind::IntervalExpression => {
-                Some(Expression::IntervalExpression(IntervalExpression(syntax)))
-            }
-            SyntaxKind::FunctionCall => Some(Expression::FunctionCall(FunctionCall(syntax))),
-            SyntaxKind::String => Some(Expression::String(String(syntax))),
-            SyntaxKind::FieldAccess => Some(Expression::FieldAccess(FieldAccess(syntax))),
-            SyntaxKind::True => Some(Expression::True(True(syntax))),
-            SyntaxKind::False => Some(Expression::False(False(syntax))),
-            SyntaxKind::Null => Some(Expression::Null(Null(syntax))),
-            SyntaxKind::AsteriskExpression => {
-                Some(Expression::AsteriskExpression(AsteriskExpression(syntax)))
-            }
-            SyntaxKind::Identifier => Some(Expression::Identifier(Identifier(syntax))),
-            SyntaxKind::Number => Some(Expression::Number(Number(syntax))),
-            SyntaxKind::ComparisonOperator => {
-                Some(Expression::ComparisonOperator(ComparisonOperator(syntax)))
-            }
-            SyntaxKind::InExpression => Some(Expression::InExpression(InExpression(syntax))),
-            SyntaxKind::IsExpression => Some(Expression::IsExpression(IsExpression(syntax))),
-            SyntaxKind::BooleanExpression => {
-                Some(Expression::BooleanExpression(BooleanExpression(syntax)))
-            }
-            SyntaxKind::ParenthesizedExpression => Some(Expression::ParenthesizedExpression(
-                ParenthesizedExpression(syntax),
-            )),
-            SyntaxKind::TypeCast => Some(Expression::TypeCast(TypeCast(syntax))),
-            SyntaxKind::BinaryExpression => {
-                Some(Expression::BinaryExpression(BinaryExpression(syntax)))
-            }
-            SyntaxKind::ArrayElementAccess => {
-                Some(Expression::ArrayElementAccess(ArrayElementAccess(syntax)))
-            }
-            SyntaxKind::ArgumentReference => {
-                Some(Expression::ArgumentReference(ArgumentReference(syntax)))
-            }
-            SyntaxKind::SelectSubexpression => {
-                Some(Expression::SelectSubexpression(SelectSubexpression(syntax)))
-            }
-            _ => None,
-        }
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        match self {
-            Self::IntervalExpression(node) => node.syntax(),
-            Self::FunctionCall(node) => node.syntax(),
-            Self::String(node) => node.syntax(),
-            Self::FieldAccess(node) => node.syntax(),
-            Self::True(node) => node.syntax(),
-            Self::False(node) => node.syntax(),
-            Self::Null(node) => node.syntax(),
-            Self::AsteriskExpression(node) => node.syntax(),
-            Self::Identifier(node) => node.syntax(),
-            Self::Number(node) => node.syntax(),
-            Self::ComparisonOperator(node) => node.syntax(),
-            Self::InExpression(node) => node.syntax(),
-            Self::IsExpression(node) => node.syntax(),
-            Self::BooleanExpression(node) => node.syntax(),
-            Self::ParenthesizedExpression(node) => node.syntax(),
-            Self::TypeCast(node) => node.syntax(),
-            Self::BinaryExpression(node) => node.syntax(),
-            Self::ArrayElementAccess(node) => node.syntax(),
-            Self::ArgumentReference(node) => node.syntax(),
-            Self::SelectSubexpression(node) => node.syntax(),
-        }
-    }
-}
-impl Expression {
-    pub fn r#interval_expression(&self) -> Option<IntervalExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#function_call(&self) -> Option<FunctionCall> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#string(&self) -> Option<String> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#field_access(&self) -> Option<FieldAccess> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#true(&self) -> Option<True> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#false(&self) -> Option<False> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#null(&self) -> Option<Null> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#asterisk_expression(&self) -> Option<AsteriskExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#identifier(&self) -> Option<Identifier> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#number(&self) -> Option<Number> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#comparison_operator(&self) -> Option<ComparisonOperator> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#in_expression(&self) -> Option<InExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#is_expression(&self) -> Option<IsExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#boolean_expression(&self) -> Option<BooleanExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#parenthesized_expression(&self) -> Option<ParenthesizedExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#type_cast(&self) -> Option<TypeCast> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#binary_expression(&self) -> Option<BinaryExpression> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#array_element_access(&self) -> Option<ArrayElementAccess> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#argument_reference(&self) -> Option<ArgumentReference> {
-        self.child()
-    }
-}
-impl Expression {
-    pub fn r#select_subexpression(&self) -> Option<SelectSubexpression> {
-        self.child()
-    }
-}
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct FieldAccess(pub(crate) SyntaxNode);
 impl Node for FieldAccess {
@@ -1939,7 +2100,7 @@ impl Node for FieldAccess {
     }
 }
 impl FieldAccess {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -1990,7 +2151,7 @@ impl FunctionBody {
     }
 }
 impl FunctionBody {
-    pub fn r#select_statement(&self) -> Option<SelectStatement> {
+    pub fn r#string(&self) -> Option<String> {
         self.child()
     }
 }
@@ -2008,13 +2169,13 @@ impl Node for FunctionCall {
     }
 }
 impl FunctionCall {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
 impl FunctionCall {
-    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
-        self.children()
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -2126,6 +2287,11 @@ impl GrantStatement {
     }
 }
 impl GrantStatement {
+    pub fn r#identifier(&self) -> Option<Identifier> {
+        self.child()
+    }
+}
+impl GrantStatement {
     pub fn public_kw(&self) -> Option<SyntaxToken> {
         self.token(SyntaxKind::PublicKw)
     }
@@ -2182,8 +2348,8 @@ impl Node for GroupByClauseBody {
     }
 }
 impl GroupByClauseBody {
-    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
-        self.children()
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -2200,7 +2366,7 @@ impl Node for Identifier {
     }
 }
 impl Identifier {
-    pub fn r#unquoted_identifier(&self) -> Option<UnquotedIdentifier> {
+    pub fn r#quoted_identifier(&self) -> Option<QuotedIdentifier> {
         self.child()
     }
 }
@@ -2317,12 +2483,17 @@ impl InsertStatement {
     }
 }
 impl InsertStatement {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
 impl InsertStatement {
     pub fn r#values_clause(&self) -> Option<ValuesClause> {
+        self.child()
+    }
+}
+impl InsertStatement {
+    pub fn r#select_statement(&self) -> Option<SelectStatement> {
         self.child()
     }
 }
@@ -2421,7 +2592,7 @@ impl JoinClause {
     }
 }
 impl JoinClause {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -2497,19 +2668,6 @@ impl Mode {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Name(pub(crate) SyntaxNode);
-impl Node for Name {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Name
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct NamedConstraint(pub(crate) SyntaxNode);
 impl Node for NamedConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
@@ -2523,12 +2681,7 @@ impl Node for NamedConstraint {
     }
 }
 impl NamedConstraint {
-    pub fn constraint_kw(&self) -> Option<SyntaxToken> {
-        self.token(SyntaxKind::ConstraintKw)
-    }
-}
-impl NamedConstraint {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -2681,7 +2834,7 @@ impl Node for OpClass {
     }
 }
 impl OpClass {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -2755,8 +2908,8 @@ impl Node for OrderByClauseBody {
     }
 }
 impl OrderByClauseBody {
-    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
-        self.children()
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -2834,7 +2987,7 @@ impl Node for Parameter {
     }
 }
 impl Parameter {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -2864,24 +3017,6 @@ impl Node for Parameters {
 impl Parameters {
     pub fn parameters(&self) -> impl Iterator<Item = Parameter> {
         self.children()
-    }
-}
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct ParenthesizedExpression(pub(crate) SyntaxNode);
-impl Node for ParenthesizedExpression {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ParenthesizedExpression
-    }
-    fn cast(syntax: SyntaxNode) -> Option<Self> {
-        Self::can_cast(syntax.kind()).then(|| Self(syntax))
-    }
-    fn syntax(&self) -> &SyntaxNode {
-        &self.0
-    }
-}
-impl ParenthesizedExpression {
-    pub fn r#expression(&self) -> Option<Expression> {
-        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -2939,12 +3074,12 @@ impl ReferencesConstraint {
     }
 }
 impl ReferencesConstraint {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
 impl ReferencesConstraint {
-    pub fn names(&self) -> impl Iterator<Item = Name> {
+    pub fn identifiers(&self) -> impl Iterator<Item = Identifier> {
         self.children()
     }
 }
@@ -2956,6 +3091,34 @@ impl ReferencesConstraint {
 impl ReferencesConstraint {
     pub fn r#on_delete_action(&self) -> Option<OnDeleteAction> {
         self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct RollbackStatement(pub(crate) SyntaxNode);
+impl Node for RollbackStatement {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::RollbackStatement
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl RollbackStatement {
+    pub fn rollback_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::RollbackKw)
+    }
+}
+impl RollbackStatement {
+    pub fn work_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::WorkKw)
+    }
+}
+impl RollbackStatement {
+    pub fn transaction_kw(&self) -> Option<SyntaxToken> {
+        self.token(SyntaxKind::TransactionKw)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -3094,7 +3257,7 @@ impl Sequence {
     }
 }
 impl Sequence {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -3156,11 +3319,6 @@ impl Sequence {
 impl Sequence {
     pub fn owned_kw(&self) -> Option<SyntaxToken> {
         self.token(SyntaxKind::OwnedKw)
-    }
-}
-impl Sequence {
-    pub fn r#dotted_name(&self) -> Option<DottedName> {
-        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -3233,7 +3391,7 @@ impl SetStatement {
     }
 }
 impl SetStatement {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -3325,7 +3483,7 @@ impl Node for TableColumn {
     }
 }
 impl TableColumn {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -3431,7 +3589,7 @@ impl TableConstraintExclude {
     }
 }
 impl TableConstraintExclude {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -3464,7 +3622,7 @@ impl TableConstraintForeignKey {
     }
 }
 impl TableConstraintForeignKey {
-    pub fn names(&self) -> impl Iterator<Item = Name> {
+    pub fn identifiers(&self) -> impl Iterator<Item = Identifier> {
         self.children()
     }
 }
@@ -3497,8 +3655,8 @@ impl TableConstraintPrimaryKey {
     }
 }
 impl TableConstraintPrimaryKey {
-    pub fn identifiers(&self) -> impl Iterator<Item = Identifier> {
-        self.children()
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -3520,8 +3678,8 @@ impl TableConstraintUnique {
     }
 }
 impl TableConstraintUnique {
-    pub fn identifiers(&self) -> impl Iterator<Item = Identifier> {
-        self.children()
+    pub fn r#name(&self) -> Option<Name> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -3594,8 +3752,8 @@ impl Node for Tuple {
     }
 }
 impl Tuple {
-    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
-        self.children()
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -3612,7 +3770,7 @@ impl Node for Type {
     }
 }
 impl Type {
-    pub fn r#identifier(&self) -> Option<Identifier> {
+    pub fn r#name(&self) -> Option<Name> {
         self.child()
     }
 }
@@ -3645,7 +3803,7 @@ impl TypeCast {
     }
 }
 impl TypeCast {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -3656,6 +3814,24 @@ impl TypeCast {
 }
 impl TypeCast {
     pub fn r#anytype(&self) -> Option<Anytype> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct UnaryExpression(pub(crate) SyntaxNode);
+impl Node for UnaryExpression {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::UnaryExpression
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl UnaryExpression {
+    pub fn r#expression(&self) -> Option<Expression> {
         self.child()
     }
 }
@@ -3696,7 +3872,7 @@ impl UpdateStatement {
     }
 }
 impl UpdateStatement {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -3729,7 +3905,7 @@ impl UsingClause {
     }
 }
 impl UsingClause {
-    pub fn r#name(&self) -> Option<Name> {
+    pub fn r#identifier(&self) -> Option<Identifier> {
         self.child()
     }
 }
@@ -3770,8 +3946,8 @@ impl Node for ValuesClauseBody {
     }
 }
 impl ValuesClauseBody {
-    pub fn expressions(&self) -> impl Iterator<Item = Expression> {
-        self.children()
+    pub fn r#expression(&self) -> Option<Expression> {
+        self.child()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -3814,8 +3990,8 @@ pub trait Visitor {
         for r#expression in r#aliased_expression.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#name in r#aliased_expression.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#aliased_expression.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
     fn visit_alter_statement(&mut self, r#alter_statement: AlterStatement) {
@@ -3842,11 +4018,11 @@ pub trait Visitor {
         if let Some(kw) = r#alter_table.table_kw() {
             self.visit_kw(kw);
         }
+        for r#name in r#alter_table.r#name() {
+            self.visit_name(r#name);
+        }
         for r#alter_table_action in r#alter_table.r#alter_table_action() {
             self.visit_alter_table_action(r#alter_table_action);
-        }
-        for r#identifier in r#alter_table.r#identifier() {
-            self.visit_identifier(r#identifier);
         }
     }
     fn visit_alter_table_action(&mut self, r#alter_table_action: AlterTableAction) {
@@ -3855,6 +4031,7 @@ pub trait Visitor {
             AlterTableAction::AlterTableActionAlterColumn(node) => {
                 self.visit_alter_table_action_alter_column(node)
             }
+            AlterTableAction::AlterTableActionSet(node) => self.visit_alter_table_action_set(node),
         }
     }
     fn visit_alter_table_action_add(&mut self, r#alter_table_action_add: AlterTableActionAdd) {
@@ -3892,8 +4069,16 @@ pub trait Visitor {
         {
             self.visit_column_default_expression(r#column_default_expression);
         }
-        for r#identifier in r#alter_table_action_alter_column.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#alter_table_action_alter_column.r#name() {
+            self.visit_name(r#name);
+        }
+    }
+    fn visit_alter_table_action_set(&mut self, r#alter_table_action_set: AlterTableActionSet) {
+        if let Some(kw) = r#alter_table_action_set.set_kw() {
+            self.visit_kw(kw);
+        }
+        for r#expression in r#alter_table_action_set.r#expression() {
+            self.visit_expression(r#expression);
         }
     }
     fn visit_anytype(&mut self, r#anytype: Anytype) {
@@ -3906,22 +4091,22 @@ pub trait Visitor {
     }
     fn visit_argument_reference(&mut self, r#argument_reference: ArgumentReference) {}
     fn visit_array_element_access(&mut self, r#array_element_access: ArrayElementAccess) {
-        for r#argument_reference in r#array_element_access.r#argument_reference() {
-            self.visit_argument_reference(r#argument_reference);
-        }
         for r#expression in r#array_element_access.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#name in r#array_element_access.r#name() {
-            self.visit_name(r#name);
+        for r#argument_reference in r#array_element_access.r#argument_reference() {
+            self.visit_argument_reference(r#argument_reference);
+        }
+        for r#identifier in r#array_element_access.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
     fn visit_assigment_expression(&mut self, r#assigment_expression: AssigmentExpression) {
         for r#expression in r#assigment_expression.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#name in r#assigment_expression.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#assigment_expression.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
     fn visit_asterisk_expression(&mut self, r#asterisk_expression: AsteriskExpression) {
@@ -3934,6 +4119,17 @@ pub trait Visitor {
         r#auto_increment_constraint: AutoIncrementConstraint,
     ) {
         if let Some(kw) = r#auto_increment_constraint.autoincrement_kw() {
+            self.visit_kw(kw);
+        }
+    }
+    fn visit_begin_statement(&mut self, r#begin_statement: BeginStatement) {
+        if let Some(kw) = r#begin_statement.begin_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#begin_statement.transaction_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#begin_statement.work_kw() {
             self.visit_kw(kw);
         }
     }
@@ -3985,14 +4181,20 @@ pub trait Visitor {
                 self.visit_parenthesized_expression(node)
             }
             ColumnDefaultExpression::String(node) => self.visit_string(node),
-            ColumnDefaultExpression::Name(node) => self.visit_name(node),
+            ColumnDefaultExpression::Identifier(node) => self.visit_identifier(node),
             ColumnDefaultExpression::FunctionCall(node) => self.visit_function_call(node),
         }
     }
     fn visit_comment(&mut self, r#comment: Comment) {}
-    fn visit_comparison_operator(&mut self, r#comparison_operator: ComparisonOperator) {
-        for r#expression in r#comparison_operator.r#expression() {
-            self.visit_expression(r#expression);
+    fn visit_commit_statement(&mut self, r#commit_statement: CommitStatement) {
+        if let Some(kw) = r#commit_statement.commit_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#commit_statement.transaction_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#commit_statement.work_kw() {
+            self.visit_kw(kw);
         }
     }
     fn visit_constrained_type(&mut self, r#constrained_type: ConstrainedType) {
@@ -4038,11 +4240,11 @@ pub trait Visitor {
         for r#anytype in r#create_domain_statement.r#anytype() {
             self.visit_anytype(r#anytype);
         }
-        for r#check_constraint in r#create_domain_statement.r#check_constraint() {
-            self.visit_check_constraint(r#check_constraint);
-        }
         for r#name in r#create_domain_statement.r#name() {
             self.visit_name(r#name);
+        }
+        for r#check_constraint in r#create_domain_statement.r#check_constraint() {
+            self.visit_check_constraint(r#check_constraint);
         }
         for r#null_constraint in r#create_domain_statement.r#null_constraint() {
             self.visit_null_constraint(r#null_constraint);
@@ -4090,14 +4292,14 @@ pub trait Visitor {
         for r#anytype in r#create_function_parameter.r#anytype() {
             self.visit_anytype(r#anytype);
         }
-        for r#constrained_type in r#create_function_parameter.r#constrained_type() {
-            self.visit_constrained_type(r#constrained_type);
-        }
         for r#expression in r#create_function_parameter.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#name in r#create_function_parameter.r#name() {
-            self.visit_name(r#name);
+        for r#constrained_type in r#create_function_parameter.r#constrained_type() {
+            self.visit_constrained_type(r#constrained_type);
+        }
+        for r#identifier in r#create_function_parameter.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
     fn visit_create_function_parameters(
@@ -4129,10 +4331,7 @@ pub trait Visitor {
         if let Some(kw) = r#create_function_statement.function_kw() {
             self.visit_kw(kw);
         }
-        if let Some(kw) = r#create_function_statement.or_kw() {
-            self.visit_kw(kw);
-        }
-        if let Some(kw) = r#create_function_statement.replace_kw() {
+        if let Some(kw) = r#create_function_statement.orreplace_kw() {
             self.visit_kw(kw);
         }
         if let Some(kw) = r#create_function_statement.returns_kw() {
@@ -4146,6 +4345,9 @@ pub trait Visitor {
         for r#function_language in r#create_function_statement.r#function_language() {
             self.visit_function_language(r#function_language);
         }
+        for r#name in r#create_function_statement.r#name() {
+            self.visit_name(r#name);
+        }
         for r#create_function_parameters in
             r#create_function_statement.r#create_function_parameters()
         {
@@ -4153,9 +4355,6 @@ pub trait Visitor {
         }
         for r#function_body in r#create_function_statement.r#function_body() {
             self.visit_function_body(r#function_body);
-        }
-        for r#name in r#create_function_statement.r#name() {
-            self.visit_name(r#name);
         }
         for r#null_hint in r#create_function_statement.r#null_hint() {
             self.visit_null_hint(r#null_hint);
@@ -4165,6 +4364,17 @@ pub trait Visitor {
         }
         for r#parallel_hint in r#create_function_statement.r#parallel_hint() {
             self.visit_parallel_hint(r#parallel_hint);
+        }
+    }
+    fn visit_create_index_include_clause(
+        &mut self,
+        r#create_index_include_clause: CreateIndexIncludeClause,
+    ) {
+        if let Some(kw) = r#create_index_include_clause.include_kw() {
+            self.visit_kw(kw);
+        }
+        for r#identifier in r#create_index_include_clause.identifiers() {
+            self.visit_identifier(r#identifier);
         }
     }
     fn visit_create_index_statement(&mut self, r#create_index_statement: CreateIndexStatement) {
@@ -4177,11 +4387,19 @@ pub trait Visitor {
         if let Some(kw) = r#create_index_statement.on_kw() {
             self.visit_kw(kw);
         }
-        for r#index_table_parameters in r#create_index_statement.r#index_table_parameters() {
-            self.visit_index_table_parameters(r#index_table_parameters);
-        }
         for r#name in r#create_index_statement.r#name() {
             self.visit_name(r#name);
+        }
+        for r#create_index_include_clause in
+            r#create_index_statement.r#create_index_include_clause()
+        {
+            self.visit_create_index_include_clause(r#create_index_include_clause);
+        }
+        for r#create_index_with_clause in r#create_index_statement.r#create_index_with_clause() {
+            self.visit_create_index_with_clause(r#create_index_with_clause);
+        }
+        for r#index_table_parameters in r#create_index_statement.r#index_table_parameters() {
+            self.visit_index_table_parameters(r#index_table_parameters);
         }
         for r#unique_constraint in r#create_index_statement.r#unique_constraint() {
             self.visit_unique_constraint(r#unique_constraint);
@@ -4193,6 +4411,20 @@ pub trait Visitor {
             self.visit_where_clause(r#where_clause);
         }
     }
+    fn visit_create_index_with_clause(
+        &mut self,
+        r#create_index_with_clause: CreateIndexWithClause,
+    ) {
+        if let Some(kw) = r#create_index_with_clause.with_kw() {
+            self.visit_kw(kw);
+        }
+        for r#expression in r#create_index_with_clause.r#expression() {
+            self.visit_expression(r#expression);
+        }
+        for r#identifier in r#create_index_with_clause.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
+    }
     fn visit_create_role_statement(&mut self, r#create_role_statement: CreateRoleStatement) {
         if let Some(kw) = r#create_role_statement.create_kw() {
             self.visit_kw(kw);
@@ -4202,9 +4434,6 @@ pub trait Visitor {
         }
         if let Some(kw) = r#create_role_statement.with_kw() {
             self.visit_kw(kw);
-        }
-        for r#identifier in r#create_role_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
         }
         for r#name in r#create_role_statement.r#name() {
             self.visit_name(r#name);
@@ -4263,8 +4492,8 @@ pub trait Visitor {
         if let Some(kw) = r#create_table_statement.temporary_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#create_table_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#create_table_statement.r#name() {
+            self.visit_name(r#name);
         }
         for r#table_parameters in r#create_table_statement.r#table_parameters() {
             self.visit_table_parameters(r#table_parameters);
@@ -4307,8 +4536,8 @@ pub trait Visitor {
         }
     }
     fn visit_dotted_name(&mut self, r#dotted_name: DottedName) {
-        for r#name in r#dotted_name.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#dotted_name.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
     fn visit_drop_statement(&mut self, r#drop_statement: DropStatement) {
@@ -4318,37 +4547,22 @@ pub trait Visitor {
         if let Some(kw) = r#drop_statement.exists_kw() {
             self.visit_kw(kw);
         }
-        if let Some(kw) = r#drop_statement.extension_kw() {
-            self.visit_kw(kw);
-        }
         if let Some(kw) = r#drop_statement.if_kw() {
             self.visit_kw(kw);
         }
-        if let Some(kw) = r#drop_statement.index_kw() {
-            self.visit_kw(kw);
-        }
-        if let Some(kw) = r#drop_statement.table_kw() {
-            self.visit_kw(kw);
-        }
-        if let Some(kw) = r#drop_statement.tablespace_kw() {
-            self.visit_kw(kw);
-        }
-        if let Some(kw) = r#drop_statement.view_kw() {
-            self.visit_kw(kw);
-        }
-        for r#identifier in r#drop_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#drop_statement.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_exclude_entry(&mut self, r#exclude_entry: ExcludeEntry) {
         if let Some(kw) = r#exclude_entry.with_kw() {
             self.visit_kw(kw);
         }
+        for r#name in r#exclude_entry.r#name() {
+            self.visit_name(r#name);
+        }
         for r#binary_operator in r#exclude_entry.r#binary_operator() {
             self.visit_binary_operator(r#binary_operator);
-        }
-        for r#identifier in r#exclude_entry.r#identifier() {
-            self.visit_identifier(r#identifier);
         }
         for r#op_class in r#exclude_entry.r#op_class() {
             self.visit_op_class(r#op_class);
@@ -4364,14 +4578,14 @@ pub trait Visitor {
             Expression::False(node) => self.visit_false(node),
             Expression::Null(node) => self.visit_null(node),
             Expression::AsteriskExpression(node) => self.visit_asterisk_expression(node),
-            Expression::Identifier(node) => self.visit_identifier(node),
+            Expression::Name(node) => self.visit_name(node),
             Expression::Number(node) => self.visit_number(node),
-            Expression::ComparisonOperator(node) => self.visit_comparison_operator(node),
             Expression::InExpression(node) => self.visit_in_expression(node),
             Expression::IsExpression(node) => self.visit_is_expression(node),
             Expression::BooleanExpression(node) => self.visit_boolean_expression(node),
             Expression::ParenthesizedExpression(node) => self.visit_parenthesized_expression(node),
             Expression::TypeCast(node) => self.visit_type_cast(node),
+            Expression::UnaryExpression(node) => self.visit_unary_expression(node),
             Expression::BinaryExpression(node) => self.visit_binary_expression(node),
             Expression::ArrayElementAccess(node) => self.visit_array_element_access(node),
             Expression::ArgumentReference(node) => self.visit_argument_reference(node),
@@ -4384,8 +4598,8 @@ pub trait Visitor {
         }
     }
     fn visit_field_access(&mut self, r#field_access: FieldAccess) {
-        for r#name in r#field_access.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#field_access.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
         for r#string in r#field_access.r#string() {
             self.visit_string(r#string);
@@ -4403,24 +4617,24 @@ pub trait Visitor {
         if let Some(kw) = r#function_body.as_kw() {
             self.visit_kw(kw);
         }
-        for r#select_statement in r#function_body.r#select_statement() {
-            self.visit_select_statement(r#select_statement);
+        for r#string in r#function_body.r#string() {
+            self.visit_string(r#string);
         }
     }
     fn visit_function_call(&mut self, r#function_call: FunctionCall) {
-        for r#expression in r#function_call.expressions() {
+        for r#expression in r#function_call.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#name in r#function_call.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#function_call.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
     fn visit_function_language(&mut self, r#function_language: FunctionLanguage) {
         if let Some(kw) = r#function_language.language_kw() {
             self.visit_kw(kw);
         }
-        for r#name in r#function_language.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#function_language.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
     fn visit_grant_statement(&mut self, r#grant_statement: GrantStatement) {
@@ -4490,6 +4704,9 @@ pub trait Visitor {
         for r#name in r#grant_statement.r#name() {
             self.visit_name(r#name);
         }
+        for r#identifier in r#grant_statement.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
     }
     fn visit_group_by_clause(&mut self, r#group_by_clause: GroupByClause) {
         if let Some(kw) = r#group_by_clause.by_kw() {
@@ -4503,13 +4720,13 @@ pub trait Visitor {
         }
     }
     fn visit_group_by_clause_body(&mut self, r#group_by_clause_body: GroupByClauseBody) {
-        for r#expression in r#group_by_clause_body.expressions() {
+        for r#expression in r#group_by_clause_body.r#expression() {
             self.visit_expression(r#expression);
         }
     }
     fn visit_identifier(&mut self, r#identifier: Identifier) {
-        for r#unquoted_identifier in r#identifier.r#unquoted_identifier() {
-            self.visit_unquoted_identifier(r#unquoted_identifier);
+        for r#quoted_identifier in r#identifier.r#quoted_identifier() {
+            self.visit_quoted_identifier(r#quoted_identifier);
         }
     }
     fn visit_in_expression(&mut self, r#in_expression: InExpression) {
@@ -4555,8 +4772,11 @@ pub trait Visitor {
         if let Some(kw) = r#insert_statement.into_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#insert_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#insert_statement.r#name() {
+            self.visit_name(r#name);
+        }
+        for r#select_statement in r#insert_statement.r#select_statement() {
+            self.visit_select_statement(r#select_statement);
         }
         for r#values_clause in r#insert_statement.r#values_clause() {
             self.visit_values_clause(r#values_clause);
@@ -4586,11 +4806,11 @@ pub trait Visitor {
         for r#true in r#is_expression.r#true() {
             self.visit_true(r#true);
         }
-        for r#distinct_from in r#is_expression.r#distinct_from() {
-            self.visit_distinct_from(r#distinct_from);
-        }
         for r#expression in r#is_expression.r#expression() {
             self.visit_expression(r#expression);
+        }
+        for r#distinct_from in r#is_expression.r#distinct_from() {
+            self.visit_distinct_from(r#distinct_from);
         }
     }
     fn visit_join_clause(&mut self, r#join_clause: JoinClause) {
@@ -4603,8 +4823,8 @@ pub trait Visitor {
         for r#expression in r#join_clause.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#identifier in r#join_clause.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#join_clause.r#name() {
+            self.visit_name(r#name);
         }
         for r#join_type in r#join_clause.r#join_type() {
             self.visit_join_type(r#join_type);
@@ -4635,13 +4855,17 @@ pub trait Visitor {
             self.visit_kw(kw);
         }
     }
-    fn visit_name(&mut self, r#name: Name) {}
-    fn visit_named_constraint(&mut self, r#named_constraint: NamedConstraint) {
-        if let Some(kw) = r#named_constraint.constraint_kw() {
-            self.visit_kw(kw);
+    fn visit_name(&mut self, r#name: Name) {
+        for r#dotted_name in r#name.r#dotted_name() {
+            self.visit_dotted_name(r#dotted_name);
         }
-        for r#name in r#named_constraint.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#name.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
+    }
+    fn visit_named_constraint(&mut self, r#named_constraint: NamedConstraint) {
+        for r#identifier in r#named_constraint.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
     fn visit_null(&mut self, r#null: Null) {
@@ -4701,8 +4925,8 @@ pub trait Visitor {
         }
     }
     fn visit_op_class(&mut self, r#op_class: OpClass) {
-        for r#identifier in r#op_class.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#op_class.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_optimizer_hint(&mut self, r#optimizer_hint: OptimizerHint) {
@@ -4728,7 +4952,7 @@ pub trait Visitor {
         }
     }
     fn visit_order_by_clause_body(&mut self, r#order_by_clause_body: OrderByClauseBody) {
-        for r#expression in r#order_by_clause_body.expressions() {
+        for r#expression in r#order_by_clause_body.r#expression() {
             self.visit_expression(r#expression);
         }
     }
@@ -4764,8 +4988,8 @@ pub trait Visitor {
         for r#constrained_type in r#parameter.r#constrained_type() {
             self.visit_constrained_type(r#constrained_type);
         }
-        for r#name in r#parameter.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#parameter.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
     fn visit_parameters(&mut self, r#parameters: Parameters) {
@@ -4790,21 +5014,33 @@ pub trait Visitor {
             self.visit_kw(kw);
         }
     }
+    fn visit_quoted_identifier(&mut self, r#quoted_identifier: QuotedIdentifier) {}
     fn visit_references_constraint(&mut self, r#references_constraint: ReferencesConstraint) {
         if let Some(kw) = r#references_constraint.references_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#references_constraint.r#identifier() {
-            self.visit_identifier(r#identifier);
-        }
-        for r#name in r#references_constraint.names() {
+        for r#name in r#references_constraint.r#name() {
             self.visit_name(r#name);
+        }
+        for r#identifier in r#references_constraint.identifiers() {
+            self.visit_identifier(r#identifier);
         }
         for r#on_delete_action in r#references_constraint.r#on_delete_action() {
             self.visit_on_delete_action(r#on_delete_action);
         }
         for r#on_update_action in r#references_constraint.r#on_update_action() {
             self.visit_on_update_action(r#on_update_action);
+        }
+    }
+    fn visit_rollback_statement(&mut self, r#rollback_statement: RollbackStatement) {
+        if let Some(kw) = r#rollback_statement.rollback_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#rollback_statement.transaction_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#rollback_statement.work_kw() {
+            self.visit_kw(kw);
         }
     }
     fn visit_select_clause(&mut self, r#select_clause: SelectClause) {
@@ -4888,11 +5124,8 @@ pub trait Visitor {
         if let Some(kw) = r#sequence.with_kw() {
             self.visit_kw(kw);
         }
-        for r#dotted_name in r#sequence.r#dotted_name() {
-            self.visit_dotted_name(r#dotted_name);
-        }
-        for r#identifier in r#sequence.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#sequence.r#name() {
+            self.visit_name(r#name);
         }
         for r#number in r#sequence.r#number() {
             self.visit_number(r#number);
@@ -4933,8 +5166,8 @@ pub trait Visitor {
         for r#expression in r#set_statement.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#name in r#set_statement.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#set_statement.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
     fn visit_setof(&mut self, r#setof: Setof) {
@@ -4956,6 +5189,9 @@ pub trait Visitor {
     fn visit_statement(&mut self, r#statement: Statement) {
         match r#statement {
             Statement::PgCommand(node) => self.visit_pg_command(node),
+            Statement::BeginStatement(node) => self.visit_begin_statement(node),
+            Statement::CommitStatement(node) => self.visit_commit_statement(node),
+            Statement::RollbackStatement(node) => self.visit_rollback_statement(node),
             Statement::SelectStatement(node) => self.visit_select_statement(node),
             Statement::UpdateStatement(node) => self.visit_update_statement(node),
             Statement::SetStatement(node) => self.visit_set_statement(node),
@@ -4981,6 +5217,9 @@ pub trait Visitor {
         for r#anytype in r#table_column.r#anytype() {
             self.visit_anytype(r#anytype);
         }
+        for r#name in r#table_column.r#name() {
+            self.visit_name(r#name);
+        }
         for r#auto_increment_constraint in r#table_column.r#auto_increment_constraint() {
             self.visit_auto_increment_constraint(r#auto_increment_constraint);
         }
@@ -4992,9 +5231,6 @@ pub trait Visitor {
         }
         for r#direction_constraint in r#table_column.r#direction_constraint() {
             self.visit_direction_constraint(r#direction_constraint);
-        }
-        for r#identifier in r#table_column.r#identifier() {
-            self.visit_identifier(r#identifier);
         }
         for r#named_constraint in r#table_column.r#named_constraint() {
             self.visit_named_constraint(r#named_constraint);
@@ -5019,8 +5255,8 @@ pub trait Visitor {
         if let Some(kw) = r#table_constraint.constraint_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#table_constraint.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#table_constraint.r#name() {
+            self.visit_name(r#name);
         }
         for r#initial_mode in r#table_constraint.r#initial_mode() {
             self.visit_initial_mode(r#initial_mode);
@@ -5062,11 +5298,11 @@ pub trait Visitor {
         if let Some(kw) = r#table_constraint_exclude.using_kw() {
             self.visit_kw(kw);
         }
+        for r#name in r#table_constraint_exclude.r#name() {
+            self.visit_name(r#name);
+        }
         for r#exclude_entry in r#table_constraint_exclude.exclude_entrys() {
             self.visit_exclude_entry(r#exclude_entry);
-        }
-        for r#identifier in r#table_constraint_exclude.r#identifier() {
-            self.visit_identifier(r#identifier);
         }
     }
     fn visit_table_constraint_foreign_key(
@@ -5079,8 +5315,8 @@ pub trait Visitor {
         if let Some(kw) = r#table_constraint_foreign_key.key_kw() {
             self.visit_kw(kw);
         }
-        for r#name in r#table_constraint_foreign_key.names() {
-            self.visit_name(r#name);
+        for r#identifier in r#table_constraint_foreign_key.identifiers() {
+            self.visit_identifier(r#identifier);
         }
         for r#references_constraint in r#table_constraint_foreign_key.r#references_constraint() {
             self.visit_references_constraint(r#references_constraint);
@@ -5096,16 +5332,16 @@ pub trait Visitor {
         if let Some(kw) = r#table_constraint_primary_key.primary_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#table_constraint_primary_key.identifiers() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#table_constraint_primary_key.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_table_constraint_unique(&mut self, r#table_constraint_unique: TableConstraintUnique) {
         if let Some(kw) = r#table_constraint_unique.unique_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#table_constraint_unique.identifiers() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#table_constraint_unique.r#name() {
+            self.visit_name(r#name);
         }
     }
     fn visit_table_parameters(&mut self, r#table_parameters: TableParameters) {
@@ -5136,13 +5372,13 @@ pub trait Visitor {
         }
     }
     fn visit_tuple(&mut self, r#tuple: Tuple) {
-        for r#expression in r#tuple.expressions() {
+        for r#expression in r#tuple.r#expression() {
             self.visit_expression(r#expression);
         }
     }
     fn visit_type(&mut self, r#type: Type) {
-        for r#identifier in r#type.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#type.r#name() {
+            self.visit_name(r#name);
         }
         for r#number in r#type.r#number() {
             self.visit_number(r#number);
@@ -5152,17 +5388,22 @@ pub trait Visitor {
         for r#anytype in r#type_cast.r#anytype() {
             self.visit_anytype(r#anytype);
         }
-        for r#function_call in r#type_cast.r#function_call() {
-            self.visit_function_call(r#function_call);
-        }
-        for r#name in r#type_cast.r#name() {
-            self.visit_name(r#name);
-        }
         for r#parenthesized_expression in r#type_cast.r#parenthesized_expression() {
             self.visit_parenthesized_expression(r#parenthesized_expression);
         }
+        for r#function_call in r#type_cast.r#function_call() {
+            self.visit_function_call(r#function_call);
+        }
+        for r#identifier in r#type_cast.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
         for r#string in r#type_cast.r#string() {
             self.visit_string(r#string);
+        }
+    }
+    fn visit_unary_expression(&mut self, r#unary_expression: UnaryExpression) {
+        for r#expression in r#unary_expression.r#expression() {
+            self.visit_expression(r#expression);
         }
     }
     fn visit_unique_constraint(&mut self, r#unique_constraint: UniqueConstraint) {
@@ -5170,20 +5411,12 @@ pub trait Visitor {
             self.visit_kw(kw);
         }
     }
-    fn visit_unquoted_identifier(&mut self, r#unquoted_identifier: UnquotedIdentifier) {
-        for r#dotted_name in r#unquoted_identifier.r#dotted_name() {
-            self.visit_dotted_name(r#dotted_name);
-        }
-        for r#name in r#unquoted_identifier.r#name() {
-            self.visit_name(r#name);
-        }
-    }
     fn visit_update_statement(&mut self, r#update_statement: UpdateStatement) {
         if let Some(kw) = r#update_statement.update_kw() {
             self.visit_kw(kw);
         }
-        for r#name in r#update_statement.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#update_statement.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
         for r#set_clause in r#update_statement.r#set_clause() {
             self.visit_set_clause(r#set_clause);
@@ -5196,8 +5429,8 @@ pub trait Visitor {
         if let Some(kw) = r#using_clause.using_kw() {
             self.visit_kw(kw);
         }
-        for r#name in r#using_clause.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#using_clause.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
     fn visit_values_clause(&mut self, r#values_clause: ValuesClause) {
@@ -5209,7 +5442,7 @@ pub trait Visitor {
         }
     }
     fn visit_values_clause_body(&mut self, r#values_clause_body: ValuesClauseBody) {
-        for r#expression in r#values_clause_body.expressions() {
+        for r#expression in r#values_clause_body.r#expression() {
             self.visit_expression(r#expression);
         }
     }
@@ -5235,10 +5468,13 @@ pub enum SyntaxKind {
     Constraint,
     ConstraintAction,
     CreateFunctionReturnType,
+    Expression,
     FunctionLanguage,
+    Name,
+    ParenthesizedExpression,
+    QuotedIdentifier,
     Statement,
     TableConstraint,
-    UnquotedIdentifier,
     AddKw,
     AllKw,
     AlterKw,
@@ -5247,6 +5483,7 @@ pub enum SyntaxKind {
     AlterTableAction,
     AlterTableActionAdd,
     AlterTableActionAlterColumn,
+    AlterTableActionSet,
     AndKw,
     ArgumentReference,
     ArrayElementAccess,
@@ -5256,6 +5493,8 @@ pub enum SyntaxKind {
     AsteriskExpression,
     AutoIncrementConstraint,
     AutoincrementKw,
+    BeginKw,
+    BeginStatement,
     BinaryExpression,
     BinaryOperator,
     BooleanExpression,
@@ -5268,7 +5507,8 @@ pub enum SyntaxKind {
     ColumnKw,
     ColumnDefault,
     Comment,
-    ComparisonOperator,
+    CommitKw,
+    CommitStatement,
     ConstrainedType,
     ConstraintKw,
     CreateKw,
@@ -5277,7 +5517,9 @@ pub enum SyntaxKind {
     CreateFunctionParameter,
     CreateFunctionParameters,
     CreateFunctionStatement,
+    CreateIndexIncludeClause,
     CreateIndexStatement,
+    CreateIndexWithClause,
     CreateRoleStatement,
     CreateSchemaStatement,
     CreateStatement,
@@ -5299,7 +5541,6 @@ pub enum SyntaxKind {
     ExcludeKw,
     ExcludeEntry,
     ExistsKw,
-    Expression,
     ExtensionKw,
     FalseKw,
     FieldAccess,
@@ -5321,6 +5562,7 @@ pub enum SyntaxKind {
     ImmutableKw,
     InKw,
     InExpression,
+    IncludeKw,
     IncrementKw,
     IndexKw,
     IndexTableParameters,
@@ -5346,7 +5588,6 @@ pub enum SyntaxKind {
     MaxvalueKw,
     MinvalueKw,
     Mode,
-    Name,
     NamedConstraint,
     NoKw,
     NotKw,
@@ -5366,6 +5607,7 @@ pub enum SyntaxKind {
     OrderByClause,
     OrderByClauseBody,
     OrderedExpression,
+    OrreplaceKw,
     OutKw,
     OuterKw,
     OwnedKw,
@@ -5373,7 +5615,6 @@ pub enum SyntaxKind {
     ParallelHint,
     Parameter,
     Parameters,
-    ParenthesizedExpression,
     PgCommand,
     PrimaryKw,
     PrimaryKeyConstraint,
@@ -5381,12 +5622,13 @@ pub enum SyntaxKind {
     PublicKw,
     ReferencesKw,
     ReferencesConstraint,
-    ReplaceKw,
     RestrictKw,
     RestrictedKw,
     ReturnsKw,
     RightKw,
     RoleKw,
+    RollbackKw,
+    RollbackStatement,
     SafeKw,
     SchemaKw,
     SelectKw,
@@ -5416,12 +5658,12 @@ pub enum SyntaxKind {
     TableConstraintPrimaryKey,
     TableConstraintUnique,
     TableParameters,
-    TablespaceKw,
     TempKw,
     TemporaryKw,
     TimeKw,
     TimeZoneConstraint,
     ToKw,
+    TransactionKw,
     TriggerKw,
     TrueKw,
     TruncateKw,
@@ -5429,6 +5671,7 @@ pub enum SyntaxKind {
     Type,
     TypeKw,
     TypeCast,
+    UnaryExpression,
     UniqueKw,
     UniqueConstraint,
     UnsafeKw,
@@ -5441,12 +5684,12 @@ pub enum SyntaxKind {
     ValuesClause,
     ValuesClauseBody,
     VariadicKw,
-    ViewKw,
     VolatileKw,
     WhereKw,
     WhereClause,
     WithKw,
     WithoutKw,
+    WorkKw,
     ZoneKw,
     Token,
     Whitespace,
@@ -5466,10 +5709,13 @@ impl TryFrom<&'static str> for SyntaxKind {
             "constraint" => Ok(Self::Constraint),
             "constraint_action" => Ok(Self::ConstraintAction),
             "create_function_return_type" => Ok(Self::CreateFunctionReturnType),
+            "expression" => Ok(Self::Expression),
             "function_language" => Ok(Self::FunctionLanguage),
+            "name" => Ok(Self::Name),
+            "parenthesized_expression" => Ok(Self::ParenthesizedExpression),
+            "quoted_identifier" => Ok(Self::QuotedIdentifier),
             "statement" => Ok(Self::Statement),
             "table_constraint" => Ok(Self::TableConstraint),
-            "unquoted_identifier" => Ok(Self::UnquotedIdentifier),
             "ADD" => Ok(Self::AddKw),
             "ALL" => Ok(Self::AllKw),
             "ALTER" => Ok(Self::AlterKw),
@@ -5478,6 +5724,7 @@ impl TryFrom<&'static str> for SyntaxKind {
             "alter_table_action" => Ok(Self::AlterTableAction),
             "alter_table_action_add" => Ok(Self::AlterTableActionAdd),
             "alter_table_action_alter_column" => Ok(Self::AlterTableActionAlterColumn),
+            "alter_table_action_set" => Ok(Self::AlterTableActionSet),
             "AND" => Ok(Self::AndKw),
             "argument_reference" => Ok(Self::ArgumentReference),
             "array_element_access" => Ok(Self::ArrayElementAccess),
@@ -5487,6 +5734,8 @@ impl TryFrom<&'static str> for SyntaxKind {
             "asterisk_expression" => Ok(Self::AsteriskExpression),
             "auto_increment_constraint" => Ok(Self::AutoIncrementConstraint),
             "AUTOINCREMENT" => Ok(Self::AutoincrementKw),
+            "BEGIN" => Ok(Self::BeginKw),
+            "begin_statement" => Ok(Self::BeginStatement),
             "binary_expression" => Ok(Self::BinaryExpression),
             "binary_operator" => Ok(Self::BinaryOperator),
             "boolean_expression" => Ok(Self::BooleanExpression),
@@ -5499,7 +5748,8 @@ impl TryFrom<&'static str> for SyntaxKind {
             "COLUMN" => Ok(Self::ColumnKw),
             "column_default" => Ok(Self::ColumnDefault),
             "comment" => Ok(Self::Comment),
-            "comparison_operator" => Ok(Self::ComparisonOperator),
+            "COMMIT" => Ok(Self::CommitKw),
+            "commit_statement" => Ok(Self::CommitStatement),
             "constrained_type" => Ok(Self::ConstrainedType),
             "CONSTRAINT" => Ok(Self::ConstraintKw),
             "CREATE" => Ok(Self::CreateKw),
@@ -5508,7 +5758,9 @@ impl TryFrom<&'static str> for SyntaxKind {
             "create_function_parameter" => Ok(Self::CreateFunctionParameter),
             "create_function_parameters" => Ok(Self::CreateFunctionParameters),
             "create_function_statement" => Ok(Self::CreateFunctionStatement),
+            "create_index_include_clause" => Ok(Self::CreateIndexIncludeClause),
             "create_index_statement" => Ok(Self::CreateIndexStatement),
+            "create_index_with_clause" => Ok(Self::CreateIndexWithClause),
             "create_role_statement" => Ok(Self::CreateRoleStatement),
             "create_schema_statement" => Ok(Self::CreateSchemaStatement),
             "create_statement" => Ok(Self::CreateStatement),
@@ -5530,7 +5782,6 @@ impl TryFrom<&'static str> for SyntaxKind {
             "EXCLUDE" => Ok(Self::ExcludeKw),
             "exclude_entry" => Ok(Self::ExcludeEntry),
             "EXISTS" => Ok(Self::ExistsKw),
-            "expression" => Ok(Self::Expression),
             "EXTENSION" => Ok(Self::ExtensionKw),
             "FALSE" => Ok(Self::FalseKw),
             "field_access" => Ok(Self::FieldAccess),
@@ -5552,6 +5803,7 @@ impl TryFrom<&'static str> for SyntaxKind {
             "IMMUTABLE" => Ok(Self::ImmutableKw),
             "IN" => Ok(Self::InKw),
             "in_expression" => Ok(Self::InExpression),
+            "INCLUDE" => Ok(Self::IncludeKw),
             "INCREMENT" => Ok(Self::IncrementKw),
             "INDEX" => Ok(Self::IndexKw),
             "index_table_parameters" => Ok(Self::IndexTableParameters),
@@ -5577,7 +5829,6 @@ impl TryFrom<&'static str> for SyntaxKind {
             "MAXVALUE" => Ok(Self::MaxvalueKw),
             "MINVALUE" => Ok(Self::MinvalueKw),
             "mode" => Ok(Self::Mode),
-            "name" => Ok(Self::Name),
             "named_constraint" => Ok(Self::NamedConstraint),
             "NO" => Ok(Self::NoKw),
             "NOT" => Ok(Self::NotKw),
@@ -5597,6 +5848,7 @@ impl TryFrom<&'static str> for SyntaxKind {
             "order_by_clause" => Ok(Self::OrderByClause),
             "order_by_clause_body" => Ok(Self::OrderByClauseBody),
             "ordered_expression" => Ok(Self::OrderedExpression),
+            "ORREPLACE" => Ok(Self::OrreplaceKw),
             "OUT" => Ok(Self::OutKw),
             "OUTER" => Ok(Self::OuterKw),
             "OWNED" => Ok(Self::OwnedKw),
@@ -5604,7 +5856,6 @@ impl TryFrom<&'static str> for SyntaxKind {
             "parallel_hint" => Ok(Self::ParallelHint),
             "parameter" => Ok(Self::Parameter),
             "parameters" => Ok(Self::Parameters),
-            "parenthesized_expression" => Ok(Self::ParenthesizedExpression),
             "pg_command" => Ok(Self::PgCommand),
             "PRIMARY" => Ok(Self::PrimaryKw),
             "primary_key_constraint" => Ok(Self::PrimaryKeyConstraint),
@@ -5612,12 +5863,13 @@ impl TryFrom<&'static str> for SyntaxKind {
             "PUBLIC" => Ok(Self::PublicKw),
             "REFERENCES" => Ok(Self::ReferencesKw),
             "references_constraint" => Ok(Self::ReferencesConstraint),
-            "REPLACE" => Ok(Self::ReplaceKw),
             "RESTRICT" => Ok(Self::RestrictKw),
             "RESTRICTED" => Ok(Self::RestrictedKw),
             "RETURNS" => Ok(Self::ReturnsKw),
             "RIGHT" => Ok(Self::RightKw),
             "ROLE" => Ok(Self::RoleKw),
+            "ROLLBACK" => Ok(Self::RollbackKw),
+            "rollback_statement" => Ok(Self::RollbackStatement),
             "SAFE" => Ok(Self::SafeKw),
             "SCHEMA" => Ok(Self::SchemaKw),
             "SELECT" => Ok(Self::SelectKw),
@@ -5647,12 +5899,12 @@ impl TryFrom<&'static str> for SyntaxKind {
             "table_constraint_primary_key" => Ok(Self::TableConstraintPrimaryKey),
             "table_constraint_unique" => Ok(Self::TableConstraintUnique),
             "table_parameters" => Ok(Self::TableParameters),
-            "TABLESPACE" => Ok(Self::TablespaceKw),
             "TEMP" => Ok(Self::TempKw),
             "TEMPORARY" => Ok(Self::TemporaryKw),
             "TIME" => Ok(Self::TimeKw),
             "time_zone_constraint" => Ok(Self::TimeZoneConstraint),
             "TO" => Ok(Self::ToKw),
+            "TRANSACTION" => Ok(Self::TransactionKw),
             "TRIGGER" => Ok(Self::TriggerKw),
             "TRUE" => Ok(Self::TrueKw),
             "TRUNCATE" => Ok(Self::TruncateKw),
@@ -5660,6 +5912,7 @@ impl TryFrom<&'static str> for SyntaxKind {
             "type" => Ok(Self::Type),
             "TYPE" => Ok(Self::TypeKw),
             "type_cast" => Ok(Self::TypeCast),
+            "unary_expression" => Ok(Self::UnaryExpression),
             "UNIQUE" => Ok(Self::UniqueKw),
             "unique_constraint" => Ok(Self::UniqueConstraint),
             "UNSAFE" => Ok(Self::UnsafeKw),
@@ -5672,12 +5925,12 @@ impl TryFrom<&'static str> for SyntaxKind {
             "values_clause" => Ok(Self::ValuesClause),
             "values_clause_body" => Ok(Self::ValuesClauseBody),
             "VARIADIC" => Ok(Self::VariadicKw),
-            "VIEW" => Ok(Self::ViewKw),
             "VOLATILE" => Ok(Self::VolatileKw),
             "WHERE" => Ok(Self::WhereKw),
             "where_clause" => Ok(Self::WhereClause),
             "WITH" => Ok(Self::WithKw),
             "WITHOUT" => Ok(Self::WithoutKw),
+            "WORK" => Ok(Self::WorkKw),
             "ZONE" => Ok(Self::ZoneKw),
             "ERROR" => Ok(Self::Err),
             _ => Err(()),

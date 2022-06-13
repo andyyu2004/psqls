@@ -288,10 +288,12 @@ impl Gen {
                         }
                     }
                 };
-                assert!(self
-                    .enums
-                    .insert(name.clone(), EnumData { variants })
-                    .is_none());
+                assert!(
+                    self.enums
+                        .insert(name.clone(), EnumData { variants })
+                        .is_none(),
+                    "duplicate enum {name}"
+                );
                 tokens
             }
             _ => quote! {

@@ -24,8 +24,8 @@ impl Visitor for TestVisitor {
         for r#expression in r#aliased_expression.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#name in r#aliased_expression.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#aliased_expression.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
 
@@ -54,11 +54,11 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#alter_table.table_kw() {
             self.visit_kw(kw);
         }
+        for r#name in r#alter_table.r#name() {
+            self.visit_name(r#name);
+        }
         for r#alter_table_action in r#alter_table.r#alter_table_action() {
             self.visit_alter_table_action(r#alter_table_action);
-        }
-        for r#identifier in r#alter_table.r#identifier() {
-            self.visit_identifier(r#identifier);
         }
     }
 
@@ -68,6 +68,7 @@ impl Visitor for TestVisitor {
             AlterTableAction::AlterTableActionAlterColumn(node) => {
                 self.visit_alter_table_action_alter_column(node)
             }
+            AlterTableAction::AlterTableActionSet(node) => self.visit_alter_table_action_set(node),
         }
     }
 
@@ -107,8 +108,17 @@ impl Visitor for TestVisitor {
         {
             self.visit_column_default_expression(r#column_default_expression);
         }
-        for r#identifier in r#alter_table_action_alter_column.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#alter_table_action_alter_column.r#name() {
+            self.visit_name(r#name);
+        }
+    }
+
+    fn visit_alter_table_action_set(&mut self, r#alter_table_action_set: AlterTableActionSet) {
+        if let Some(kw) = r#alter_table_action_set.set_kw() {
+            self.visit_kw(kw);
+        }
+        for r#expression in r#alter_table_action_set.r#expression() {
+            self.visit_expression(r#expression);
         }
     }
 
@@ -124,14 +134,14 @@ impl Visitor for TestVisitor {
     fn visit_argument_reference(&mut self, r#argument_reference: ArgumentReference) {}
 
     fn visit_array_element_access(&mut self, r#array_element_access: ArrayElementAccess) {
-        for r#argument_reference in r#array_element_access.r#argument_reference() {
-            self.visit_argument_reference(r#argument_reference);
-        }
         for r#expression in r#array_element_access.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#name in r#array_element_access.r#name() {
-            self.visit_name(r#name);
+        for r#argument_reference in r#array_element_access.r#argument_reference() {
+            self.visit_argument_reference(r#argument_reference);
+        }
+        for r#identifier in r#array_element_access.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
 
@@ -139,8 +149,8 @@ impl Visitor for TestVisitor {
         for r#expression in r#assigment_expression.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#name in r#assigment_expression.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#assigment_expression.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
 
@@ -155,6 +165,18 @@ impl Visitor for TestVisitor {
         r#auto_increment_constraint: AutoIncrementConstraint,
     ) {
         if let Some(kw) = r#auto_increment_constraint.autoincrement_kw() {
+            self.visit_kw(kw);
+        }
+    }
+
+    fn visit_begin_statement(&mut self, r#begin_statement: BeginStatement) {
+        if let Some(kw) = r#begin_statement.begin_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#begin_statement.transaction_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#begin_statement.work_kw() {
             self.visit_kw(kw);
         }
     }
@@ -212,16 +234,22 @@ impl Visitor for TestVisitor {
                 self.visit_parenthesized_expression(node)
             }
             ColumnDefaultExpression::String(node) => self.visit_string(node),
-            ColumnDefaultExpression::Name(node) => self.visit_name(node),
+            ColumnDefaultExpression::Identifier(node) => self.visit_identifier(node),
             ColumnDefaultExpression::FunctionCall(node) => self.visit_function_call(node),
         }
     }
 
     fn visit_comment(&mut self, r#comment: Comment) {}
 
-    fn visit_comparison_operator(&mut self, r#comparison_operator: ComparisonOperator) {
-        for r#expression in r#comparison_operator.r#expression() {
-            self.visit_expression(r#expression);
+    fn visit_commit_statement(&mut self, r#commit_statement: CommitStatement) {
+        if let Some(kw) = r#commit_statement.commit_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#commit_statement.transaction_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#commit_statement.work_kw() {
+            self.visit_kw(kw);
         }
     }
 
@@ -271,11 +299,11 @@ impl Visitor for TestVisitor {
         for r#anytype in r#create_domain_statement.r#anytype() {
             self.visit_anytype(r#anytype);
         }
-        for r#check_constraint in r#create_domain_statement.r#check_constraint() {
-            self.visit_check_constraint(r#check_constraint);
-        }
         for r#name in r#create_domain_statement.r#name() {
             self.visit_name(r#name);
+        }
+        for r#check_constraint in r#create_domain_statement.r#check_constraint() {
+            self.visit_check_constraint(r#check_constraint);
         }
         for r#null_constraint in r#create_domain_statement.r#null_constraint() {
             self.visit_null_constraint(r#null_constraint);
@@ -325,14 +353,14 @@ impl Visitor for TestVisitor {
         for r#anytype in r#create_function_parameter.r#anytype() {
             self.visit_anytype(r#anytype);
         }
-        for r#constrained_type in r#create_function_parameter.r#constrained_type() {
-            self.visit_constrained_type(r#constrained_type);
-        }
         for r#expression in r#create_function_parameter.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#name in r#create_function_parameter.r#name() {
-            self.visit_name(r#name);
+        for r#constrained_type in r#create_function_parameter.r#constrained_type() {
+            self.visit_constrained_type(r#constrained_type);
+        }
+        for r#identifier in r#create_function_parameter.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
 
@@ -367,10 +395,7 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#create_function_statement.function_kw() {
             self.visit_kw(kw);
         }
-        if let Some(kw) = r#create_function_statement.or_kw() {
-            self.visit_kw(kw);
-        }
-        if let Some(kw) = r#create_function_statement.replace_kw() {
+        if let Some(kw) = r#create_function_statement.orreplace_kw() {
             self.visit_kw(kw);
         }
         if let Some(kw) = r#create_function_statement.returns_kw() {
@@ -384,6 +409,9 @@ impl Visitor for TestVisitor {
         for r#function_language in r#create_function_statement.r#function_language() {
             self.visit_function_language(r#function_language);
         }
+        for r#name in r#create_function_statement.r#name() {
+            self.visit_name(r#name);
+        }
         for r#create_function_parameters in
             r#create_function_statement.r#create_function_parameters()
         {
@@ -391,9 +419,6 @@ impl Visitor for TestVisitor {
         }
         for r#function_body in r#create_function_statement.r#function_body() {
             self.visit_function_body(r#function_body);
-        }
-        for r#name in r#create_function_statement.r#name() {
-            self.visit_name(r#name);
         }
         for r#null_hint in r#create_function_statement.r#null_hint() {
             self.visit_null_hint(r#null_hint);
@@ -403,6 +428,18 @@ impl Visitor for TestVisitor {
         }
         for r#parallel_hint in r#create_function_statement.r#parallel_hint() {
             self.visit_parallel_hint(r#parallel_hint);
+        }
+    }
+
+    fn visit_create_index_include_clause(
+        &mut self,
+        r#create_index_include_clause: CreateIndexIncludeClause,
+    ) {
+        if let Some(kw) = r#create_index_include_clause.include_kw() {
+            self.visit_kw(kw);
+        }
+        for r#identifier in r#create_index_include_clause.identifiers() {
+            self.visit_identifier(r#identifier);
         }
     }
 
@@ -416,11 +453,19 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#create_index_statement.on_kw() {
             self.visit_kw(kw);
         }
-        for r#index_table_parameters in r#create_index_statement.r#index_table_parameters() {
-            self.visit_index_table_parameters(r#index_table_parameters);
-        }
         for r#name in r#create_index_statement.r#name() {
             self.visit_name(r#name);
+        }
+        for r#create_index_include_clause in
+            r#create_index_statement.r#create_index_include_clause()
+        {
+            self.visit_create_index_include_clause(r#create_index_include_clause);
+        }
+        for r#create_index_with_clause in r#create_index_statement.r#create_index_with_clause() {
+            self.visit_create_index_with_clause(r#create_index_with_clause);
+        }
+        for r#index_table_parameters in r#create_index_statement.r#index_table_parameters() {
+            self.visit_index_table_parameters(r#index_table_parameters);
         }
         for r#unique_constraint in r#create_index_statement.r#unique_constraint() {
             self.visit_unique_constraint(r#unique_constraint);
@@ -433,6 +478,21 @@ impl Visitor for TestVisitor {
         }
     }
 
+    fn visit_create_index_with_clause(
+        &mut self,
+        r#create_index_with_clause: CreateIndexWithClause,
+    ) {
+        if let Some(kw) = r#create_index_with_clause.with_kw() {
+            self.visit_kw(kw);
+        }
+        for r#expression in r#create_index_with_clause.r#expression() {
+            self.visit_expression(r#expression);
+        }
+        for r#identifier in r#create_index_with_clause.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
+    }
+
     fn visit_create_role_statement(&mut self, r#create_role_statement: CreateRoleStatement) {
         if let Some(kw) = r#create_role_statement.create_kw() {
             self.visit_kw(kw);
@@ -442,9 +502,6 @@ impl Visitor for TestVisitor {
         }
         if let Some(kw) = r#create_role_statement.with_kw() {
             self.visit_kw(kw);
-        }
-        for r#identifier in r#create_role_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
         }
         for r#name in r#create_role_statement.r#name() {
             self.visit_name(r#name);
@@ -506,8 +563,8 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#create_table_statement.temporary_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#create_table_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#create_table_statement.r#name() {
+            self.visit_name(r#name);
         }
         for r#table_parameters in r#create_table_statement.r#table_parameters() {
             self.visit_table_parameters(r#table_parameters);
@@ -554,8 +611,8 @@ impl Visitor for TestVisitor {
     }
 
     fn visit_dotted_name(&mut self, r#dotted_name: DottedName) {
-        for r#name in r#dotted_name.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#dotted_name.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
 
@@ -566,26 +623,11 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#drop_statement.exists_kw() {
             self.visit_kw(kw);
         }
-        if let Some(kw) = r#drop_statement.extension_kw() {
-            self.visit_kw(kw);
-        }
         if let Some(kw) = r#drop_statement.if_kw() {
             self.visit_kw(kw);
         }
-        if let Some(kw) = r#drop_statement.index_kw() {
-            self.visit_kw(kw);
-        }
-        if let Some(kw) = r#drop_statement.table_kw() {
-            self.visit_kw(kw);
-        }
-        if let Some(kw) = r#drop_statement.tablespace_kw() {
-            self.visit_kw(kw);
-        }
-        if let Some(kw) = r#drop_statement.view_kw() {
-            self.visit_kw(kw);
-        }
-        for r#identifier in r#drop_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#drop_statement.r#name() {
+            self.visit_name(r#name);
         }
     }
 
@@ -593,11 +635,11 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#exclude_entry.with_kw() {
             self.visit_kw(kw);
         }
+        for r#name in r#exclude_entry.r#name() {
+            self.visit_name(r#name);
+        }
         for r#binary_operator in r#exclude_entry.r#binary_operator() {
             self.visit_binary_operator(r#binary_operator);
-        }
-        for r#identifier in r#exclude_entry.r#identifier() {
-            self.visit_identifier(r#identifier);
         }
         for r#op_class in r#exclude_entry.r#op_class() {
             self.visit_op_class(r#op_class);
@@ -614,14 +656,14 @@ impl Visitor for TestVisitor {
             Expression::False(node) => self.visit_false(node),
             Expression::Null(node) => self.visit_null(node),
             Expression::AsteriskExpression(node) => self.visit_asterisk_expression(node),
-            Expression::Identifier(node) => self.visit_identifier(node),
+            Expression::Name(node) => self.visit_name(node),
             Expression::Number(node) => self.visit_number(node),
-            Expression::ComparisonOperator(node) => self.visit_comparison_operator(node),
             Expression::InExpression(node) => self.visit_in_expression(node),
             Expression::IsExpression(node) => self.visit_is_expression(node),
             Expression::BooleanExpression(node) => self.visit_boolean_expression(node),
             Expression::ParenthesizedExpression(node) => self.visit_parenthesized_expression(node),
             Expression::TypeCast(node) => self.visit_type_cast(node),
+            Expression::UnaryExpression(node) => self.visit_unary_expression(node),
             Expression::BinaryExpression(node) => self.visit_binary_expression(node),
             Expression::ArrayElementAccess(node) => self.visit_array_element_access(node),
             Expression::ArgumentReference(node) => self.visit_argument_reference(node),
@@ -636,8 +678,8 @@ impl Visitor for TestVisitor {
     }
 
     fn visit_field_access(&mut self, r#field_access: FieldAccess) {
-        for r#name in r#field_access.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#field_access.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
         for r#string in r#field_access.r#string() {
             self.visit_string(r#string);
@@ -657,17 +699,17 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#function_body.as_kw() {
             self.visit_kw(kw);
         }
-        for r#select_statement in r#function_body.r#select_statement() {
-            self.visit_select_statement(r#select_statement);
+        for r#string in r#function_body.r#string() {
+            self.visit_string(r#string);
         }
     }
 
     fn visit_function_call(&mut self, r#function_call: FunctionCall) {
-        for r#expression in r#function_call.expressions() {
+        for r#expression in r#function_call.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#name in r#function_call.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#function_call.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
 
@@ -675,8 +717,8 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#function_language.language_kw() {
             self.visit_kw(kw);
         }
-        for r#name in r#function_language.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#function_language.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
 
@@ -747,6 +789,9 @@ impl Visitor for TestVisitor {
         for r#name in r#grant_statement.r#name() {
             self.visit_name(r#name);
         }
+        for r#identifier in r#grant_statement.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
     }
 
     fn visit_group_by_clause(&mut self, r#group_by_clause: GroupByClause) {
@@ -762,14 +807,14 @@ impl Visitor for TestVisitor {
     }
 
     fn visit_group_by_clause_body(&mut self, r#group_by_clause_body: GroupByClauseBody) {
-        for r#expression in r#group_by_clause_body.expressions() {
+        for r#expression in r#group_by_clause_body.r#expression() {
             self.visit_expression(r#expression);
         }
     }
 
     fn visit_identifier(&mut self, r#identifier: Identifier) {
-        for r#unquoted_identifier in r#identifier.r#unquoted_identifier() {
-            self.visit_unquoted_identifier(r#unquoted_identifier);
+        for r#quoted_identifier in r#identifier.r#quoted_identifier() {
+            self.visit_quoted_identifier(r#quoted_identifier);
         }
     }
 
@@ -819,8 +864,11 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#insert_statement.into_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#insert_statement.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#insert_statement.r#name() {
+            self.visit_name(r#name);
+        }
+        for r#select_statement in r#insert_statement.r#select_statement() {
+            self.visit_select_statement(r#select_statement);
         }
         for r#values_clause in r#insert_statement.r#values_clause() {
             self.visit_values_clause(r#values_clause);
@@ -852,11 +900,11 @@ impl Visitor for TestVisitor {
         for r#true in r#is_expression.r#true() {
             self.visit_true(r#true);
         }
-        for r#distinct_from in r#is_expression.r#distinct_from() {
-            self.visit_distinct_from(r#distinct_from);
-        }
         for r#expression in r#is_expression.r#expression() {
             self.visit_expression(r#expression);
+        }
+        for r#distinct_from in r#is_expression.r#distinct_from() {
+            self.visit_distinct_from(r#distinct_from);
         }
     }
 
@@ -870,8 +918,8 @@ impl Visitor for TestVisitor {
         for r#expression in r#join_clause.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#identifier in r#join_clause.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#join_clause.r#name() {
+            self.visit_name(r#name);
         }
         for r#join_type in r#join_clause.r#join_type() {
             self.visit_join_type(r#join_type);
@@ -905,14 +953,18 @@ impl Visitor for TestVisitor {
         }
     }
 
-    fn visit_name(&mut self, r#name: Name) {}
+    fn visit_name(&mut self, r#name: Name) {
+        for r#dotted_name in r#name.r#dotted_name() {
+            self.visit_dotted_name(r#dotted_name);
+        }
+        for r#identifier in r#name.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
+    }
 
     fn visit_named_constraint(&mut self, r#named_constraint: NamedConstraint) {
-        if let Some(kw) = r#named_constraint.constraint_kw() {
-            self.visit_kw(kw);
-        }
-        for r#name in r#named_constraint.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#named_constraint.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
 
@@ -979,8 +1031,8 @@ impl Visitor for TestVisitor {
     }
 
     fn visit_op_class(&mut self, r#op_class: OpClass) {
-        for r#identifier in r#op_class.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#op_class.r#name() {
+            self.visit_name(r#name);
         }
     }
 
@@ -1009,7 +1061,7 @@ impl Visitor for TestVisitor {
     }
 
     fn visit_order_by_clause_body(&mut self, r#order_by_clause_body: OrderByClauseBody) {
-        for r#expression in r#order_by_clause_body.expressions() {
+        for r#expression in r#order_by_clause_body.r#expression() {
             self.visit_expression(r#expression);
         }
     }
@@ -1048,8 +1100,8 @@ impl Visitor for TestVisitor {
         for r#constrained_type in r#parameter.r#constrained_type() {
             self.visit_constrained_type(r#constrained_type);
         }
-        for r#name in r#parameter.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#parameter.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
 
@@ -1079,21 +1131,35 @@ impl Visitor for TestVisitor {
         }
     }
 
+    fn visit_quoted_identifier(&mut self, r#quoted_identifier: QuotedIdentifier) {}
+
     fn visit_references_constraint(&mut self, r#references_constraint: ReferencesConstraint) {
         if let Some(kw) = r#references_constraint.references_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#references_constraint.r#identifier() {
-            self.visit_identifier(r#identifier);
-        }
-        for r#name in r#references_constraint.names() {
+        for r#name in r#references_constraint.r#name() {
             self.visit_name(r#name);
+        }
+        for r#identifier in r#references_constraint.identifiers() {
+            self.visit_identifier(r#identifier);
         }
         for r#on_delete_action in r#references_constraint.r#on_delete_action() {
             self.visit_on_delete_action(r#on_delete_action);
         }
         for r#on_update_action in r#references_constraint.r#on_update_action() {
             self.visit_on_update_action(r#on_update_action);
+        }
+    }
+
+    fn visit_rollback_statement(&mut self, r#rollback_statement: RollbackStatement) {
+        if let Some(kw) = r#rollback_statement.rollback_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#rollback_statement.transaction_kw() {
+            self.visit_kw(kw);
+        }
+        if let Some(kw) = r#rollback_statement.work_kw() {
+            self.visit_kw(kw);
         }
     }
 
@@ -1182,11 +1248,8 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#sequence.with_kw() {
             self.visit_kw(kw);
         }
-        for r#dotted_name in r#sequence.r#dotted_name() {
-            self.visit_dotted_name(r#dotted_name);
-        }
-        for r#identifier in r#sequence.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#sequence.r#name() {
+            self.visit_name(r#name);
         }
         for r#number in r#sequence.r#number() {
             self.visit_number(r#number);
@@ -1230,8 +1293,8 @@ impl Visitor for TestVisitor {
         for r#expression in r#set_statement.r#expression() {
             self.visit_expression(r#expression);
         }
-        for r#name in r#set_statement.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#set_statement.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
 
@@ -1256,6 +1319,9 @@ impl Visitor for TestVisitor {
     fn visit_statement(&mut self, r#statement: Statement) {
         match r#statement {
             Statement::PgCommand(node) => self.visit_pg_command(node),
+            Statement::BeginStatement(node) => self.visit_begin_statement(node),
+            Statement::CommitStatement(node) => self.visit_commit_statement(node),
+            Statement::RollbackStatement(node) => self.visit_rollback_statement(node),
             Statement::SelectStatement(node) => self.visit_select_statement(node),
             Statement::UpdateStatement(node) => self.visit_update_statement(node),
             Statement::SetStatement(node) => self.visit_set_statement(node),
@@ -1283,6 +1349,9 @@ impl Visitor for TestVisitor {
         for r#anytype in r#table_column.r#anytype() {
             self.visit_anytype(r#anytype);
         }
+        for r#name in r#table_column.r#name() {
+            self.visit_name(r#name);
+        }
         for r#auto_increment_constraint in r#table_column.r#auto_increment_constraint() {
             self.visit_auto_increment_constraint(r#auto_increment_constraint);
         }
@@ -1294,9 +1363,6 @@ impl Visitor for TestVisitor {
         }
         for r#direction_constraint in r#table_column.r#direction_constraint() {
             self.visit_direction_constraint(r#direction_constraint);
-        }
-        for r#identifier in r#table_column.r#identifier() {
-            self.visit_identifier(r#identifier);
         }
         for r#named_constraint in r#table_column.r#named_constraint() {
             self.visit_named_constraint(r#named_constraint);
@@ -1322,8 +1388,8 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#table_constraint.constraint_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#table_constraint.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#table_constraint.r#name() {
+            self.visit_name(r#name);
         }
         for r#initial_mode in r#table_constraint.r#initial_mode() {
             self.visit_initial_mode(r#initial_mode);
@@ -1367,11 +1433,11 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#table_constraint_exclude.using_kw() {
             self.visit_kw(kw);
         }
+        for r#name in r#table_constraint_exclude.r#name() {
+            self.visit_name(r#name);
+        }
         for r#exclude_entry in r#table_constraint_exclude.exclude_entrys() {
             self.visit_exclude_entry(r#exclude_entry);
-        }
-        for r#identifier in r#table_constraint_exclude.r#identifier() {
-            self.visit_identifier(r#identifier);
         }
     }
 
@@ -1385,8 +1451,8 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#table_constraint_foreign_key.key_kw() {
             self.visit_kw(kw);
         }
-        for r#name in r#table_constraint_foreign_key.names() {
-            self.visit_name(r#name);
+        for r#identifier in r#table_constraint_foreign_key.identifiers() {
+            self.visit_identifier(r#identifier);
         }
         for r#references_constraint in r#table_constraint_foreign_key.r#references_constraint() {
             self.visit_references_constraint(r#references_constraint);
@@ -1403,8 +1469,8 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#table_constraint_primary_key.primary_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#table_constraint_primary_key.identifiers() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#table_constraint_primary_key.r#name() {
+            self.visit_name(r#name);
         }
     }
 
@@ -1412,8 +1478,8 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#table_constraint_unique.unique_kw() {
             self.visit_kw(kw);
         }
-        for r#identifier in r#table_constraint_unique.identifiers() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#table_constraint_unique.r#name() {
+            self.visit_name(r#name);
         }
     }
 
@@ -1448,14 +1514,14 @@ impl Visitor for TestVisitor {
     }
 
     fn visit_tuple(&mut self, r#tuple: Tuple) {
-        for r#expression in r#tuple.expressions() {
+        for r#expression in r#tuple.r#expression() {
             self.visit_expression(r#expression);
         }
     }
 
     fn visit_type(&mut self, r#type: Type) {
-        for r#identifier in r#type.r#identifier() {
-            self.visit_identifier(r#identifier);
+        for r#name in r#type.r#name() {
+            self.visit_name(r#name);
         }
         for r#number in r#type.r#number() {
             self.visit_number(r#number);
@@ -1466,17 +1532,23 @@ impl Visitor for TestVisitor {
         for r#anytype in r#type_cast.r#anytype() {
             self.visit_anytype(r#anytype);
         }
-        for r#function_call in r#type_cast.r#function_call() {
-            self.visit_function_call(r#function_call);
-        }
-        for r#name in r#type_cast.r#name() {
-            self.visit_name(r#name);
-        }
         for r#parenthesized_expression in r#type_cast.r#parenthesized_expression() {
             self.visit_parenthesized_expression(r#parenthesized_expression);
         }
+        for r#function_call in r#type_cast.r#function_call() {
+            self.visit_function_call(r#function_call);
+        }
+        for r#identifier in r#type_cast.r#identifier() {
+            self.visit_identifier(r#identifier);
+        }
         for r#string in r#type_cast.r#string() {
             self.visit_string(r#string);
+        }
+    }
+
+    fn visit_unary_expression(&mut self, r#unary_expression: UnaryExpression) {
+        for r#expression in r#unary_expression.r#expression() {
+            self.visit_expression(r#expression);
         }
     }
 
@@ -1486,21 +1558,12 @@ impl Visitor for TestVisitor {
         }
     }
 
-    fn visit_unquoted_identifier(&mut self, r#unquoted_identifier: UnquotedIdentifier) {
-        for r#dotted_name in r#unquoted_identifier.r#dotted_name() {
-            self.visit_dotted_name(r#dotted_name);
-        }
-        for r#name in r#unquoted_identifier.r#name() {
-            self.visit_name(r#name);
-        }
-    }
-
     fn visit_update_statement(&mut self, r#update_statement: UpdateStatement) {
         if let Some(kw) = r#update_statement.update_kw() {
             self.visit_kw(kw);
         }
-        for r#name in r#update_statement.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#update_statement.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
         for r#set_clause in r#update_statement.r#set_clause() {
             self.visit_set_clause(r#set_clause);
@@ -1514,8 +1577,8 @@ impl Visitor for TestVisitor {
         if let Some(kw) = r#using_clause.using_kw() {
             self.visit_kw(kw);
         }
-        for r#name in r#using_clause.r#name() {
-            self.visit_name(r#name);
+        for r#identifier in r#using_clause.r#identifier() {
+            self.visit_identifier(r#identifier);
         }
     }
 
@@ -1529,7 +1592,7 @@ impl Visitor for TestVisitor {
     }
 
     fn visit_values_clause_body(&mut self, r#values_clause_body: ValuesClauseBody) {
-        for r#expression in r#values_clause_body.expressions() {
+        for r#expression in r#values_clause_body.r#expression() {
             self.visit_expression(r#expression);
         }
     }
