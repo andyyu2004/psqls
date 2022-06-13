@@ -21,10 +21,27 @@ impl TestDB {
 impl salsa::Database for TestDB {}
 
 #[test]
+fn test_alter_table() {
+    let sql = "
+
+-- BEGIN
+
+ALTER TABLE trait_buckets ALTER COLUMN group_id DROP NOT NULL;
+-- ALTER TABLE trait_buckets ADD CONSTRAINT fk_trait_buckets_group_id FOREIGN KEY (group_id) REFERENCES groups(id);
+
+-- COMMIT;
+    ";
+    let db = TestDB::from_str("foo", sql);
+    let parsed = db.parse_raw("foo".into());
+    dbg!(parsed.root_node().to_sexp());
+}
+
+#[test]
 fn test_parse_preserves_whitespace() {
     let sql = " select  *   from  bar;
     ";
     let db = TestDB::from_str("foo", sql);
+    let ast = db.parse_raw("foo".into());
     let parsed = db.parse("foo".into());
     expect![[r#"
         SourceFile(

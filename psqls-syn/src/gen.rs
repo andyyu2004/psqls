@@ -7,6 +7,8 @@ use expect_test::expect;
 use quote::__private::{Ident, TokenStream};
 use quote::{format_ident, quote};
 
+use crate::gen::copy::MetadataParams;
+
 use self::copy::{parse_grammar, InputGrammar, Symbol, Variable, VariableType};
 
 mod copy;
@@ -478,8 +480,20 @@ impl Gen {
             .into_iter()
             .filter(|v| v.kind == VariableType::Named)
             .for_each(|v| {
-                self.syntax_kinds
-                    .insert((v.name.clone(), SyntaxKindSort::Sym));
+                if let copy::Rule::Metadata {
+                    params:
+                        MetadataParams {
+                            alias: Some(alias), ..
+                        },
+                    rule: _,
+                } = &v.rule
+                {
+                    self.syntax_kinds
+                        .insert((alias.value.clone(), SyntaxKindSort::Sym));
+                } else {
+                    self.syntax_kinds
+                        .insert((v.name.clone(), SyntaxKindSort::Sym));
+                }
                 self.gen_var(v);
             });
     }

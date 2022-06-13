@@ -2388,11 +2388,16 @@
     "auto_increment_constraint": {
       "type": "ALIAS",
       "content": {
-        "type": "PATTERN",
-        "value": "[aA][uU][tT][oO][__][iI][nN][cC][rR][eE][mM][eE][nN][tT]"
+        "type": "ALIAS",
+        "content": {
+          "type": "PATTERN",
+          "value": "[aA][uU][tT][oO][__][iI][nN][cC][rR][eE][mM][eE][nN][tT]"
+        },
+        "named": false,
+        "value": "AUTO_INCREMENT"
       },
-      "named": false,
-      "value": "AUTO_INCREMENT"
+      "named": true,
+      "value": "auto_increment_constraint"
     },
     "direction_constraint": {
       "type": "CHOICE",
@@ -2696,49 +2701,24 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "table_constraint_foreign_key"
-              },
-              "named": true,
-              "value": "foreign_key"
+              "type": "SYMBOL",
+              "name": "table_constraint_foreign_key"
             },
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "table_constraint_unique"
-              },
-              "named": true,
-              "value": "unique"
+              "type": "SYMBOL",
+              "name": "table_constraint_unique"
             },
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "table_constraint_primary_key"
-              },
-              "named": true,
-              "value": "primary_key"
+              "type": "SYMBOL",
+              "name": "table_constraint_primary_key"
             },
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "table_constraint_check"
-              },
-              "named": true,
-              "value": "check"
+              "type": "SYMBOL",
+              "name": "table_constraint_check"
             },
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "table_constraint_exclude"
-              },
-              "named": true,
-              "value": "exclude"
+              "type": "SYMBOL",
+              "name": "table_constraint_exclude"
             }
           ]
         },
@@ -4261,11 +4241,16 @@
     "unique_constraint": {
       "type": "ALIAS",
       "content": {
-        "type": "PATTERN",
-        "value": "[uU][nN][iI][qQ][uU][eE]"
+        "type": "ALIAS",
+        "content": {
+          "type": "PATTERN",
+          "value": "[uU][nN][iI][qQ][uU][eE]"
+        },
+        "named": false,
+        "value": "UNIQUE"
       },
-      "named": false,
-      "value": "UNIQUE"
+      "named": true,
+      "value": "unique_constraint"
     },
     "null_constraint": {
       "type": "SEQ",

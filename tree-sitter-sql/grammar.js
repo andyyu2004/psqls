@@ -33,7 +33,7 @@ function kw(keyword) {
   const regExps = words.map(createCaseInsensitiveRegex);
 
   if (regExps.length == 1) {
-    return alias(regExps[0], keyword);
+    return alias(regExps[0], keyword)
   } else {
     return seq(...words.map(kw))
   }
@@ -316,7 +316,7 @@ module.exports = grammar({
           ),
         ),
       ),
-    auto_increment_constraint: _ => kw("AUTO_INCREMENT"),
+    auto_increment_constraint: $ => alias(kw("AUTO_INCREMENT"), $.auto_increment_constraint),
     direction_constraint: _ => choice(kw("ASC"), kw("DESC")),
     time_zone_constraint: _ =>
       seq(choice(kw("WITH"), kw("WITHOUT")), kw("TIME ZONE")),
@@ -344,11 +344,11 @@ module.exports = grammar({
       seq(
         optional(seq(kw("CONSTRAINT"), field("name", $._name))),
         choice(
-          alias($.table_constraint_foreign_key, $.foreign_key),
-          alias($.table_constraint_unique, $.unique),
-          alias($.table_constraint_primary_key, $.primary_key),
-          alias($.table_constraint_check, $.check),
-          alias($.table_constraint_exclude, $.exclude),
+          $.table_constraint_foreign_key,
+          $.table_constraint_unique,
+          $.table_constraint_primary_key,
+          $.table_constraint_check,
+          $.table_constraint_exclude,
         ),
         optional($.mode),
         optional($.initial_mode),
@@ -489,7 +489,7 @@ module.exports = grammar({
       seq(kw("ON DELETE"), field("action", $._constraint_action)),
     _constraint_action: $ =>
       choice(kw("RESTRICT"), kw("CASCADE"), kw("SET NULL")),
-    unique_constraint: $ => kw("UNIQUE"),
+    unique_constraint: $ => alias(kw("UNIQUE"), $.unique_constraint),
     null_constraint: $ => seq(optional(kw("NOT")), $.NULL),
     check_constraint: $ => seq(kw("CHECK"), $._expression),
     _constraint: $ =>

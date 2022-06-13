@@ -16,27 +16,30 @@ fn test(sql: &str, expect: Expect) {
 #[test]
 fn test_semantic_tokens() {
     let sql = "
- select * from bar
+select * from bar
     ";
-    test(sql, expect![[r#"
-        SemanticTokens {
-            result_id: None,
-            data: [
-                SemanticToken {
-                    delta_line: 1,
-                    delta_start: 1,
-                    length: 6,
-                    token_type: 3,
-                    token_modifiers_bitset: 0,
-                },
-                SemanticToken {
-                    delta_line: 0,
-                    delta_start: 9,
-                    length: 4,
-                    token_type: 3,
-                    token_modifiers_bitset: 0,
-                },
-            ],
-        }
-    "#]])
+    test(
+        sql,
+        expect![[r#"
+            SemanticTokens {
+                result_id: None,
+                data: [
+                    SemanticToken {
+                        delta_line: 1,
+                        delta_start: 0,
+                        length: 6,
+                        token_type: 3,
+                        token_modifiers_bitset: 0,
+                    },
+                    SemanticToken {
+                        delta_line: 0,
+                        delta_start: 9,
+                        length: 4,
+                        token_type: 3,
+                        token_modifiers_bitset: 0,
+                    },
+                ],
+            }
+        "#]],
+    )
 }
