@@ -3668,7 +3668,22 @@
   {
     "type": "string",
     "named": true,
-    "fields": {}
+    "fields": {
+      "content": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "raw_string_content",
+            "named": true
+          },
+          {
+            "type": "string_content",
+            "named": true
+          }
+        ]
+      }
+    }
   },
   {
     "type": "table_column",
@@ -5204,6 +5219,14 @@
   },
   {
     "type": "comment",
+    "named": true
+  },
+  {
+    "type": "raw_string_content",
+    "named": true
+  },
+  {
+    "type": "string_content",
     "named": true
   },
   {

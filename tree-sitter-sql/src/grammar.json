@@ -4808,6 +4808,14 @@
         }
       ]
     },
+    "string_content": {
+      "type": "PATTERN",
+      "value": "[^']*"
+    },
+    "raw_string_content": {
+      "type": "PATTERN",
+      "value": "(\\$?[^$]+)+"
+    },
     "string": {
       "type": "CHOICE",
       "members": [
@@ -4822,8 +4830,8 @@
               "type": "FIELD",
               "name": "content",
               "content": {
-                "type": "PATTERN",
-                "value": "[^']*"
+                "type": "SYMBOL",
+                "name": "string_content"
               }
             },
             {
@@ -4843,8 +4851,8 @@
               "type": "FIELD",
               "name": "content",
               "content": {
-                "type": "PATTERN",
-                "value": "(\\$?[^$]+)+"
+                "type": "SYMBOL",
+                "name": "raw_string_content"
               }
             },
             {

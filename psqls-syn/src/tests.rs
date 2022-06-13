@@ -33,7 +33,6 @@ ALTER TABLE trait_buckets ALTER COLUMN group_id DROP NOT NULL;
     ";
     let db = TestDB::from_str("foo", sql);
     let parsed = db.parse_raw("foo".into());
-    dbg!(parsed.root_node().to_sexp());
 }
 
 #[test]
@@ -41,7 +40,6 @@ fn test_parse_preserves_whitespace() {
     let sql = " select  *   from  bar;
     ";
     let db = TestDB::from_str("foo", sql);
-    let ast = db.parse_raw("foo".into());
     let parsed = db.parse("foo".into());
     expect![[r#"
         SourceFile(
@@ -64,6 +62,44 @@ fn test_parse_preserves_whitespace() {
         )
     "#]]
     .assert_debug_eq(&parsed.root())
+}
+
+#[test]
+fn test_parse_alter_table_set_default() {
+    let db = TestDB::from_str("foo", "alter table foo alter column bar set default 'baz';");
+    let parsed = db.parse("foo".into());
+    expect![[r#"
+        SourceFile(
+            SourceFile@0..51
+              AlterStatement@0..50
+                AlterKw@0..5 "alter"
+                AlterTable@5..50
+                  Whitespace@5..6 " "
+                  TableKw@6..11 "table"
+                  Whitespace@11..12 " "
+                  Identifier@12..15 "foo"
+                  AlterTableAction@15..50
+                    AlterTableActionAlterColumn@15..50
+                      Whitespace@15..16 " "
+                      AlterKw@16..21 "alter"
+                      Whitespace@21..22 " "
+                      ColumnKw@22..28 "column"
+                      Whitespace@28..29 " "
+                      Identifier@29..32 "bar"
+                      Whitespace@32..33 " "
+                      SetKw@33..36 "set"
+                      Whitespace@36..37 " "
+                      DefaultKw@37..44 "default"
+                      String@44..50
+                        Whitespace@44..45 " "
+                        Token@45..46 "'"
+                        StringContent@46..49 "baz"
+                        Token@49..50 "'"
+              Token@50..51 ";"
+            ,
+        )
+    "#]]
+    .assert_debug_eq(&parsed.root());
 }
 
 #[test]

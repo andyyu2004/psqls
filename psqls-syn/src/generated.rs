@@ -3056,6 +3056,19 @@ impl PrimaryKeyConstraint {
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct RawStringContent(pub(crate) SyntaxNode);
+impl Node for RawStringContent {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::RawStringContent
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ReferencesConstraint(pub(crate) SyntaxNode);
 impl Node for ReferencesConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
@@ -3461,6 +3474,29 @@ pub struct String(pub(crate) SyntaxNode);
 impl Node for String {
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == SyntaxKind::String
+    }
+    fn cast(syntax: SyntaxNode) -> Option<Self> {
+        Self::can_cast(syntax.kind()).then(|| Self(syntax))
+    }
+    fn syntax(&self) -> &SyntaxNode {
+        &self.0
+    }
+}
+impl String {
+    pub fn r#string_content(&self) -> Option<StringContent> {
+        self.child()
+    }
+}
+impl String {
+    pub fn r#raw_string_content(&self) -> Option<RawStringContent> {
+        self.child()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct StringContent(pub(crate) SyntaxNode);
+impl Node for StringContent {
+    fn can_cast(kind: SyntaxKind) -> bool {
+        kind == SyntaxKind::StringContent
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -5015,6 +5051,7 @@ pub trait Visitor {
         }
     }
     fn visit_quoted_identifier(&mut self, r#quoted_identifier: QuotedIdentifier) {}
+    fn visit_raw_string_content(&mut self, r#raw_string_content: RawStringContent) {}
     fn visit_references_constraint(&mut self, r#references_constraint: ReferencesConstraint) {
         if let Some(kw) = r#references_constraint.references_kw() {
             self.visit_kw(kw);
@@ -5212,7 +5249,15 @@ pub trait Visitor {
             }
         }
     }
-    fn visit_string(&mut self, r#string: String) {}
+    fn visit_string(&mut self, r#string: String) {
+        for r#raw_string_content in r#string.r#raw_string_content() {
+            self.visit_raw_string_content(r#raw_string_content);
+        }
+        for r#string_content in r#string.r#string_content() {
+            self.visit_string_content(r#string_content);
+        }
+    }
+    fn visit_string_content(&mut self, r#string_content: StringContent) {}
     fn visit_table_column(&mut self, r#table_column: TableColumn) {
         for r#anytype in r#table_column.r#anytype() {
             self.visit_anytype(r#anytype);
@@ -5620,6 +5665,7 @@ pub enum SyntaxKind {
     PrimaryKeyConstraint,
     PrivilegesKw,
     PublicKw,
+    RawStringContent,
     ReferencesKw,
     ReferencesConstraint,
     RestrictKw,
@@ -5650,6 +5696,7 @@ pub enum SyntaxKind {
     StartKw,
     StrictKw,
     String,
+    StringContent,
     TableKw,
     TableColumn,
     TableConstraintCheck,
@@ -5861,6 +5908,7 @@ impl TryFrom<&'static str> for SyntaxKind {
             "primary_key_constraint" => Ok(Self::PrimaryKeyConstraint),
             "PRIVILEGES" => Ok(Self::PrivilegesKw),
             "PUBLIC" => Ok(Self::PublicKw),
+            "raw_string_content" => Ok(Self::RawStringContent),
             "REFERENCES" => Ok(Self::ReferencesKw),
             "references_constraint" => Ok(Self::ReferencesConstraint),
             "RESTRICT" => Ok(Self::RestrictKw),
@@ -5891,6 +5939,7 @@ impl TryFrom<&'static str> for SyntaxKind {
             "START" => Ok(Self::StartKw),
             "STRICT" => Ok(Self::StrictKw),
             "string" => Ok(Self::String),
+            "string_content" => Ok(Self::StringContent),
             "TABLE" => Ok(Self::TableKw),
             "table_column" => Ok(Self::TableColumn),
             "table_constraint_check" => Ok(Self::TableConstraintCheck),

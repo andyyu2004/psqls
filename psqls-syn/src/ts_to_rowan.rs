@@ -41,10 +41,10 @@ impl Builder {
     fn pad_whitespace(&mut self, start: usize) {
         if self.prev_end < start {
             let text = &self.text[self.prev_end..start];
-            assert!(
-                text.chars().all(char::is_whitespace),
-                "non-whitespace padding `{text}`",
-            );
+            // assert!(
+            //     text.chars().all(char::is_whitespace),
+            //     "non-whitespace padding `{text}`",
+            // );
             self.builder
                 .token(Sql::kind_to_raw(SyntaxKind::Whitespace), text);
         }

@@ -33,7 +33,7 @@ fn parse_raw(db: &dyn SyntaxDatabase, url: Arc<str>) -> Tree {
 fn parse(db: &dyn SyntaxDatabase, url: Arc<str>) -> Parse<SourceFile> {
     let tree = db.parse_raw(url.clone());
     let green = ts_to_rowan::ts_to_rowan(db.text(url), tree);
-    assert_eq!(green.kind(), Sql::kind_to_raw(SyntaxKind::SourceFile));
+    assert_eq!(Sql::kind_from_raw(green.kind()), SyntaxKind::SourceFile);
     Parse::new(green)
 }
 

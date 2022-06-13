@@ -537,10 +537,12 @@ module.exports = grammar({
     dotted_name: $ => prec.left(PREC.primary, sep2($.identifier, ".")),
     _name: $ => seq(choice($.identifier, $.dotted_name)),
     type: $ => seq($._name, optional(seq("(", $.number, ")"))),
+    string_content: _ => /[^']*/,
+    raw_string_content: _ => /(\$?[^$]+)+/,
     string: $ =>
       choice(
-        seq("'", field("content", /[^']*/), "'"),
-        seq("$$", field("content", /(\$?[^$]+)+/), "$$"), // FIXME empty string test, maybe read a bit more into c comments answer
+        seq("'", field("content", $.string_content), "'"),
+        seq("$$", field("content", $.raw_string_content), "$$"), // FIXME empty string test, maybe read a bit more into c comments answer
       ),
     field_access: $ => seq($.identifier, "->>", $.string),
     ordered_expression: $ =>
