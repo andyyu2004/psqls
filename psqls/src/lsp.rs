@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use psqls_ide::{Change, Ide, SyntaxDatabase};
+use psqls_ide::{Change, Ide};
 use tokio::sync::Mutex;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{jsonrpc, Client, LanguageServer};
@@ -81,10 +81,7 @@ impl LanguageServer for Lsp {
     ) -> jsonrpc::Result<Option<SemanticTokensResult>> {
         let url: Arc<str> = params.text_document.uri.to_string().into();
         let ide = self.ide.lock().await;
-        let snapshot = ide.snapshot();
-        let rope = snapshot.rope(Arc::clone(&url));
-        let highlights = snapshot.highlight(url.clone());
-        let tokens = tokens::convert(&rope, highlights);
+        let tokens = tokens::semantic_tokens(&ide.snapshot(), url);
         Ok(Some(SemanticTokensResult::Tokens(tokens)))
     }
 

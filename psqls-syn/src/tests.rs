@@ -21,29 +21,67 @@ impl TestDB {
 impl salsa::Database for TestDB {}
 
 #[test]
+fn test_parse_preserves_whitespace() {
+    let sql = " select  *   from  bar;
+    ";
+    let db = TestDB::from_str("foo", sql);
+    let parsed = db.parse("foo".into());
+    expect![[r#"
+        SourceFile(
+            SourceFile@0..23
+              SelectStatement@0..22
+                SelectClause@0..10
+                  Whitespace@0..1 " "
+                  SelectKw@1..7 "select"
+                  SelectClauseBody@7..10
+                    Expression@7..10
+                      AsteriskExpression@7..10
+                        Whitespace@7..9 "  "
+                        Token@9..10 "*"
+                FromClause@10..22
+                  Whitespace@10..13 "   "
+                  FromKw@13..17 "from"
+                  Expression@17..22
+                    Identifier@17..22
+                      Whitespace@17..19 "  "
+                      Name@19..22 "bar"
+              Token@22..23 ";"
+            ,
+        )
+    "#]]
+    .assert_debug_eq(&parsed.root())
+}
+
+#[test]
 fn test_parse_create_table() {
     let db = TestDB::from_str("foo", "create table bar (id uuid PRIMARY KEY)");
     let parsed = db.parse("foo".into());
     expect![[r#"
         SourceFile(
-            SourceFile@0..23
-              CreateTableStatement@0..23
+            SourceFile@0..38
+              CreateTableStatement@0..38
                 CreateKw@0..6 "create"
-                TableKw@6..11 "table"
-                Identifier@11..11
-                  Name@11..11
-                TableParameters@11..23
-                  Token@11..12 "("
-                  TableColumn@12..22
-                    Identifier@12..12
-                      Name@12..12
-                    Type@12..12
-                      Identifier@12..12
-                        Name@12..12
-                    PrimaryKeyConstraint@12..22
-                      PrimaryKw@12..19 "PRIMARY"
-                      KeyKw@19..22 "KEY"
-                  Token@22..23 ")"
+                Whitespace@6..7 " "
+                TableKw@7..12 "table"
+                Identifier@12..16
+                  Whitespace@12..13 " "
+                  Name@13..16 "bar"
+                TableParameters@16..38
+                  Whitespace@16..17 " "
+                  Token@17..18 "("
+                  TableColumn@18..37
+                    Identifier@18..20
+                      Name@18..20 "id"
+                    Type@20..25
+                      Identifier@20..25
+                        Whitespace@20..21 " "
+                        Name@21..25 "uuid"
+                    PrimaryKeyConstraint@25..37
+                      Whitespace@25..26 " "
+                      PrimaryKw@26..33 "PRIMARY"
+                      Whitespace@33..34 " "
+                      KeyKw@34..37 "KEY"
+                  Token@37..38 ")"
             ,
         )
     "#]]
@@ -56,16 +94,18 @@ fn test_parse_error() {
     let parsed = db.parse("foo".into());
     expect![[r#"
         SourceFile(
-            SourceFile@0..11
-              SelectStatement@0..7
-                SelectClause@0..7
+            SourceFile@0..13
+              SelectStatement@0..8
+                SelectClause@0..8
                   SelectKw@0..6 "select"
-                  SelectClauseBody@6..7
-                    Expression@6..7
-                      AsteriskExpression@6..7
-                        Token@6..7 "*"
-              Err@7..11
-                FromKw@7..11 "from"
+                  SelectClauseBody@6..8
+                    Expression@6..8
+                      AsteriskExpression@6..8
+                        Whitespace@6..7 " "
+                        Token@7..8 "*"
+              Err@8..13
+                Whitespace@8..9 " "
+                FromKw@9..13 "from"
             ,
         )
     "#]]
@@ -74,23 +114,27 @@ fn test_parse_error() {
 
 #[test]
 fn test_parse() {
-    let db = TestDB::from_str("foo", "select * from table");
+    let db = TestDB::from_str("foo", "  select  * from table  ");
     let parsed = db.parse("foo".into());
     expect![[r#"
         SourceFile(
-            SourceFile@0..11
-              SelectStatement@0..11
-                SelectClause@0..7
-                  SelectKw@0..6 "select"
-                  SelectClauseBody@6..7
-                    Expression@6..7
-                      AsteriskExpression@6..7
-                        Token@6..7 "*"
-                FromClause@7..11
-                  FromKw@7..11 "from"
-                  Expression@11..11
-                    Identifier@11..11
-                      Name@11..11
+            SourceFile@0..22
+              SelectStatement@0..22
+                SelectClause@0..11
+                  Whitespace@0..2 "  "
+                  SelectKw@2..8 "select"
+                  SelectClauseBody@8..11
+                    Expression@8..11
+                      AsteriskExpression@8..11
+                        Whitespace@8..10 "  "
+                        Token@10..11 "*"
+                FromClause@11..22
+                  Whitespace@11..12 " "
+                  FromKw@12..16 "from"
+                  Expression@16..22
+                    Identifier@16..22
+                      Whitespace@16..17 " "
+                      Name@17..22 "table"
             ,
         )
     "#]]

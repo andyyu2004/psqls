@@ -5449,6 +5449,7 @@ pub enum SyntaxKind {
     WithoutKw,
     ZoneKw,
     Token,
+    Whitespace,
     Err,
 }
 impl TryFrom<&'static str> for SyntaxKind {

@@ -1,4 +1,6 @@
-use psqls_ide::{HighlightRange, Rope};
+use std::sync::Arc;
+
+use psqls_ide::{HighlightRange, Rope, Snapshot, SyntaxDatabase};
 use tower_lsp::lsp_types::*;
 
 use crate::convert::{Convert, ConvertWith};
@@ -19,15 +21,18 @@ pub const TYPES: &[SemanticTokenType] = &[
 
 pub const MODIFIERS: &[SemanticTokenModifier] = &[];
 
+pub(crate) fn semantic_tokens(snapshot: &Snapshot, url: Arc<str>) -> SemanticTokens {
+    let rope = snapshot.rope(Arc::clone(&url));
+    let highlights = snapshot.highlight(url.clone());
+    convert(&rope, highlights)
+}
+
 pub(crate) fn convert(rope: &Rope, highlights: Vec<HighlightRange>) -> SemanticTokens {
     let mut builder = SemanticTokensBuilder::new();
     for token in highlights {
         let (token_index, modifier_bitset) = token.hl.convert();
-        builder.push(
-            token.range.convert_with(&rope),
-            token_index,
-            modifier_bitset,
-        );
+        let range = token.range.convert_with(&rope);
+        builder.push(range, token_index, modifier_bitset);
     }
     builder.build()
 }
@@ -61,6 +66,7 @@ impl SemanticTokensBuilder {
         }
 
         // A token cannot be multiline
+        debug_assert_eq!(range.start.line, range.end.line);
         let token_len = range.end.character - range.start.character;
 
         let token = SemanticToken {
@@ -84,3 +90,6 @@ impl SemanticTokensBuilder {
         }
     }
 }
+
+#[cfg(test)]
+mod tests;

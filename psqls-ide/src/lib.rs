@@ -1,3 +1,5 @@
+#![deny(rust_2018_idioms)]
+
 pub use self::highlight::{Highlight, HighlightRange};
 pub use psqls_syn::{Rope, SyntaxDatabase, TextRange, TextSize};
 

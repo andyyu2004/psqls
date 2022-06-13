@@ -16,3 +16,6 @@ features = ["macros", "rt-multi-thread", "io-std"]
 
 [dependencies.psqls-ide]
 path = "../psqls-ide"
+
+[dev-dependencies]
+expect-test = "1"

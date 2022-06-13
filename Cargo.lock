@@ -487,6 +487,7 @@ dependencies = [
 name = "psqls"
 version = "0.1.0"
 dependencies = [
+ "expect-test",
  "psqls-ide",
  "tokio",
  "tower-lsp",

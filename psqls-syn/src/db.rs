@@ -5,9 +5,9 @@ use ropey::Rope;
 use rowan::Language;
 use tree_sitter::Tree;
 
-use crate::convert;
 use crate::generated::{SourceFile, SyntaxKind};
 use crate::node::{GreenNode, Node, Sql, SyntaxNode};
+use crate::ts_to_rowan;
 
 #[salsa::query_group(SyntaxDatabaseStorage)]
 pub trait SyntaxDatabase {
@@ -32,7 +32,7 @@ fn parse_raw(db: &dyn SyntaxDatabase, url: Arc<str>) -> Tree {
 
 fn parse(db: &dyn SyntaxDatabase, url: Arc<str>) -> Parse<SourceFile> {
     let tree = db.parse_raw(url.clone());
-    let green = convert::ts_to_rowan(db.text(url), tree);
+    let green = ts_to_rowan::ts_to_rowan(db.text(url), tree);
     assert_eq!(green.kind(), Sql::kind_to_raw(SyntaxKind::SourceFile));
     Parse::new(green)
 }

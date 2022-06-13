@@ -746,7 +746,7 @@ pub(crate) struct SyntaxGrammar {
 }
 
 impl fmt::Display for PrecedenceEntry {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             PrecedenceEntry::Name(n) => write!(f, "'{}'", n),
             PrecedenceEntry::Symbol(s) => write!(f, "$.{}", s),

@@ -10,7 +10,7 @@ function kw(keyword) {
     const regex = createCaseInsensitiveRegex(words[0]);
     return alias(regex, keyword);
   } else {
-    return alias(seq(...words.map(kw)), keyword);
+    return seq(...words.map(kw))
   }
 }
 
@@ -298,11 +298,11 @@ module.exports = grammar({
       seq(
         optional(seq(kw("CONSTRAINT"), field("name", $.identifier))),
         choice(
-          alias($.table_constraint_foreign_key, $.foreign_key),
-          alias($.table_constraint_unique, $.unique),
-          alias($.table_constraint_primary_key, $.primary_key),
-          alias($.table_constraint_check, $.check),
-          alias($.table_constraint_exclude, $.exclude),
+          $.table_constraint_foreign_key,
+          $.table_constraint_unique,
+          $.table_constraint_primary_key,
+          $.table_constraint_check,
+          $.table_constraint_exclude,
         ),
         optional($.mode),
         optional($.initial_mode),

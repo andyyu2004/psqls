@@ -220,6 +220,7 @@ impl Gen {
             pub enum SyntaxKind {
                 #(#variants,)*
                 Token, // catchall kind for tokens
+                Whitespace, // catchall for arbitrary whitespace
                 Err,
             }
 
@@ -785,6 +786,7 @@ fn test_generate_nodes() {
             True,
             Value,
             Token,
+            Whitespace,
             Err,
         }
         impl TryFrom<&'static str> for SyntaxKind {

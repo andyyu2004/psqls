@@ -1,3 +1,4 @@
+#![deny(rust_2018_idioms)]
 #![cfg_attr(test, feature(box_patterns))]
 
 pub use self::db::{SyntaxDatabase, SyntaxDatabaseStorage};
@@ -6,11 +7,10 @@ pub use self::node::{Node, SyntaxNode, SyntaxToken};
 pub use ropey::Rope;
 pub use rowan::{TextRange, TextSize};
 
-mod convert;
 mod db;
 mod generated;
-mod lower;
 mod node;
+mod ts_to_rowan;
 mod validation;
 mod visit;
 

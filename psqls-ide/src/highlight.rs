@@ -33,6 +33,10 @@ impl Highlighter {
         self.visit_source_file(source);
         self.highlights.sort_by_key(|hl| hl.range.start());
         self.highlights
+            .iter()
+            .zip(self.highlights.iter().skip(1))
+            .for_each(|(x, y)| assert!(x.range.end() <= y.range.start()));
+        self.highlights
     }
 }
 
