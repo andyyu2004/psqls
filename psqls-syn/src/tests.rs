@@ -33,6 +33,7 @@ ALTER TABLE trait_buckets ALTER COLUMN group_id DROP NOT NULL;
     ";
     let db = TestDB::from_str("foo", sql);
     let parsed = db.parse_raw("foo".into());
+    dbg!(parsed.root_node().to_sexp());
 }
 
 #[test]

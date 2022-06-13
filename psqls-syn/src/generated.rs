@@ -14,7 +14,7 @@ impl rowan::Language for Sql {
 pub struct False(pub(crate) SyntaxNode);
 impl Node for False {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::False
+        matches!(kind, SyntaxKind::False)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -32,7 +32,7 @@ impl False {
 pub struct Null(pub(crate) SyntaxNode);
 impl Node for Null {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Null
+        matches!(kind, SyntaxKind::Null)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -50,7 +50,7 @@ impl Null {
 pub struct True(pub(crate) SyntaxNode);
 impl Node for True {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::True
+        matches!(kind, SyntaxKind::True)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -68,7 +68,7 @@ impl True {
 pub struct AliasableExpression(pub(crate) SyntaxNode);
 impl Node for AliasableExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AliasableExpression
+        matches!(kind, SyntaxKind::AliasableExpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -91,7 +91,7 @@ impl AliasableExpression {
 pub struct AliasedExpression(pub(crate) SyntaxNode);
 impl Node for AliasedExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AliasedExpression
+        matches!(kind, SyntaxKind::AliasedExpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -119,7 +119,7 @@ impl AliasedExpression {
 pub struct Anytype(pub(crate) SyntaxNode);
 impl Node for Anytype {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Anytype
+        matches!(kind, SyntaxKind::Anytype)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -200,7 +200,7 @@ impl ColumnDefaultExpression {
 pub struct Constraint(pub(crate) SyntaxNode);
 impl Node for Constraint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Constraint
+        matches!(kind, SyntaxKind::Constraint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -223,7 +223,7 @@ impl Constraint {
 pub struct ConstraintAction(pub(crate) SyntaxNode);
 impl Node for ConstraintAction {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ConstraintAction
+        matches!(kind, SyntaxKind::ConstraintAction)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -517,7 +517,7 @@ impl Expression {
 pub struct FunctionLanguage(pub(crate) SyntaxNode);
 impl Node for FunctionLanguage {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FunctionLanguage
+        matches!(kind, SyntaxKind::FunctionLanguage)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -540,7 +540,7 @@ impl FunctionLanguage {
 pub struct Name(pub(crate) SyntaxNode);
 impl Node for Name {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Name
+        matches!(kind, SyntaxKind::Name)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -563,7 +563,7 @@ impl Name {
 pub struct ParenthesizedExpression(pub(crate) SyntaxNode);
 impl Node for ParenthesizedExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ParenthesizedExpression
+        matches!(kind, SyntaxKind::ParenthesizedExpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -581,7 +581,7 @@ impl ParenthesizedExpression {
 pub struct QuotedIdentifier(pub(crate) SyntaxNode);
 impl Node for QuotedIdentifier {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::QuotedIdentifier
+        matches!(kind, SyntaxKind::QuotedIdentifier)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -820,7 +820,7 @@ impl Statement {
 pub struct TableConstraint(pub(crate) SyntaxNode);
 impl Node for TableConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::TableConstraint
+        matches!(kind, SyntaxKind::TableConstraint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -878,7 +878,7 @@ impl TableConstraint {
 pub struct AlterStatement(pub(crate) SyntaxNode);
 impl Node for AlterStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AlterStatement
+        matches!(kind, SyntaxKind::AlterStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -906,7 +906,7 @@ impl AlterStatement {
 pub struct AlterTable(pub(crate) SyntaxNode);
 impl Node for AlterTable {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AlterTable
+        matches!(kind, SyntaxKind::AlterTable)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1000,7 +1000,7 @@ impl AlterTableAction {
 pub struct AlterTableActionAdd(pub(crate) SyntaxNode);
 impl Node for AlterTableActionAdd {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AlterTableActionAdd
+        matches!(kind, SyntaxKind::AlterTableActionAdd)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1033,7 +1033,7 @@ impl AlterTableActionAdd {
 pub struct AlterTableActionAlterColumn(pub(crate) SyntaxNode);
 impl Node for AlterTableActionAlterColumn {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AlterTableActionAlterColumn
+        matches!(kind, SyntaxKind::AlterTableActionAlterColumn)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1076,7 +1076,7 @@ impl AlterTableActionAlterColumn {
 pub struct AlterTableActionSet(pub(crate) SyntaxNode);
 impl Node for AlterTableActionSet {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AlterTableActionSet
+        matches!(kind, SyntaxKind::AlterTableActionSet)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1099,7 +1099,7 @@ impl AlterTableActionSet {
 pub struct ArgumentReference(pub(crate) SyntaxNode);
 impl Node for ArgumentReference {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ArgumentReference
+        matches!(kind, SyntaxKind::ArgumentReference)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1112,7 +1112,7 @@ impl Node for ArgumentReference {
 pub struct ArrayElementAccess(pub(crate) SyntaxNode);
 impl Node for ArrayElementAccess {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ArrayElementAccess
+        matches!(kind, SyntaxKind::ArrayElementAccess)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1140,7 +1140,7 @@ impl ArrayElementAccess {
 pub struct AssigmentExpression(pub(crate) SyntaxNode);
 impl Node for AssigmentExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AssigmentExpression
+        matches!(kind, SyntaxKind::AssigmentExpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1163,7 +1163,7 @@ impl AssigmentExpression {
 pub struct AsteriskExpression(pub(crate) SyntaxNode);
 impl Node for AsteriskExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AsteriskExpression
+        matches!(kind, SyntaxKind::AsteriskExpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1181,7 +1181,7 @@ impl AsteriskExpression {
 pub struct AutoIncrementConstraint(pub(crate) SyntaxNode);
 impl Node for AutoIncrementConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::AutoIncrementConstraint
+        matches!(kind, SyntaxKind::AutoIncrementConstraint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1199,7 +1199,7 @@ impl AutoIncrementConstraint {
 pub struct BeginStatement(pub(crate) SyntaxNode);
 impl Node for BeginStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::BeginStatement
+        matches!(kind, SyntaxKind::BeginStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1227,7 +1227,7 @@ impl BeginStatement {
 pub struct BinaryExpression(pub(crate) SyntaxNode);
 impl Node for BinaryExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::BinaryExpression
+        matches!(kind, SyntaxKind::BinaryExpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1245,7 +1245,7 @@ impl BinaryExpression {
 pub struct BinaryOperator(pub(crate) SyntaxNode);
 impl Node for BinaryOperator {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::BinaryOperator
+        matches!(kind, SyntaxKind::BinaryOperator)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1258,7 +1258,7 @@ impl Node for BinaryOperator {
 pub struct BooleanExpression(pub(crate) SyntaxNode);
 impl Node for BooleanExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::BooleanExpression
+        matches!(kind, SyntaxKind::BooleanExpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1291,7 +1291,7 @@ impl BooleanExpression {
 pub struct CheckConstraint(pub(crate) SyntaxNode);
 impl Node for CheckConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CheckConstraint
+        matches!(kind, SyntaxKind::CheckConstraint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1314,7 +1314,7 @@ impl CheckConstraint {
 pub struct ColumnDefault(pub(crate) SyntaxNode);
 impl Node for ColumnDefault {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ColumnDefault
+        matches!(kind, SyntaxKind::ColumnDefault)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1342,7 +1342,7 @@ impl ColumnDefault {
 pub struct Comment(pub(crate) SyntaxNode);
 impl Node for Comment {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Comment
+        matches!(kind, SyntaxKind::Comment)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1355,7 +1355,7 @@ impl Node for Comment {
 pub struct CommitStatement(pub(crate) SyntaxNode);
 impl Node for CommitStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CommitStatement
+        matches!(kind, SyntaxKind::CommitStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1383,7 +1383,7 @@ impl CommitStatement {
 pub struct ConstrainedType(pub(crate) SyntaxNode);
 impl Node for ConstrainedType {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ConstrainedType
+        matches!(kind, SyntaxKind::ConstrainedType)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1406,7 +1406,7 @@ impl ConstrainedType {
 pub struct CreateDomainStatement(pub(crate) SyntaxNode);
 impl Node for CreateDomainStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateDomainStatement
+        matches!(kind, SyntaxKind::CreateDomainStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1454,7 +1454,7 @@ impl CreateDomainStatement {
 pub struct CreateExtensionStatement(pub(crate) SyntaxNode);
 impl Node for CreateExtensionStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateExtensionStatement
+        matches!(kind, SyntaxKind::CreateExtensionStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1497,7 +1497,7 @@ impl CreateExtensionStatement {
 pub struct CreateFunctionParameter(pub(crate) SyntaxNode);
 impl Node for CreateFunctionParameter {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateFunctionParameter
+        matches!(kind, SyntaxKind::CreateFunctionParameter)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1550,7 +1550,7 @@ impl CreateFunctionParameter {
 pub struct CreateFunctionParameters(pub(crate) SyntaxNode);
 impl Node for CreateFunctionParameters {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateFunctionParameters
+        matches!(kind, SyntaxKind::CreateFunctionParameters)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1568,7 +1568,7 @@ impl CreateFunctionParameters {
 pub struct CreateFunctionStatement(pub(crate) SyntaxNode);
 impl Node for CreateFunctionStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateFunctionStatement
+        matches!(kind, SyntaxKind::CreateFunctionStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1641,7 +1641,7 @@ impl CreateFunctionStatement {
 pub struct CreateIndexIncludeClause(pub(crate) SyntaxNode);
 impl Node for CreateIndexIncludeClause {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateIndexIncludeClause
+        matches!(kind, SyntaxKind::CreateIndexIncludeClause)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1664,7 +1664,7 @@ impl CreateIndexIncludeClause {
 pub struct CreateIndexStatement(pub(crate) SyntaxNode);
 impl Node for CreateIndexStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateIndexStatement
+        matches!(kind, SyntaxKind::CreateIndexStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1727,7 +1727,7 @@ impl CreateIndexStatement {
 pub struct CreateIndexWithClause(pub(crate) SyntaxNode);
 impl Node for CreateIndexWithClause {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateIndexWithClause
+        matches!(kind, SyntaxKind::CreateIndexWithClause)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1755,7 +1755,7 @@ impl CreateIndexWithClause {
 pub struct CreateRoleStatement(pub(crate) SyntaxNode);
 impl Node for CreateRoleStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateRoleStatement
+        matches!(kind, SyntaxKind::CreateRoleStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1788,7 +1788,7 @@ impl CreateRoleStatement {
 pub struct CreateSchemaStatement(pub(crate) SyntaxNode);
 impl Node for CreateSchemaStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateSchemaStatement
+        matches!(kind, SyntaxKind::CreateSchemaStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1831,7 +1831,7 @@ impl CreateSchemaStatement {
 pub struct CreateStatement(pub(crate) SyntaxNode);
 impl Node for CreateStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateStatement
+        matches!(kind, SyntaxKind::CreateStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1864,7 +1864,7 @@ impl CreateStatement {
 pub struct CreateTableStatement(pub(crate) SyntaxNode);
 impl Node for CreateTableStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateTableStatement
+        matches!(kind, SyntaxKind::CreateTableStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1917,7 +1917,7 @@ impl CreateTableStatement {
 pub struct CreateTypeStatement(pub(crate) SyntaxNode);
 impl Node for CreateTypeStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::CreateTypeStatement
+        matches!(kind, SyntaxKind::CreateTypeStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1955,7 +1955,7 @@ impl CreateTypeStatement {
 pub struct DirectionConstraint(pub(crate) SyntaxNode);
 impl Node for DirectionConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::DirectionConstraint
+        matches!(kind, SyntaxKind::DirectionConstraint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -1978,7 +1978,7 @@ impl DirectionConstraint {
 pub struct DistinctFrom(pub(crate) SyntaxNode);
 impl Node for DistinctFrom {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::DistinctFrom
+        matches!(kind, SyntaxKind::DistinctFrom)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2006,7 +2006,7 @@ impl DistinctFrom {
 pub struct DottedName(pub(crate) SyntaxNode);
 impl Node for DottedName {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::DottedName
+        matches!(kind, SyntaxKind::DottedName)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2024,7 +2024,7 @@ impl DottedName {
 pub struct DropStatement(pub(crate) SyntaxNode);
 impl Node for DropStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::DropStatement
+        matches!(kind, SyntaxKind::DropStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2057,7 +2057,7 @@ impl DropStatement {
 pub struct ExcludeEntry(pub(crate) SyntaxNode);
 impl Node for ExcludeEntry {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ExcludeEntry
+        matches!(kind, SyntaxKind::ExcludeEntry)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2090,7 +2090,7 @@ impl ExcludeEntry {
 pub struct FieldAccess(pub(crate) SyntaxNode);
 impl Node for FieldAccess {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FieldAccess
+        matches!(kind, SyntaxKind::FieldAccess)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2113,7 +2113,7 @@ impl FieldAccess {
 pub struct FromClause(pub(crate) SyntaxNode);
 impl Node for FromClause {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FromClause
+        matches!(kind, SyntaxKind::FromClause)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2136,7 +2136,7 @@ impl FromClause {
 pub struct FunctionBody(pub(crate) SyntaxNode);
 impl Node for FunctionBody {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FunctionBody
+        matches!(kind, SyntaxKind::FunctionBody)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2159,7 +2159,7 @@ impl FunctionBody {
 pub struct FunctionCall(pub(crate) SyntaxNode);
 impl Node for FunctionCall {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::FunctionCall
+        matches!(kind, SyntaxKind::FunctionCall)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2182,7 +2182,7 @@ impl FunctionCall {
 pub struct GrantStatement(pub(crate) SyntaxNode);
 impl Node for GrantStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::GrantStatement
+        matches!(kind, SyntaxKind::GrantStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2310,7 +2310,7 @@ impl GrantStatement {
 pub struct GroupByClause(pub(crate) SyntaxNode);
 impl Node for GroupByClause {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::GroupByClause
+        matches!(kind, SyntaxKind::GroupByClause)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2338,7 +2338,7 @@ impl GroupByClause {
 pub struct GroupByClauseBody(pub(crate) SyntaxNode);
 impl Node for GroupByClauseBody {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::GroupByClauseBody
+        matches!(kind, SyntaxKind::GroupByClauseBody)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2356,7 +2356,7 @@ impl GroupByClauseBody {
 pub struct Identifier(pub(crate) SyntaxNode);
 impl Node for Identifier {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Identifier
+        matches!(kind, SyntaxKind::Identifier)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2374,7 +2374,7 @@ impl Identifier {
 pub struct InExpression(pub(crate) SyntaxNode);
 impl Node for InExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::InExpression
+        matches!(kind, SyntaxKind::InExpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2407,7 +2407,7 @@ impl InExpression {
 pub struct IndexTableParameters(pub(crate) SyntaxNode);
 impl Node for IndexTableParameters {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::IndexTableParameters
+        matches!(kind, SyntaxKind::IndexTableParameters)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2435,7 +2435,7 @@ impl IndexTableParameters {
 pub struct InitialMode(pub(crate) SyntaxNode);
 impl Node for InitialMode {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::InitialMode
+        matches!(kind, SyntaxKind::InitialMode)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2463,7 +2463,7 @@ impl InitialMode {
 pub struct InsertStatement(pub(crate) SyntaxNode);
 impl Node for InsertStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::InsertStatement
+        matches!(kind, SyntaxKind::InsertStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2501,7 +2501,7 @@ impl InsertStatement {
 pub struct IntervalExpression(pub(crate) SyntaxNode);
 impl Node for IntervalExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::IntervalExpression
+        matches!(kind, SyntaxKind::IntervalExpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2524,7 +2524,7 @@ impl IntervalExpression {
 pub struct IsExpression(pub(crate) SyntaxNode);
 impl Node for IsExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::IsExpression
+        matches!(kind, SyntaxKind::IsExpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2572,7 +2572,7 @@ impl IsExpression {
 pub struct JoinClause(pub(crate) SyntaxNode);
 impl Node for JoinClause {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::JoinClause
+        matches!(kind, SyntaxKind::JoinClause)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2610,7 +2610,7 @@ impl JoinClause {
 pub struct JoinType(pub(crate) SyntaxNode);
 impl Node for JoinType {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::JoinType
+        matches!(kind, SyntaxKind::JoinType)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2648,7 +2648,7 @@ impl JoinType {
 pub struct Mode(pub(crate) SyntaxNode);
 impl Node for Mode {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Mode
+        matches!(kind, SyntaxKind::Mode)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2671,7 +2671,7 @@ impl Mode {
 pub struct NamedConstraint(pub(crate) SyntaxNode);
 impl Node for NamedConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::NamedConstraint
+        matches!(kind, SyntaxKind::NamedConstraint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2689,7 +2689,7 @@ impl NamedConstraint {
 pub struct NullConstraint(pub(crate) SyntaxNode);
 impl Node for NullConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::NullConstraint
+        matches!(kind, SyntaxKind::NullConstraint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2712,7 +2712,7 @@ impl NullConstraint {
 pub struct NullHint(pub(crate) SyntaxNode);
 impl Node for NullHint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::NullHint
+        matches!(kind, SyntaxKind::NullHint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2755,7 +2755,7 @@ impl NullHint {
 pub struct Number(pub(crate) SyntaxNode);
 impl Node for Number {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Number
+        matches!(kind, SyntaxKind::Number)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2768,7 +2768,7 @@ impl Node for Number {
 pub struct OnDeleteAction(pub(crate) SyntaxNode);
 impl Node for OnDeleteAction {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OnDeleteAction
+        matches!(kind, SyntaxKind::OnDeleteAction)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2796,7 +2796,7 @@ impl OnDeleteAction {
 pub struct OnUpdateAction(pub(crate) SyntaxNode);
 impl Node for OnUpdateAction {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OnUpdateAction
+        matches!(kind, SyntaxKind::OnUpdateAction)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2824,7 +2824,7 @@ impl OnUpdateAction {
 pub struct OpClass(pub(crate) SyntaxNode);
 impl Node for OpClass {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OpClass
+        matches!(kind, SyntaxKind::OpClass)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2842,7 +2842,7 @@ impl OpClass {
 pub struct OptimizerHint(pub(crate) SyntaxNode);
 impl Node for OptimizerHint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OptimizerHint
+        matches!(kind, SyntaxKind::OptimizerHint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2870,7 +2870,7 @@ impl OptimizerHint {
 pub struct OrderByClause(pub(crate) SyntaxNode);
 impl Node for OrderByClause {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OrderByClause
+        matches!(kind, SyntaxKind::OrderByClause)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2898,7 +2898,7 @@ impl OrderByClause {
 pub struct OrderByClauseBody(pub(crate) SyntaxNode);
 impl Node for OrderByClauseBody {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OrderByClauseBody
+        matches!(kind, SyntaxKind::OrderByClauseBody)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2916,7 +2916,7 @@ impl OrderByClauseBody {
 pub struct OrderedExpression(pub(crate) SyntaxNode);
 impl Node for OrderedExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::OrderedExpression
+        matches!(kind, SyntaxKind::OrderedExpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2944,7 +2944,7 @@ impl OrderedExpression {
 pub struct ParallelHint(pub(crate) SyntaxNode);
 impl Node for ParallelHint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ParallelHint
+        matches!(kind, SyntaxKind::ParallelHint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -2977,7 +2977,7 @@ impl ParallelHint {
 pub struct Parameter(pub(crate) SyntaxNode);
 impl Node for Parameter {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Parameter
+        matches!(kind, SyntaxKind::Parameter)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3005,7 +3005,7 @@ impl Parameter {
 pub struct Parameters(pub(crate) SyntaxNode);
 impl Node for Parameters {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Parameters
+        matches!(kind, SyntaxKind::Parameters)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3023,7 +3023,7 @@ impl Parameters {
 pub struct PgCommand(pub(crate) SyntaxNode);
 impl Node for PgCommand {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::PgCommand
+        matches!(kind, SyntaxKind::PgCommand)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3036,7 +3036,7 @@ impl Node for PgCommand {
 pub struct PrimaryKeyConstraint(pub(crate) SyntaxNode);
 impl Node for PrimaryKeyConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::PrimaryKeyConstraint
+        matches!(kind, SyntaxKind::PrimaryKeyConstraint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3059,7 +3059,7 @@ impl PrimaryKeyConstraint {
 pub struct RawStringContent(pub(crate) SyntaxNode);
 impl Node for RawStringContent {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::RawStringContent
+        matches!(kind, SyntaxKind::RawStringContent)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3072,7 +3072,7 @@ impl Node for RawStringContent {
 pub struct ReferencesConstraint(pub(crate) SyntaxNode);
 impl Node for ReferencesConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ReferencesConstraint
+        matches!(kind, SyntaxKind::ReferencesConstraint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3110,7 +3110,7 @@ impl ReferencesConstraint {
 pub struct RollbackStatement(pub(crate) SyntaxNode);
 impl Node for RollbackStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::RollbackStatement
+        matches!(kind, SyntaxKind::RollbackStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3138,7 +3138,7 @@ impl RollbackStatement {
 pub struct SelectClause(pub(crate) SyntaxNode);
 impl Node for SelectClause {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SelectClause
+        matches!(kind, SyntaxKind::SelectClause)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3161,7 +3161,7 @@ impl SelectClause {
 pub struct SelectClauseBody(pub(crate) SyntaxNode);
 impl Node for SelectClauseBody {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SelectClauseBody
+        matches!(kind, SyntaxKind::SelectClauseBody)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3179,7 +3179,7 @@ impl SelectClauseBody {
 pub struct SelectStatement(pub(crate) SyntaxNode);
 impl Node for SelectStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SelectStatement
+        matches!(kind, SyntaxKind::SelectStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3222,7 +3222,7 @@ impl SelectStatement {
 pub struct SelectSubexpression(pub(crate) SyntaxNode);
 impl Node for SelectSubexpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SelectSubexpression
+        matches!(kind, SyntaxKind::SelectSubexpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3240,7 +3240,7 @@ impl SelectSubexpression {
 pub struct Sequence(pub(crate) SyntaxNode);
 impl Node for Sequence {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Sequence
+        matches!(kind, SyntaxKind::Sequence)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3338,7 +3338,7 @@ impl Sequence {
 pub struct SetClause(pub(crate) SyntaxNode);
 impl Node for SetClause {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SetClause
+        matches!(kind, SyntaxKind::SetClause)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3361,7 +3361,7 @@ impl SetClause {
 pub struct SetClauseBody(pub(crate) SyntaxNode);
 impl Node for SetClauseBody {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SetClauseBody
+        matches!(kind, SyntaxKind::SetClauseBody)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3379,7 +3379,7 @@ impl SetClauseBody {
 pub struct SetStatement(pub(crate) SyntaxNode);
 impl Node for SetStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SetStatement
+        matches!(kind, SyntaxKind::SetStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3427,7 +3427,7 @@ impl SetStatement {
 pub struct Setof(pub(crate) SyntaxNode);
 impl Node for Setof {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Setof
+        matches!(kind, SyntaxKind::Setof)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3455,7 +3455,7 @@ impl Setof {
 pub struct SourceFile(pub(crate) SyntaxNode);
 impl Node for SourceFile {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::SourceFile
+        matches!(kind, SyntaxKind::SourceFile)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3473,7 +3473,7 @@ impl SourceFile {
 pub struct String(pub(crate) SyntaxNode);
 impl Node for String {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::String
+        matches!(kind, SyntaxKind::String)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3496,7 +3496,7 @@ impl String {
 pub struct StringContent(pub(crate) SyntaxNode);
 impl Node for StringContent {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::StringContent
+        matches!(kind, SyntaxKind::StringContent)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3509,7 +3509,7 @@ impl Node for StringContent {
 pub struct TableColumn(pub(crate) SyntaxNode);
 impl Node for TableColumn {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::TableColumn
+        matches!(kind, SyntaxKind::TableColumn)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3582,7 +3582,7 @@ impl TableColumn {
 pub struct TableConstraintCheck(pub(crate) SyntaxNode);
 impl Node for TableConstraintCheck {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::TableConstraintCheck
+        matches!(kind, SyntaxKind::TableConstraintCheck)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3605,7 +3605,7 @@ impl TableConstraintCheck {
 pub struct TableConstraintExclude(pub(crate) SyntaxNode);
 impl Node for TableConstraintExclude {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::TableConstraintExclude
+        matches!(kind, SyntaxKind::TableConstraintExclude)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3638,7 +3638,7 @@ impl TableConstraintExclude {
 pub struct TableConstraintForeignKey(pub(crate) SyntaxNode);
 impl Node for TableConstraintForeignKey {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::TableConstraintForeignKey
+        matches!(kind, SyntaxKind::TableConstraintForeignKey)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3671,7 +3671,7 @@ impl TableConstraintForeignKey {
 pub struct TableConstraintPrimaryKey(pub(crate) SyntaxNode);
 impl Node for TableConstraintPrimaryKey {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::TableConstraintPrimaryKey
+        matches!(kind, SyntaxKind::TableConstraintPrimaryKey)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3699,7 +3699,7 @@ impl TableConstraintPrimaryKey {
 pub struct TableConstraintUnique(pub(crate) SyntaxNode);
 impl Node for TableConstraintUnique {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::TableConstraintUnique
+        matches!(kind, SyntaxKind::TableConstraintUnique)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3722,7 +3722,7 @@ impl TableConstraintUnique {
 pub struct TableParameters(pub(crate) SyntaxNode);
 impl Node for TableParameters {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::TableParameters
+        matches!(kind, SyntaxKind::TableParameters)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3745,7 +3745,7 @@ impl TableParameters {
 pub struct TimeZoneConstraint(pub(crate) SyntaxNode);
 impl Node for TimeZoneConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::TimeZoneConstraint
+        matches!(kind, SyntaxKind::TimeZoneConstraint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3778,7 +3778,7 @@ impl TimeZoneConstraint {
 pub struct Tuple(pub(crate) SyntaxNode);
 impl Node for Tuple {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Tuple
+        matches!(kind, SyntaxKind::Tuple)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3796,7 +3796,7 @@ impl Tuple {
 pub struct Type(pub(crate) SyntaxNode);
 impl Node for Type {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::Type
+        matches!(kind, SyntaxKind::Type)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3819,7 +3819,7 @@ impl Type {
 pub struct TypeCast(pub(crate) SyntaxNode);
 impl Node for TypeCast {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::TypeCast
+        matches!(kind, SyntaxKind::TypeCast)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3857,7 +3857,7 @@ impl TypeCast {
 pub struct UnaryExpression(pub(crate) SyntaxNode);
 impl Node for UnaryExpression {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::UnaryExpression
+        matches!(kind, SyntaxKind::UnaryExpression)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3875,7 +3875,7 @@ impl UnaryExpression {
 pub struct UniqueConstraint(pub(crate) SyntaxNode);
 impl Node for UniqueConstraint {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::UniqueConstraint
+        matches!(kind, SyntaxKind::UniqueConstraint)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3893,7 +3893,7 @@ impl UniqueConstraint {
 pub struct UpdateStatement(pub(crate) SyntaxNode);
 impl Node for UpdateStatement {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::UpdateStatement
+        matches!(kind, SyntaxKind::UpdateStatement)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3926,7 +3926,7 @@ impl UpdateStatement {
 pub struct UsingClause(pub(crate) SyntaxNode);
 impl Node for UsingClause {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::UsingClause
+        matches!(kind, SyntaxKind::UsingClause)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3949,7 +3949,7 @@ impl UsingClause {
 pub struct ValuesClause(pub(crate) SyntaxNode);
 impl Node for ValuesClause {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ValuesClause
+        matches!(kind, SyntaxKind::ValuesClause)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3972,7 +3972,7 @@ impl ValuesClause {
 pub struct ValuesClauseBody(pub(crate) SyntaxNode);
 impl Node for ValuesClauseBody {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::ValuesClauseBody
+        matches!(kind, SyntaxKind::ValuesClauseBody)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -3990,7 +3990,7 @@ impl ValuesClauseBody {
 pub struct WhereClause(pub(crate) SyntaxNode);
 impl Node for WhereClause {
     fn can_cast(kind: SyntaxKind) -> bool {
-        kind == SyntaxKind::WhereClause
+        matches!(kind, SyntaxKind::WhereClause)
     }
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         Self::can_cast(syntax.kind()).then(|| Self(syntax))

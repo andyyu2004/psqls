@@ -304,7 +304,7 @@ impl Gen {
 
                 impl Node for #name {
                     fn can_cast(kind: SyntaxKind) -> bool {
-                        kind == SyntaxKind::#name
+                        matches!(kind, SyntaxKind::#name)
                     }
 
                     fn cast(syntax: SyntaxNode) -> Option<Self> {
@@ -519,7 +519,7 @@ fn test_generate_nodes() {
         pub struct Array(pub(crate) SyntaxNode);
         impl Node for Array {
             fn can_cast(kind: SyntaxKind) -> bool {
-                kind == SyntaxKind::Array
+                matches!(kind, SyntaxKind::Array)
             }
             fn cast(syntax: SyntaxNode) -> Option<Self> {
                 Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -537,7 +537,7 @@ fn test_generate_nodes() {
         pub struct Document(pub(crate) SyntaxNode);
         impl Node for Document {
             fn can_cast(kind: SyntaxKind) -> bool {
-                kind == SyntaxKind::Document
+                matches!(kind, SyntaxKind::Document)
             }
             fn cast(syntax: SyntaxNode) -> Option<Self> {
                 Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -555,7 +555,7 @@ fn test_generate_nodes() {
         pub struct False(pub(crate) SyntaxNode);
         impl Node for False {
             fn can_cast(kind: SyntaxKind) -> bool {
-                kind == SyntaxKind::False
+                matches!(kind, SyntaxKind::False)
             }
             fn cast(syntax: SyntaxNode) -> Option<Self> {
                 Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -568,7 +568,7 @@ fn test_generate_nodes() {
         pub struct Null(pub(crate) SyntaxNode);
         impl Node for Null {
             fn can_cast(kind: SyntaxKind) -> bool {
-                kind == SyntaxKind::Null
+                matches!(kind, SyntaxKind::Null)
             }
             fn cast(syntax: SyntaxNode) -> Option<Self> {
                 Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -581,7 +581,7 @@ fn test_generate_nodes() {
         pub struct Number(pub(crate) SyntaxNode);
         impl Node for Number {
             fn can_cast(kind: SyntaxKind) -> bool {
-                kind == SyntaxKind::Number
+                matches!(kind, SyntaxKind::Number)
             }
             fn cast(syntax: SyntaxNode) -> Option<Self> {
                 Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -594,7 +594,7 @@ fn test_generate_nodes() {
         pub struct Object(pub(crate) SyntaxNode);
         impl Node for Object {
             fn can_cast(kind: SyntaxKind) -> bool {
-                kind == SyntaxKind::Object
+                matches!(kind, SyntaxKind::Object)
             }
             fn cast(syntax: SyntaxNode) -> Option<Self> {
                 Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -612,7 +612,7 @@ fn test_generate_nodes() {
         pub struct Pair(pub(crate) SyntaxNode);
         impl Node for Pair {
             fn can_cast(kind: SyntaxKind) -> bool {
-                kind == SyntaxKind::Pair
+                matches!(kind, SyntaxKind::Pair)
             }
             fn cast(syntax: SyntaxNode) -> Option<Self> {
                 Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -640,7 +640,7 @@ fn test_generate_nodes() {
         pub struct String(pub(crate) SyntaxNode);
         impl Node for String {
             fn can_cast(kind: SyntaxKind) -> bool {
-                kind == SyntaxKind::String
+                matches!(kind, SyntaxKind::String)
             }
             fn cast(syntax: SyntaxNode) -> Option<Self> {
                 Self::can_cast(syntax.kind()).then(|| Self(syntax))
@@ -653,7 +653,7 @@ fn test_generate_nodes() {
         pub struct True(pub(crate) SyntaxNode);
         impl Node for True {
             fn can_cast(kind: SyntaxKind) -> bool {
-                kind == SyntaxKind::True
+                matches!(kind, SyntaxKind::True)
             }
             fn cast(syntax: SyntaxNode) -> Option<Self> {
                 Self::can_cast(syntax.kind()).then(|| Self(syntax))
